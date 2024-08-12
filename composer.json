@@ -3,10 +3,10 @@
     "description": "PHP library for support brispot microservice development",
     "keywords": ["brispot", "microservice", "php-lib"],
     "license": "MIT",
-    "type": "project",
+    "type": "library",
     "autoload": {
         "psr-4": {
-            "Brispot\\HelloWorldPackage\\": "src/"
+            "Brispot\\PhpLib\\": "src/"
         }
     },
     "minimum-stability": "dev",
