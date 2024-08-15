@@ -17,6 +17,7 @@ namespace Brispot\PhpLib\Exceptions;
 
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
+use Brispot\PhpLib\Exceptions\TraitException;
 
 /**
  * Class UnsupportedException
@@ -29,6 +30,7 @@ use Brispot\PhpLib\Exceptions\ExceptionInterface;
  */
 class UnsupportedException extends Exception implements ExceptionInterface
 {
+    use TraitException;
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -52,43 +54,4 @@ class UnsupportedException extends Exception implements ExceptionInterface
         parent::__construct($message, 6, null);
     }
 
-    /**
-     * Get attribute errorCode
-     *
-     * @return string
-     */
-    public function getErrorCode(): string
-    {
-        return $this->errorCode;
-    }
-
-    /**
-     * Get attribute errorMessage
-     *
-     * @return string
-     */
-    public function getErrorMessage(): string
-    {
-        return $this->errorMessage;
-    }
-
-    /**
-     * Get attribute httpCode
-     *
-     * @return int
-     */
-    public function getHttpCode(): int
-    {
-        return $this->httpCode;
-    }
-
-    /**
-     * Get attribute data
-     *
-     * @return mixed
-     */
-    public function getData(): mixed
-    {
-        return $this->data;
-    }
 }
