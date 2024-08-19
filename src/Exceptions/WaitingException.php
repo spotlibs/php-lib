@@ -18,6 +18,7 @@ namespace Brispot\PhpLib\Exceptions;
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
 use Brispot\PhpLib\Exceptions\TraitException;
+use Brispot\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class WaitingException
@@ -31,6 +32,7 @@ use Brispot\PhpLib\Exceptions\TraitException;
 class WaitingException extends Exception implements ExceptionInterface
 {
     use TraitException;
+
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -47,11 +49,10 @@ class WaitingException extends Exception implements ExceptionInterface
      */
     public function __construct(string $message = 'Masih proses harap tunggu', mixed $data = null)
     {
-        $this->errorCode = '05';
+        $this->errorCode = ExceptionFactory::WAITING_EXCEPTION;
         $this->errorMessage = $message;
         $this->httpCode = 200;
         $this->data = $data;
         parent::__construct($message, 5, null);
     }
-
 }

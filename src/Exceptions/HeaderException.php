@@ -18,6 +18,7 @@ namespace Brispot\PhpLib\Exceptions;
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
 use Brispot\PhpLib\Exceptions\TraitException;
+use Brispot\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class HeaderException
@@ -31,6 +32,7 @@ use Brispot\PhpLib\Exceptions\TraitException;
 class HeaderException extends Exception implements ExceptionInterface
 {
     use TraitException;
+
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -47,11 +49,10 @@ class HeaderException extends Exception implements ExceptionInterface
      */
     public function __construct(string $message = 'Header Request tidak valid', mixed $data = null)
     {
-        $this->errorCode = 'X0';
+        $this->errorCode = ExceptionFactory::HEADER_EXCEPTION;
         $this->errorMessage = $message;
         $this->httpCode = 400;
         $this->data = $data;
         parent::__construct($message, 1, null);
     }
-
 }

@@ -18,6 +18,7 @@ namespace Brispot\PhpLib\Exceptions;
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
 use Brispot\PhpLib\Exceptions\TraitException;
+use Brispot\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class ThirdPartyServiceException
@@ -31,6 +32,7 @@ use Brispot\PhpLib\Exceptions\TraitException;
 class ThirdPartyServiceException extends Exception implements ExceptionInterface
 {
     use TraitException;
+
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -47,11 +49,10 @@ class ThirdPartyServiceException extends Exception implements ExceptionInterface
      */
     public function __construct(string $message = 'Service ThirdParty bermasalah', mixed $data = null)
     {
-        $this->errorCode = '04';
+        $this->errorCode = ExceptionFactory::THIRDPARTY_EXCEPTION;
         $this->errorMessage = $message;
         $this->httpCode = 200;
         $this->data = $data;
         parent::__construct($message, 4, null);
     }
-
 }

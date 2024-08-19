@@ -18,6 +18,7 @@ namespace Brispot\PhpLib\Exceptions;
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
 use Brispot\PhpLib\Exceptions\TraitException;
+use Brispot\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class UnsupportedException
@@ -31,6 +32,7 @@ use Brispot\PhpLib\Exceptions\TraitException;
 class UnsupportedException extends Exception implements ExceptionInterface
 {
     use TraitException;
+
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -47,11 +49,10 @@ class UnsupportedException extends Exception implements ExceptionInterface
      */
     public function __construct(string $message = 'Tidak disupport', mixed $data = null)
     {
-        $this->errorCode = '06';
+        $this->errorCode = ExceptionFactory::UNSUPPORTED_EXCEPTION;
         $this->errorMessage = $message;
         $this->httpCode = 200;
         $this->data = $data;
         parent::__construct($message, 6, null);
     }
-
 }

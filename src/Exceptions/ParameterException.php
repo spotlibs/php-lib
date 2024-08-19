@@ -18,6 +18,7 @@ namespace Brispot\PhpLib\Exceptions;
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
 use Brispot\PhpLib\Exceptions\TraitException;
+use Brispot\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class ParameterException
@@ -31,6 +32,7 @@ use Brispot\PhpLib\Exceptions\TraitException;
 class ParameterException extends Exception implements ExceptionInterface
 {
     use TraitException;
+
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -48,12 +50,11 @@ class ParameterException extends Exception implements ExceptionInterface
      */
     public function __construct(string $message = 'Parameter tidak sesuai', mixed $data = null, array $validationErrors = [])
     {
-        $this->errorCode = '01';
+        $this->errorCode = ExceptionFactory::PARAMETER_EXCEPTION;
         $this->errorMessage = $message;
         $this->httpCode = 200;
         $this->data = $data;
         $this->validationErrors = $validationErrors;
         parent::__construct($message, 1, null);
     }
-
 }

@@ -18,6 +18,7 @@ namespace Brispot\PhpLib\Exceptions;
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
 use Brispot\PhpLib\Exceptions\TraitException;
+use Brispot\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class RuntimeException
@@ -31,6 +32,7 @@ use Brispot\PhpLib\Exceptions\TraitException;
 class RuntimeException extends Exception implements ExceptionInterface
 {
     use TraitException;
+
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -46,15 +48,13 @@ class RuntimeException extends Exception implements ExceptionInterface
      * @return void
      */
     public function __construct(
-        string $message = 'Runtime error happens', 
+        string $message = 'Runtime error happens',
         mixed $data = null
-    )
-    {
-        $this->errorCode = '99';
+    ) {
+        $this->errorCode = ExceptionFactory::RUNTIME_EXCEPTION;
         $this->errorMessage = $message;
         $this->httpCode = 200;
         $this->data = $data;
         parent::__construct($message, 1, null);
     }
-
 }

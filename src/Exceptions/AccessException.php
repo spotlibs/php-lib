@@ -18,6 +18,7 @@ namespace Brispot\PhpLib\Exceptions;
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
 use Brispot\PhpLib\Exceptions\TraitException;
+use Brispot\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class AccessException
@@ -31,6 +32,7 @@ use Brispot\PhpLib\Exceptions\TraitException;
 class AccessException extends Exception implements ExceptionInterface
 {
     use TraitException;
+
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -47,11 +49,10 @@ class AccessException extends Exception implements ExceptionInterface
      */
     public function __construct(string $message = 'Akses tidak diijinkan', mixed $data = null)
     {
-        $this->errorCode = 'X1';
+        $this->errorCode = ExceptionFactory::ACCESS_EXCEPTION;
         $this->errorMessage = $message;
         $this->httpCode = 403;
         $this->data = $data;
         parent::__construct($message, 1, null);
     }
-
 }

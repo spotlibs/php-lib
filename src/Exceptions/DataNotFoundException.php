@@ -18,6 +18,7 @@ namespace Brispot\PhpLib\Exceptions;
 use Exception;
 use Brispot\PhpLib\Exceptions\ExceptionInterface;
 use Brispot\PhpLib\Exceptions\TraitException;
+use Brispot\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class DataNotFoundException
@@ -31,6 +32,7 @@ use Brispot\PhpLib\Exceptions\TraitException;
 class DataNotFoundException extends Exception implements ExceptionInterface
 {
     use TraitException;
+
     /* Properties */
     private string $errorCode;
     private string $errorMessage;
@@ -47,11 +49,10 @@ class DataNotFoundException extends Exception implements ExceptionInterface
      */
     public function __construct(string $message = 'Data tidak ditemukan', mixed $data = null)
     {
-        $this->errorCode = '02';
+        $this->errorCode = ExceptionFactory::NOTFOUND_EXCEPTION;
         $this->errorMessage = $message;
         $this->httpCode = 200;
         $this->data = $data;
         parent::__construct($message, 2, null);
     }
-
 }
