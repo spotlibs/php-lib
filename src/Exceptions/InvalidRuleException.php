@@ -47,12 +47,12 @@ class InvalidRuleException extends Exception implements ExceptionInterface
      *
      * @return void
      */
-    public function __construct(string $message = 'Validasi tidak terpenuhi', mixed $data = null)
+    public function __construct(?string $message, mixed $data = null)
     {
         $this->errorCode = ExceptionFactory::INVALIDRULE_EXCEPTION;
-        $this->errorMessage = $message;
+        $this->errorMessage = $message ?? 'Validasi tidak terpenuhi';
         $this->httpCode = 200;
         $this->data = $data;
-        parent::__construct($message, 3, null);
+        parent::__construct($this->errorMessage, 3, null);
     }
 }

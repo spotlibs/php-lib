@@ -1,5 +1,6 @@
 {
     "name": "brispot/php-lib",
+    "version": "0.0.2",
     "description": "PHP library for support brispot microservice development",
     "keywords": ["brispot", "microservice", "php-lib"],
     "license": "MIT",
@@ -16,6 +17,11 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "phpunit/phpunit": "9.6.20"
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --coverage-text --colors",
+        "test-with-report": "./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover test-reports/cov.xml"
     }
 }

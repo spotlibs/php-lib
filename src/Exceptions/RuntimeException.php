@@ -48,13 +48,13 @@ class RuntimeException extends Exception implements ExceptionInterface
      * @return void
      */
     public function __construct(
-        string $message = 'Runtime error happens',
+        ?string $message,
         mixed $data = null
     ) {
         $this->errorCode = ExceptionFactory::RUNTIME_EXCEPTION;
-        $this->errorMessage = $message;
+        $this->errorMessage = $message ?? 'Runtime error happens';
         $this->httpCode = 200;
         $this->data = $data;
-        parent::__construct($message, 1, null);
+        parent::__construct($this->errorMessage, 1, null);
     }
 }

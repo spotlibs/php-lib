@@ -38,27 +38,31 @@ class ExceptionFactory
 	public const UNSUPPORTED_EXCEPTION = '06';
 	public const RUNTIME_EXCEPTION = '99';
 	
-	public static function create(string $responseCode, string $responseDesc): ExceptionInterface
+	public static function create(
+		string $responseCode, 
+		?string $responseDesc = null, 
+		mixed $responseData = null
+	): ExceptionInterface
 	{
 		switch ($responseCode) {
 			case self::HEADER_EXCEPTION:
-				return new HeaderException($responseDesc);
+				return new HeaderException($responseDesc, $responseData);
 			case self::ACCESS_EXCEPTION:
-				return new AccessException($responseDesc);
+				return new AccessException($responseDesc, $responseData);
 			case self::PARAMETER_EXCEPTION:
-				return new ParameterException($responseDesc);
+				return new ParameterException($responseDesc, $responseData);
 			case self::NOTFOUND_EXCEPTION:
-				return new DataNotFoundException($responseDesc);
+				return new DataNotFoundException($responseDesc, $responseData);
 			case self::INVALIDRULE_EXCEPTION:
-				return new InvalidRuleException($responseDesc);
+				return new InvalidRuleException($responseDesc, $responseData);
 			case self::THIRDPARTY_EXCEPTION:
-				return new ThirdPartyServiceException($responseDesc);
+				return new ThirdPartyServiceException($responseDesc, $responseData);
 			case self::WAITING_EXCEPTION:
-				return new WaitingException($responseDesc);
+				return new WaitingException($responseDesc, $responseData);
 			case self::UNSUPPORTED_EXCEPTION:
-				return new UnsupportedException($responseDesc);
+				return new UnsupportedException($responseDesc, $responseData);
 			case self::RUNTIME_EXCEPTION:
-				return new RuntimeException($responseDesc);
+				return new RuntimeException($responseDesc, $responseData);
 			default:
 				return new RuntimeException("Unknown response from host");
 		}

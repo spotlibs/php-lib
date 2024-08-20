@@ -48,13 +48,13 @@ class ParameterException extends Exception implements ExceptionInterface
      *
      * @return void
      */
-    public function __construct(string $message = 'Parameter tidak sesuai', mixed $data = null, array $validationErrors = [])
+    public function __construct(?string $message, mixed $data = null, array $validationErrors = [])
     {
         $this->errorCode = ExceptionFactory::PARAMETER_EXCEPTION;
-        $this->errorMessage = $message;
+        $this->errorMessage = $message ?? 'Parameter tidak sesuai';
         $this->httpCode = 200;
         $this->data = $data;
         $this->validationErrors = $validationErrors;
-        parent::__construct($message, 1, null);
+        parent::__construct($this->errorMessage, 1, null);
     }
 }

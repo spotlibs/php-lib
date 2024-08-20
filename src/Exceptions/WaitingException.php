@@ -47,12 +47,12 @@ class WaitingException extends Exception implements ExceptionInterface
      *
      * @return void
      */
-    public function __construct(string $message = 'Masih proses harap tunggu', mixed $data = null)
+    public function __construct(?string $message, mixed $data = null)
     {
         $this->errorCode = ExceptionFactory::WAITING_EXCEPTION;
-        $this->errorMessage = $message;
+        $this->errorMessage = $message ?? 'Masih proses harap tunggu';
         $this->httpCode = 200;
         $this->data = $data;
-        parent::__construct($message, 5, null);
+        parent::__construct($this->errorMessage, 5, null);
     }
 }

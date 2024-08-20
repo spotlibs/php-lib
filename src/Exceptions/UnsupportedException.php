@@ -47,12 +47,12 @@ class UnsupportedException extends Exception implements ExceptionInterface
      *
      * @return void
      */
-    public function __construct(string $message = 'Tidak disupport', mixed $data = null)
+    public function __construct(?string $message, mixed $data = null)
     {
         $this->errorCode = ExceptionFactory::UNSUPPORTED_EXCEPTION;
-        $this->errorMessage = $message;
+        $this->errorMessage = $message ?? 'Tidak disupport';
         $this->httpCode = 200;
         $this->data = $data;
-        parent::__construct($message, 6, null);
+        parent::__construct($this->errorMessage, 6, null);
     }
 }

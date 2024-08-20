@@ -47,12 +47,12 @@ class DataNotFoundException extends Exception implements ExceptionInterface
      *
      * @return void
      */
-    public function __construct(string $message = 'Data tidak ditemukan', mixed $data = null)
+    public function __construct(?string $message, mixed $data = null)
     {
         $this->errorCode = ExceptionFactory::NOTFOUND_EXCEPTION;
-        $this->errorMessage = $message;
+        $this->errorMessage = $message ?? 'Data tidak ditemukan';
         $this->httpCode = 200;
         $this->data = $data;
-        parent::__construct($message, 2, null);
+        parent::__construct($this->errorMessage, 2, null);
     }
 }

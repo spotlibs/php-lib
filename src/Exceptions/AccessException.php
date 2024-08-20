@@ -47,12 +47,12 @@ class AccessException extends Exception implements ExceptionInterface
      *
      * @return void
      */
-    public function __construct(string $message = 'Akses tidak diijinkan', mixed $data = null)
+    public function __construct(?string $message, mixed $data = null)
     {
         $this->errorCode = ExceptionFactory::ACCESS_EXCEPTION;
-        $this->errorMessage = $message;
+        $this->errorMessage = $message ?? 'Akses tidak diijinkan';
         $this->httpCode = 403;
         $this->data = $data;
-        parent::__construct($message, 1, null);
+        parent::__construct($this->errorMessage, 1, null);
     }
 }
