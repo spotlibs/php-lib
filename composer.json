@@ -22,6 +22,6 @@
     },
     "scripts": {
         "test": "./vendor/bin/phpunit --coverage-text --colors",
-        "test-with-report": "./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover test-reports/cov.xml"
+        "test-with-report": "./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover test-reports/cov.xml && php prepare-coverage-report.php"
     }
 }

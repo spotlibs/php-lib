@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1724124780">
-  <project timestamp="1724124780">
+<coverage generated="1724126968">
+  <project timestamp="1724126968">
     <file name="./src/Exceptions/AccessException.php">
       <class name="Brispot\PhpLib\Exceptions\AccessException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
