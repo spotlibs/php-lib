@@ -25,7 +25,6 @@ use Brispot\PhpLib\Exceptions\ThirdPartyServiceException;
 use Brispot\PhpLib\Exceptions\UnsupportedException;
 use Brispot\PhpLib\Exceptions\WaitingException;
 use Brispot\PhpLib\Exceptions\RuntimeException;
-use Exception;
 use PHPUnit\Framework\TestCase;
 
 final class ExceptionFactoryTest extends TestCase
