@@ -20,6 +20,11 @@ use Illuminate\Http\Response;
 
 class ResponseFactory
 {
+    public static array $headers = [
+        'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains; preload',
+        'Server'=> 'BRISPOT',
+        'X-Powered-By' => 'BRISPOT'
+    ];
     /**
      * Create success http response
      *
@@ -36,7 +41,7 @@ class ResponseFactory
         if ($responseData !== null) {
             $result['responseData'] = $responseData;
         }
-        return new Response($result);
+        return new Response($result, 200, self::$headers);
     }
     
     /**
@@ -56,6 +61,6 @@ class ResponseFactory
             $result['responseData'] = $exception->getData();
         }
 
-        return new Response($result);
+        return new Response($result, $exception->getHttpCode(), self::$headers);
     }
 }
