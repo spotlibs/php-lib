@@ -1,13 +1,12 @@
 {
     "name": "brispot/php-lib",
-    "version": "0.0.3",
     "description": "PHP library for support brispot microservice development",
     "keywords": ["brispot", "microservice", "php-lib"],
     "license": "MIT",
     "type": "library",
     "require": {
         "php": "^8.0",
-        "laravel/lumen-framework": "8.2.4"
+        "laravel/lumen-framework": "^8.0"
     },
     "autoload": {
         "psr-4": {
