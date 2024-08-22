@@ -1,6 +1,6 @@
 {
     "name": "brispot/php-lib",
-    "version": "v0.0.3",
+    "version": "v0.0.4",
     "description": "PHP library for support brispot microservice development",
     "keywords": ["brispot", "microservice", "php-lib"],
     "license": "MIT",
