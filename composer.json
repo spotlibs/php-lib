@@ -8,7 +8,6 @@
         "php": "^8.0",
         "laravel/lumen-framework": "^8.0",
         "jobcloud/php-kafka-lib": "^1.7",
-        "flix-tech/confluent-schema-registry-api": "8.1.0",
         "flix-tech/avro-serde-php": "2.1.0"
     },
     "autoload": {
