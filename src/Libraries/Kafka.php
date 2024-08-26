@@ -2,7 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Library;
+/**
+ * PHP version 8
+ *
+ * @category Library
+ * @package  Exceptions
+ * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.4
+ * @link     https://github.com/brispot
+ */
+
+namespace App\Libraries;
 
 use GuzzleHttp\Client;
 use Jobcloud\Kafka\Message\KafkaAvroSchema;
