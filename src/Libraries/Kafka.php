@@ -13,7 +13,7 @@ declare(strict_types=1);
  * @link     https://github.com/brispot
  */
 
-namespace App\Libraries;
+namespace Brispot\PhpLib\Libraries;
 
 use GuzzleHttp\Client;
 use Jobcloud\Kafka\Message\KafkaAvroSchema;
