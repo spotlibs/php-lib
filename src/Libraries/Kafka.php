@@ -169,12 +169,10 @@ class Kafka
             $consumer = KafkaConsumerBuilder::create()->withAdditionalConfig(
                 [
                     'client.id' => env('APP_NAME').'-'.gethostname(),
-                    'compression.codec' => 'lz4',
                     'sasl.username' => env('KAFKA_USER_CONSUME'),
                     'sasl.password' => env('KAFKA_PASS_CONSUME'),
                     'sasl.mechanism' => 'PLAIN',
                     'security.protocol' => 'SASL_SSL',
-                    'message.timeout.ms' => '10000',
                     'socket.timeout.ms' => '10000'
                 ]
             )->withAdditionalBroker(env('KAFKA_BROKERS_URL', ''))
@@ -186,12 +184,10 @@ class Kafka
             $consumer = KafkaConsumerBuilder::create()->withAdditionalConfig(
                 [
                     'client.id' => env('APP_NAME').'-'.gethostname(),
-                    'compression.codec' => 'lz4',
                     'sasl.username' => env('KAFKA_USER_CONSUME'),
                     'sasl.password' => env('KAFKA_PASS_CONSUME'),
                     'sasl.mechanism' => 'PLAIN',
                     'security.protocol' => 'SASL_SSL',
-                    'message.timeout.ms' => '5000',
                     'socket.timeout.ms' => '5000'
                 ]
             )->withAdditionalBroker(env('KAFKA_BROKERS_URL', ''))
