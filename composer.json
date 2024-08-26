@@ -1,13 +1,15 @@
 {
     "name": "brispot/php-lib",
-    "version": "v0.0.4",
     "description": "PHP library for support brispot microservice development",
     "keywords": ["brispot", "microservice", "php-lib"],
     "license": "MIT",
     "type": "library",
     "require": {
         "php": "^8.0",
-        "laravel/lumen-framework": "^8.0"
+        "laravel/lumen-framework": "^8.0",
+        "jobcloud/php-kafka-lib": "2.0.0",
+        "flix-tech/confluent-schema-registry-api": "8.1.0",
+        "flix-tech/avro-serde-php": "2.1.0"
     },
     "autoload": {
         "psr-4": {
@@ -18,10 +20,10 @@
     "prefer-stable": true,
     "require-dev": {
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "9.6.20"
+        "phpunit/phpunit": "9.6.20",
+        "rregeer/phpunit-coverage-check": "^0.3.1"
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit --coverage-text --colors",
-        "test-with-report": "./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover test-reports/cov.xml && php prepare-coverage-report.php"
+        "test": "./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover test-reports/cov.xml && php prepare-coverage-report.php && ./vendor/bin/coverage-check test-reports/cov.xml 40"
     }
 }
