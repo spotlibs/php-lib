@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Brispot\PhpLib\Exceptions;
+namespace Spotlibs\PhpLib\Exceptions;
 
 trait TraitException
 {

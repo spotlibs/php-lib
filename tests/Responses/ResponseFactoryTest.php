@@ -15,8 +15,8 @@ declare(strict_types=1);
 
 namespace Tests\Responses;
 
-use Brispot\PhpLib\Responses\ResponseFactory;
-use Brispot\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Responses\ResponseFactory;
+use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
 use PHPUnit\Framework\TestCase;
 
 final class ResponseFactoryTest extends TestCase

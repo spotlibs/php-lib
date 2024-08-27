@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<ruleset name="Brispot Microservice Coding Standard Ruleset">
-  <description>A number of ruleset coding standard style that defined by Brispot Principle Team.</description>
+<ruleset name="Spotlibs Microservice Coding Standard Ruleset">
+  <description>A number of ruleset coding standard style that defined by Spotlibs Principle Team.</description>
   <rule ref="PSR1" />
   <rule ref="PSR12" />
   <rule ref="PEAR">

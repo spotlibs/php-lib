@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Brispot\PhpLib;
+namespace Spotlibs\PhpLib;
 
 class HelloWorld
 {

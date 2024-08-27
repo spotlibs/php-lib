@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Brispot\PhpLib\Validation;
+namespace Spotlibs\PhpLib\Validation;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory as ValidationFactory;

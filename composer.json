@@ -12,7 +12,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Brispot\\PhpLib\\": "src/"
+            "Spotlibs\\PhpLib\\": "src/"
         }
     },
     "minimum-stability": "dev",

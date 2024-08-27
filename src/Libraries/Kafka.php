@@ -13,7 +13,7 @@ declare(strict_types=1);
  * @link     https://github.com/brispot
  */
 
-namespace Brispot\PhpLib\Libraries;
+namespace Spotlibs\PhpLib\Libraries;
 
 use GuzzleHttp\Client;
 use Jobcloud\Kafka\Message\KafkaAvroSchema;
@@ -105,7 +105,10 @@ class Kafka
                     'socket.timeout.ms' => '8000'
                 ]
             )
-            ->withAdditionalBroker(env('KAFKA_BROKERS_URL', ''));
+            ->withAdditionalBroker(env('KAFKA_BROKERS_URL', ''))
+            ->withDeliveryReportCallback([KafkaCallable::class, 'deliveryReportCallback'])
+            ->withLogCallback([KafkaCallable::class, 'logCallback'])
+            ->withErrorCallback([KafkaCallable::class, 'errorProduceCallback']);
 
         if($schematype === self::SCHEMALESS_WITH_SERDE || $schematype === self::SCHEMAFULL_WITH_SERDE) {
             $producerBuilder->withEncoder($encoder);
@@ -179,6 +182,11 @@ class Kafka
             ->withConsumerGroup($topic_name.'_'.(isset($congrup_name) ? $congrup_name : 'congrup'))
             ->withAdditionalSubscription($topic_name)
             ->withDecoder($decoder)
+            ->withErrorCallback([KafkaCallable::class, 'errorConsumeCallback'])
+            ->withRebalanceCallback([KafkaCallable::class, 'rebalanceCallback'])
+            ->withConsumeCallback([KafkaCallable::class, 'consumeCallback'])
+            ->withLogCallback([KafkaCallable::class, 'logCallback'])
+            ->withOffsetCommitCallback([KafkaCallable::class, 'offsetCommitCallback'])
             ->build();
         } else {
             $consumer = KafkaConsumerBuilder::create()->withAdditionalConfig(
@@ -193,6 +201,11 @@ class Kafka
             )->withAdditionalBroker(env('KAFKA_BROKERS_URL', ''))
             ->withConsumerGroup($topic_name . '_' . (isset($congrup_name) ? $congrup_name : 'congrup'))
             ->withAdditionalSubscription($topic_name)
+            ->withErrorCallback([KafkaCallable::class, 'errorConsumeCallback'])
+            ->withRebalanceCallback([KafkaCallable::class, 'rebalanceCallback'])
+            ->withConsumeCallback([KafkaCallable::class, 'consumeCallback'])
+            ->withLogCallback([KafkaCallable::class, 'logCallback'])
+            ->withOffsetCommitCallback([KafkaCallable::class, 'offsetCommitCallback'])
             ->build();
         }
 
