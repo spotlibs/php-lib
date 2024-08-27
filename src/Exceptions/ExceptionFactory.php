@@ -13,18 +13,18 @@
 
 declare(strict_types=1);
 
-namespace Brispot\PhpLib\Exceptions;
+namespace Spotlibs\PhpLib\Exceptions;
 
-use Brispot\PhpLib\Exceptions\AccessException;
-use Brispot\PhpLib\Exceptions\ParameterException;
-use Brispot\PhpLib\Exceptions\DataNotFoundException;
-use Brispot\PhpLib\Exceptions\InvalidRuleException;
-use Brispot\PhpLib\Exceptions\ThirdPartyServiceException;
-use Brispot\PhpLib\Exceptions\WaitingException;
-use Brispot\PhpLib\Exceptions\UnsupportedException;
-use Brispot\PhpLib\Exceptions\ExceptionInterface;
-use Brispot\PhpLib\Exceptions\HeaderException;
-use Brispot\PhpLib\Exceptions\RuntimeException;
+use Spotlibs\PhpLib\Exceptions\AccessException;
+use Spotlibs\PhpLib\Exceptions\ParameterException;
+use Spotlibs\PhpLib\Exceptions\DataNotFoundException;
+use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
+use Spotlibs\PhpLib\Exceptions\ThirdPartyServiceException;
+use Spotlibs\PhpLib\Exceptions\WaitingException;
+use Spotlibs\PhpLib\Exceptions\UnsupportedException;
+use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
+use Spotlibs\PhpLib\Exceptions\HeaderException;
+use Spotlibs\PhpLib\Exceptions\RuntimeException;
 
 class ExceptionFactory
 {

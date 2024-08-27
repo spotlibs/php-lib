@@ -13,12 +13,12 @@
 
 declare(strict_types= 1);
 
-namespace Brispot\PhpLib\Responses;
+namespace Spotlibs\PhpLib\Responses;
 
-use Brispot\PhpLib\Exceptions\ExceptionInterface;
+use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Illuminate\Http\Response;
 
-class ResponseFactory
+class StdResponse
 {
     public static array $headers = [
         'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains; preload',
@@ -47,7 +47,7 @@ class ResponseFactory
     /**
      * Create failure http response
      *
-     * @param  \Brispot\PhpLib\Exceptions\ExceptionInterface $exception
+     * @param  \Spotlibs\PhpLib\Exceptions\ExceptionInterface $exception
      * @return  \Illuminate\Http\Response
      */
 

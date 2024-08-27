@@ -13,12 +13,12 @@
 
 declare(strict_types=1);
 
-namespace Brispot\PhpLib\Exceptions;
+namespace Spotlibs\PhpLib\Exceptions;
 
 use Exception;
-use Brispot\PhpLib\Exceptions\ExceptionInterface;
-use Brispot\PhpLib\Exceptions\TraitException;
-use Brispot\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
+use Spotlibs\PhpLib\Exceptions\TraitException;
+use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
 
 /**
  * Class ThirdPartyServiceException

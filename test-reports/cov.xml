@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1724126968">
-  <project timestamp="1724126968">
+<coverage generated="1724652379">
+  <project timestamp="1724652379">
     <file name="./src/Exceptions/AccessException.php">
-      <class name="Brispot\PhpLib\Exceptions\AccessException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\AccessException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="50" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
@@ -14,7 +14,7 @@
       <metrics loc="59" ncloc="31" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="./src/Exceptions/DataNotFoundException.php">
-      <class name="Brispot\PhpLib\Exceptions\DataNotFoundException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\DataNotFoundException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="50" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
@@ -26,12 +26,15 @@
       <metrics loc="59" ncloc="31" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="./src/Exceptions/ExceptionFactory.php">
-      <class name="Brispot\PhpLib\Exceptions\ExceptionFactory" namespace="global">
-        <metrics complexity="11" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="15" elements="17" coveredelements="15"/>
+      <class name="Spotlibs\PhpLib\Exceptions\ExceptionFactory" namespace="global">
+        <metrics complexity="11" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="19" coveredstatements="18" elements="20" coveredelements="18"/>
       </class>
-      <line num="41" type="method" name="create" visibility="public" complexity="11" crap="11.03" count="8"/>
+      <line num="41" type="method" name="create" visibility="public" complexity="11" crap="11.02" count="11"/>
+      <line num="48" type="stmt" count="11"/>
       <line num="49" type="stmt" count="1"/>
+      <line num="50" type="stmt" count="10"/>
       <line num="51" type="stmt" count="1"/>
+      <line num="52" type="stmt" count="9"/>
       <line num="53" type="stmt" count="1"/>
       <line num="54" type="stmt" count="8"/>
       <line num="55" type="stmt" count="1"/>
@@ -46,13 +49,13 @@
       <line num="64" type="stmt" count="1"/>
       <line num="65" type="stmt" count="1"/>
       <line num="67" type="stmt" count="0"/>
-      <metrics loc="70" ncloc="60" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="16" coveredstatements="15" elements="17" coveredelements="15"/>
+      <metrics loc="70" ncloc="60" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="19" coveredstatements="18" elements="20" coveredelements="18"/>
     </file>
     <file name="./src/Exceptions/ExceptionInterface.php">
       <metrics loc="57" ncloc="18" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
     <file name="./src/Exceptions/HeaderException.php">
-      <class name="Brispot\PhpLib\Exceptions\HeaderException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\HeaderException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="50" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
@@ -64,7 +67,7 @@
       <metrics loc="59" ncloc="31" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="./src/Exceptions/InvalidRuleException.php">
-      <class name="Brispot\PhpLib\Exceptions\InvalidRuleException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\InvalidRuleException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="50" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="3"/>
@@ -76,7 +79,7 @@
       <metrics loc="59" ncloc="31" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="./src/Exceptions/ParameterException.php">
-      <class name="Brispot\PhpLib\Exceptions\ParameterException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\ParameterException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="6" coveredstatements="6" elements="7" coveredelements="7"/>
       </class>
       <line num="51" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
@@ -89,7 +92,7 @@
       <metrics loc="61" ncloc="33" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="6" coveredstatements="6" elements="7" coveredelements="7"/>
     </file>
     <file name="./src/Exceptions/RuntimeException.php">
-      <class name="Brispot\PhpLib\Exceptions\RuntimeException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\RuntimeException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="50" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
@@ -101,7 +104,7 @@
       <metrics loc="61" ncloc="33" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="./src/Exceptions/ThirdPartyServiceException.php">
-      <class name="Brispot\PhpLib\Exceptions\ThirdPartyServiceException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\ThirdPartyServiceException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="50" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
@@ -113,21 +116,21 @@
       <metrics loc="59" ncloc="31" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="./src/Exceptions/TraitException.php">
-      <class name="Brispot\PhpLib\Exceptions\TraitException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\TraitException" namespace="global">
         <metrics complexity="4" methods="4" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="4" elements="8" coveredelements="8"/>
       </class>
       <line num="25" type="method" name="getErrorCode" visibility="public" complexity="1" crap="1" count="11"/>
       <line num="27" type="stmt" count="11"/>
       <line num="35" type="method" name="getErrorMessage" visibility="public" complexity="1" crap="1" count="11"/>
       <line num="37" type="stmt" count="11"/>
-      <line num="45" type="method" name="getHttpCode" visibility="public" complexity="1" crap="1" count="9"/>
-      <line num="47" type="stmt" count="9"/>
+      <line num="45" type="method" name="getHttpCode" visibility="public" complexity="1" crap="1" count="11"/>
+      <line num="47" type="stmt" count="11"/>
       <line num="55" type="method" name="getData" visibility="public" complexity="1" crap="1" count="11"/>
       <line num="57" type="stmt" count="11"/>
       <metrics loc="60" ncloc="30" classes="1" methods="4" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="4" elements="8" coveredelements="8"/>
     </file>
     <file name="./src/Exceptions/UnsupportedException.php">
-      <class name="Brispot\PhpLib\Exceptions\UnsupportedException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\UnsupportedException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="50" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
@@ -139,7 +142,7 @@
       <metrics loc="59" ncloc="31" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="./src/Exceptions/WaitingException.php">
-      <class name="Brispot\PhpLib\Exceptions\WaitingException" namespace="global">
+      <class name="Spotlibs\PhpLib\Exceptions\WaitingException" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="50" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
@@ -151,7 +154,7 @@
       <metrics loc="59" ncloc="31" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="./src/HelloWorld.php">
-      <class name="Brispot\PhpLib\HelloWorld" namespace="global">
+      <class name="Spotlibs\PhpLib\HelloWorld" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
       </class>
       <line num="9" type="method" name="sayHello" visibility="public" complexity="1" crap="2" count="0"/>
@@ -159,27 +162,42 @@
       <metrics loc="14" ncloc="14" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
     </file>
     <file name="./src/Responses/ResponseFactory.php">
-      <class name="Brispot\PhpLib\Responses\ResponseFactory" namespace="global">
+      <class name="Spotlibs\PhpLib\Responses\ResponseFactory" namespace="global">
         <metrics complexity="4" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="14" coveredstatements="14" elements="16" coveredelements="16"/>
       </class>
-      <line num="30" type="method" name="success" visibility="public" complexity="2" crap="2" count="1"/>
-      <line num="32" type="stmt" count="1"/>
-      <line num="33" type="stmt" count="1"/>
-      <line num="34" type="stmt" count="1"/>
-      <line num="35" type="stmt" count="1"/>
-      <line num="36" type="stmt" count="1"/>
+      <line num="35" type="method" name="success" visibility="public" complexity="2" crap="2" count="1"/>
       <line num="37" type="stmt" count="1"/>
+      <line num="38" type="stmt" count="1"/>
       <line num="39" type="stmt" count="1"/>
-      <line num="49" type="method" name="failure" visibility="public" complexity="2" crap="2" count="2"/>
-      <line num="51" type="stmt" count="2"/>
-      <line num="52" type="stmt" count="2"/>
-      <line num="53" type="stmt" count="2"/>
-      <line num="54" type="stmt" count="2"/>
-      <line num="55" type="stmt" count="2"/>
-      <line num="56" type="stmt" count="1"/>
+      <line num="40" type="stmt" count="1"/>
+      <line num="41" type="stmt" count="1"/>
+      <line num="42" type="stmt" count="1"/>
+      <line num="44" type="stmt" count="1"/>
+      <line num="54" type="method" name="failure" visibility="public" complexity="2" crap="2" count="2"/>
+      <line num="56" type="stmt" count="2"/>
+      <line num="57" type="stmt" count="2"/>
+      <line num="58" type="stmt" count="2"/>
       <line num="59" type="stmt" count="2"/>
-      <metrics loc="61" ncloc="38" classes="1" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="14" coveredstatements="14" elements="16" coveredelements="16"/>
+      <line num="60" type="stmt" count="2"/>
+      <line num="61" type="stmt" count="1"/>
+      <line num="64" type="stmt" count="2"/>
+      <metrics loc="66" ncloc="43" classes="1" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="14" coveredstatements="14" elements="16" coveredelements="16"/>
     </file>
-    <metrics files="14" loc="797" ncloc="443" classes="13" methods="17" coveredmethods="15" conditionals="0" coveredconditionals="0" statements="81" coveredstatements="79" elements="98" coveredelements="94"/>
+    <file name="./src/Validation/ValidationServiceProvider.php">
+      <class name="Spotlibs\PhpLib\Validation\ValidationServiceProvider" namespace="global">
+        <metrics complexity="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="8" coveredstatements="0" elements="9" coveredelements="0"/>
+      </class>
+      <line num="167" type="method" name="register" visibility="public" complexity="1" crap="2" count="0"/>
+      <line num="169" type="stmt" count="0"/>
+      <line num="170" type="stmt" count="0"/>
+      <line num="171" type="stmt" count="0"/>
+      <line num="172" type="stmt" count="0"/>
+      <line num="173" type="stmt" count="0"/>
+      <line num="174" type="stmt" count="0"/>
+      <line num="175" type="stmt" count="0"/>
+      <line num="176" type="stmt" count="0"/>
+      <metrics loc="180" ncloc="145" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="8" coveredstatements="0" elements="9" coveredelements="0"/>
+    </file>
+    <metrics files="15" loc="982" ncloc="593" classes="14" methods="18" coveredmethods="15" conditionals="0" coveredconditionals="0" statements="92" coveredstatements="82" elements="110" coveredelements="97"/>
   </project>
 </coverage>
