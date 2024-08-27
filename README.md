@@ -1,4 +1,4 @@
-# brispot-php-lib
+# spotlibs-php-lib
 
 ## Description
 This library is used to support easier development of Spotlibs Microservice Project.

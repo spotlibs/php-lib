@@ -1,7 +1,7 @@
 {
-    "name": "brispot/php-lib",
-    "description": "PHP library for support brispot microservice development",
-    "keywords": ["brispot", "microservice", "php-lib"],
+    "name": "spotlibs/php-lib",
+    "description": "PHP library for support spotlibs microservice development",
+    "keywords": ["spotlibs", "microservice", "php-lib"],
     "license": "MIT",
     "type": "library",
     "require": {
