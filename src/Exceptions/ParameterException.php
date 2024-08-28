@@ -5,7 +5,7 @@
  *
  * @category Library
  * @package  Exceptions
- * @author   Nur Arif Prihutomo <nur.arif@corp.bri.co.id>
+ * @author   Nur Arif Prihutomo <ayip.eiger@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @version  GIT: 0.0.1
  * @link     https://github.com/spotlibs
@@ -25,7 +25,7 @@ use Spotlibs\PhpLib\Exceptions\StdException;
  *
  * @category Library
  * @package  Exceptions
- * @author   Nur Arif Prihutomo <nur.arif@corp.bri.co.id>
+ * @author   Nur Arif Prihutomo <ayip.eiger@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
