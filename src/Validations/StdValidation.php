@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Spotlibs\PhpLib\Validation;
+namespace Spotlibs\PhpLib\Validations;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

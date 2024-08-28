@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Spotlibs\PhpLib\Validation;
+namespace Spotlibs\PhpLib\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory as ValidationFactory;
@@ -171,6 +171,7 @@ class ValidationServiceProvider extends ServiceProvider
         'attributes' => [
         ],
     ];
+    
     /**
      * Register services.
      *
