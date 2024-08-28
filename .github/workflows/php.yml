@@ -21,7 +21,12 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: 8.0
-        extension: rdkafka
+
+    - name: Install librdkafka and rdkafka extension
+      run: |
+        sudo apt-get install -y librdkafka-dev
+        pecl install rdkafka
+        echo "extension=rdkafka.so" >> $(php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||")
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
