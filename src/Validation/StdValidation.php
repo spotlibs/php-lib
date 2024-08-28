@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * PHP version 8
+ *
+ * @category Library
+ * @package  Exceptions
+ * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.4
+ * @link     https://github.com/spotlibs
+ */
+
 declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Validation;
@@ -9,6 +20,13 @@ use Illuminate\Support\Facades\Validator;
 
 class StdValidation
 {
+    /**
+     * Get all required header from rules
+     *
+     * @param  array $header
+     * @param  array &$rules
+     * @return  array
+     */
     public static function getHeaderFromRules(array $header, array &$rules): array
     {
         $result = [];
@@ -23,6 +41,12 @@ class StdValidation
         return $result;
     }
     
+    /**
+     * Validate nik on request body
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return  void
+     */
     public static function validateNIK(Request $request): void
     {
         $rules = [
@@ -31,6 +55,12 @@ class StdValidation
         Validator::make($request->all(), $rules)->validate();
     }
 
+    /**
+     * Validate npwp on request body
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return  void
+     */
     public static function validateNPWP(Request $request): void
     {
         $rules = [
@@ -39,6 +69,12 @@ class StdValidation
         Validator::make($request->all(), $rules)->validate();
     }
 
+    /**
+     * Validate tanggal_lahir on request body
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return  void
+     */
     public static function validateTanggalLahir(Request $request): void
     {
         $rules = [
@@ -47,6 +83,12 @@ class StdValidation
         Validator::make($request->all(), $rules)->validate();
     }
 
+    /**
+     * Validate jenis_kelamin on request body
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return  void
+     */
     public static function validateJenisKelamin(Request $request): void
     {
         $rules = [
@@ -55,6 +97,12 @@ class StdValidation
         Validator::make($request->all(), $rules)->validate();
     }
 
+    /**
+     * Validate agama on request body
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return  void
+     */
     public static function validateAgama(Request $request): void
     {
     	$rules = [
@@ -63,6 +111,12 @@ class StdValidation
         Validator::make($request->all(), $rules)->validate();
     }
 
+    /**
+     * Validate no_hp on request body
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return  void
+     */
     public static function validateNoHP(Request $request): void
     {
         $rules = [

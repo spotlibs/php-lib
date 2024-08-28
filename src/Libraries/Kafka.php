@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * @category Library
  * @package  Exceptions
- * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
+ * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @version  GIT: 0.0.4
  * @link     https://github.com/spotlibs
@@ -39,6 +39,15 @@ class Kafka
     const SCHEMALESS_WITH_SERDE = 2; // Tidak berskema tapi memiliki mekanisme encode dan decode
     const SCHEMAFULL_WITH_SERDE = 3; // Berskema sekaligus memiliki mekanisme encode dan decode
 
+    /**
+     * Publish new message to Kafka topic
+     *
+     * @param  string $topic_name
+     * @param  int $schematype
+     * @param  string|null $definitionSchemaBody
+     * @param  string|null $definitionSchemaKey
+     * @return  \Jobcloud\Kafka\Producer\KafkaProducerInterface
+     */
 	public function publishOn(string $topic_name, int $schematype, string $definitionSchemaBody = null, string $definitionSchemaKey = null) : KafkaProducerInterface
 	{
 		if(env('KAFKA_SCHEME_REGISTRY_URL') === null) {
@@ -119,6 +128,14 @@ class Kafka
         return $producer;
 	}
 
+    /**
+     * Publish new message to Kafka topic
+     *
+     * @param  string $topic_name
+     * @param  int $schematype
+     * @param  string|null $congrup_name
+     * @return  \Jobcloud\Kafka\Consumer\KafkaConsumerInterface
+     */
 	public function consumeOn(string $topic_name, int $schematype, string $congrup_name = null) : KafkaConsumerInterface
 	{
 		if(env('KAFKA_SCHEME_REGISTRY_URL') === null) {
