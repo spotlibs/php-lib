@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * PHP version 8
+ *
+ * @category Library
+ * @package  Exceptions
+ * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.4
+ * @link     https://github.com/spotlibs
+ */
+
 declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Validation;
@@ -8,6 +19,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory as ValidationFactory;
 use Illuminate\Validation\Validator;
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Support\Facades\Validator as ValidatorFacade;
 
 class ValidationServiceProvider extends ServiceProvider
 {
@@ -174,6 +186,34 @@ class ValidationServiceProvider extends ServiceProvider
             });
             return $validator;
         });
+    }
+
+    /**
+     * Bootstrap the application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        ValidatorFacade::extend('nik_pattern', function ($attribute, $value, $parameters, $validator) {
+            return is_string($value) && strlen($value) === 16 && preg_match('/^[0-9]+$/', $value);
+        }, ':attribute harus 16 digit angka.');
+
+        ValidatorFacade::extend('npwp_pattern', function ($attribute, $value, $parameters, $validator) {
+            return is_string($value) && in_array(strlen($value), [15, 16]) && preg_match('/^[0-9]+$/', $value);
+        }, ':attribute harus 15/16 digit angka.');
+
+        ValidatorFacade::extend('gender_pattern', function ($attribute, $value, $parameters, $validator) {
+            return is_string($value) && in_array($value, ['L', 'P']);
+        }, ':attribute harus L/P.');
+
+        ValidatorFacade::extend('phone_pattern', function ($attribute, $value, $parameters, $validator) {
+            return is_string($value) && preg_match('/^[0-9]+$/', $value);
+        }, ':attribute harus digit angka.');
+
+        ValidatorFacade::extend('email_pattern', function ($attribute, $value, $parameters, $validator) {
+            return is_string($value) && str_contains($value, '@');
+        }, ':attribute format tidak valid.');
     }
 }
 

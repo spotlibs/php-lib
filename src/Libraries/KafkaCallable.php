@@ -1,5 +1,16 @@
 <?php 
 
+/**
+ * PHP version 8
+ *
+ * @category Library
+ * @package  Exceptions
+ * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.4
+ * @link     https://github.com/spotlibs
+ */
+
 declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Libraries;

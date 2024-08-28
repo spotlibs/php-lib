@@ -50,7 +50,6 @@ class StdResponse
      * @param  \Spotlibs\PhpLib\Exceptions\ExceptionInterface $exception
      * @return  \Illuminate\Http\Response
      */
-
     public static function error(ExceptionInterface $exception): Response
     {
         $result = [
