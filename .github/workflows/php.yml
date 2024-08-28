@@ -25,7 +25,7 @@ jobs:
     - name: Install librdkafka and rdkafka extension
       run: |
         sudo apt-get install -y librdkafka-dev
-        pecl install rdkafka
+        sudo pecl install rdkafka
         echo "extension=rdkafka.so" >> $(php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||")
 
     - name: Validate composer.json and composer.lock
