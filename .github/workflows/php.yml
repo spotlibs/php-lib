@@ -12,16 +12,24 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Set up PHP 8.0
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.0
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
     - name: Get php ini location
       run: php --ini
+
+    - name: Print php ini
+      run: cat /etc/php/8.1/cli/php.ini
 
     - name: Cache Composer packages
       id: composer-cache
