@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Exceptions;
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\TraitException;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * Class AccessException
@@ -49,7 +49,7 @@ class AccessException extends Exception implements ExceptionInterface
      */
     public function __construct(?string $message, mixed $data = null)
     {
-        $this->errorCode = ExceptionFactory::ACCESS_EXCEPTION;
+        $this->errorCode = StdException::ACCESS_EXCEPTION;
         $this->errorMessage = $message ?? 'Akses tidak diijinkan';
         $this->httpCode = 403;
         $this->data = $data;

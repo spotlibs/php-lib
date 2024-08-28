@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Exceptions;
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\TraitException;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * Class RuntimeException
@@ -51,7 +51,7 @@ class RuntimeException extends Exception implements ExceptionInterface
         ?string $message,
         mixed $data = null
     ) {
-        $this->errorCode = ExceptionFactory::RUNTIME_EXCEPTION;
+        $this->errorCode = StdException::RUNTIME_EXCEPTION;
         $this->errorMessage = $message ?? 'Runtime error happens';
         $this->httpCode = 200;
         $this->data = $data;

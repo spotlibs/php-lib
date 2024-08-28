@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Exceptions;
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\TraitException;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * Class UnsupportedException
@@ -49,7 +49,7 @@ class UnsupportedException extends Exception implements ExceptionInterface
      */
     public function __construct(?string $message, mixed $data = null)
     {
-        $this->errorCode = ExceptionFactory::UNSUPPORTED_EXCEPTION;
+        $this->errorCode = StdException::UNSUPPORTED_EXCEPTION;
         $this->errorMessage = $message ?? 'Tidak disupport';
         $this->httpCode = 200;
         $this->data = $data;

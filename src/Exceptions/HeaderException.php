@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Exceptions;
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\TraitException;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * Class HeaderException
@@ -49,7 +49,7 @@ class HeaderException extends Exception implements ExceptionInterface
      */
     public function __construct(?string $message, mixed $data = null)
     {
-        $this->errorCode = ExceptionFactory::HEADER_EXCEPTION;
+        $this->errorCode = StdException::HEADER_EXCEPTION;
         $this->errorMessage = $message ?? 'Header Request tidak valid';
         $this->httpCode = 400;
         $this->data = $data;

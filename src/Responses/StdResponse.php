@@ -51,7 +51,7 @@ class StdResponse
      * @return  \Illuminate\Http\Response
      */
 
-    public static function failure(ExceptionInterface $exception): Response
+    public static function error(ExceptionInterface $exception): Response
     {
         $result = [
             'responseCode' => $exception->getErrorCode(),

@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Exceptions;
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\TraitException;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * Class InvalidRuleException
@@ -49,7 +49,7 @@ class InvalidRuleException extends Exception implements ExceptionInterface
      */
     public function __construct(?string $message, mixed $data = null)
     {
-        $this->errorCode = ExceptionFactory::INVALIDRULE_EXCEPTION;
+        $this->errorCode = StdException::INVALIDRULE_EXCEPTION;
         $this->errorMessage = $message ?? 'Validasi tidak terpenuhi';
         $this->httpCode = 200;
         $this->data = $data;

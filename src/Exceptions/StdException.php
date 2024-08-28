@@ -26,7 +26,7 @@ use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\HeaderException;
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
 
-class ExceptionFactory
+class StdException
 {
 	public const HEADER_EXCEPTION = 'X0';
 	public const ACCESS_EXCEPTION = 'X1';

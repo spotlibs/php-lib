@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Exceptions;
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\TraitException;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * Class DataNotFoundException
@@ -49,7 +49,7 @@ class DataNotFoundException extends Exception implements ExceptionInterface
      */
     public function __construct(?string $message, mixed $data = null)
     {
-        $this->errorCode = ExceptionFactory::NOTFOUND_EXCEPTION;
+        $this->errorCode = StdException::NOTFOUND_EXCEPTION;
         $this->errorMessage = $message ?? 'Data tidak ditemukan';
         $this->httpCode = 200;
         $this->data = $data;
