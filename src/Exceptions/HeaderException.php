@@ -5,7 +5,7 @@
  *
  * @category Library
  * @package  Exceptions
- * @author   Nur Arif Prihutomo <nur.arif@corp.bri.co.id>
+ * @author   Nur Arif Prihutomo <ayip.eiger@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @version  GIT: 0.0.1
  * @link     https://github.com/spotlibs
@@ -18,14 +18,14 @@ namespace Spotlibs\PhpLib\Exceptions;
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\TraitException;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * Class HeaderException
  *
  * @category Library
  * @package  Exceptions
- * @author   Nur Arif Prihutomo <nur.arif@corp.bri.co.id>
+ * @author   Nur Arif Prihutomo <ayip.eiger@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
@@ -49,7 +49,7 @@ class HeaderException extends Exception implements ExceptionInterface
      */
     public function __construct(?string $message, mixed $data = null)
     {
-        $this->errorCode = ExceptionFactory::HEADER_EXCEPTION;
+        $this->errorCode = StdException::HEADER_EXCEPTION;
         $this->errorMessage = $message ?? 'Header Request tidak valid';
         $this->httpCode = 400;
         $this->data = $data;

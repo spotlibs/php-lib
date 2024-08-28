@@ -5,7 +5,7 @@
  *
  * @category Library
  * @package  Exceptions
- * @author   Nur Arif Prihutomo <nur.arif@corp.bri.co.id>
+ * @author   Nur Arif Prihutomo <ayip.eiger@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @version  GIT: 0.0.1
  * @link     https://github.com/spotlibs
@@ -18,14 +18,14 @@ namespace Spotlibs\PhpLib\Exceptions;
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\TraitException;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * Class RuntimeException
  *
  * @category Library
  * @package  Exceptions
- * @author   Nur Arif Prihutomo <nur.arif@corp.bri.co.id>
+ * @author   Nur Arif Prihutomo <ayip.eiger@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
@@ -51,7 +51,7 @@ class RuntimeException extends Exception implements ExceptionInterface
         ?string $message,
         mixed $data = null
     ) {
-        $this->errorCode = ExceptionFactory::RUNTIME_EXCEPTION;
+        $this->errorCode = StdException::RUNTIME_EXCEPTION;
         $this->errorMessage = $message ?? 'Runtime error happens';
         $this->httpCode = 200;
         $this->data = $data;

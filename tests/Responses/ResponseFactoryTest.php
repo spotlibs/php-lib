@@ -15,15 +15,15 @@ declare(strict_types=1);
 
 namespace Tests\Responses;
 
-use Spotlibs\PhpLib\Responses\ResponseFactory;
-use Spotlibs\PhpLib\Exceptions\ExceptionFactory;
+use Spotlibs\PhpLib\Responses\StdResponse;
+use Spotlibs\PhpLib\Exceptions\StdException;
 use PHPUnit\Framework\TestCase;
 
-final class ResponseFactoryTest extends TestCase
+final class StdResponseTest extends TestCase
 {
     public function testSuccessResponse(): void
     {
-        $r = ResponseFactory::success('Success', ['x' => 'y']);
+        $r = StdResponse::success('Success', ['x' => 'y']);
         $this->assertEquals(200, $r->getStatusCode());
         $responseBody = json_decode($r->getContent(), true);
         $this->assertEquals('00', $responseBody['responseCode']);
@@ -31,18 +31,18 @@ final class ResponseFactoryTest extends TestCase
     }
     public function testFailureResponse(): void
     {
-        $r = ResponseFactory::failure(ExceptionFactory::create(ExceptionFactory::INVALIDRULE_EXCEPTION));
+        $r = StdResponse::error(StdException::create(StdException::INVALIDRULE_EXCEPTION));
         $this->assertEquals(200, $r->getStatusCode());
         $responseBody = json_decode($r->getContent(), true);
-        $this->assertEquals(ExceptionFactory::INVALIDRULE_EXCEPTION, $responseBody['responseCode']);
+        $this->assertEquals(StdException::INVALIDRULE_EXCEPTION, $responseBody['responseCode']);
         $this->assertEquals('Validasi tidak terpenuhi', $responseBody['responseDesc']);
     }
     public function testFailureResponse2(): void
     {
-        $r = ResponseFactory::failure(ExceptionFactory::create(ExceptionFactory::INVALIDRULE_EXCEPTION, null, ['x' => 'y']));
+        $r = StdResponse::error(StdException::create(StdException::INVALIDRULE_EXCEPTION, null, ['x' => 'y']));
         $this->assertEquals(200, $r->getStatusCode());
         $responseBody = json_decode($r->getContent(), true);
-        $this->assertEquals(ExceptionFactory::INVALIDRULE_EXCEPTION, $responseBody['responseCode']);
+        $this->assertEquals(StdException::INVALIDRULE_EXCEPTION, $responseBody['responseCode']);
         $this->assertEquals('Validasi tidak terpenuhi', $responseBody['responseDesc']);
     }
 }
