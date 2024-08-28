@@ -21,21 +21,10 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: 8.0
+        extension: rdkafka
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
-
-    - name: Get php ini location
-      run: php --ini
-
-    - name: Install rdkafka
-      run: apt-get install librdkafka
-
-    - name: Install pecl rdkafka
-      run: pecl install rdkafka
-
-    - name: Enable rdkafka extension
-      run: echo "extension=rdkafka.so" > /etc/php/8.0/cli/php.ini
 
     - name: Cache Composer packages
       id: composer-cache
