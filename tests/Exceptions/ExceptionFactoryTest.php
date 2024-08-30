@@ -92,11 +92,15 @@ final class StdExceptionTest extends TestCase
         $e = StdException::create(
             StdException::PARAMETER_EXCEPTION,
             null,
+            ['x' => 'y'],
             ['x' => 'y']
         );
         $this->assertEquals(StdException::PARAMETER_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Parameter tidak sesuai', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
+        if ($e instanceof ParameterException) {
+            $this->assertEquals(['x' => 'y'], $e->getValidationErrors());
+        }
         $this->assertEquals(200, $e->getHttpCode());
         throw $e;
     }

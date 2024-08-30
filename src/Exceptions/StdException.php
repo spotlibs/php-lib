@@ -41,7 +41,8 @@ class StdException
 	public static function create(
 		string $responseCode, 
 		?string $responseDesc = null, 
-		mixed $responseData = null
+		mixed $responseData = null,
+		array $validationErrors = []
 	): ExceptionInterface
 	{
 		switch ($responseCode) {
@@ -50,7 +51,7 @@ class StdException
 			case self::ACCESS_EXCEPTION:
 				return new AccessException($responseDesc, $responseData);
 			case self::PARAMETER_EXCEPTION:
-				return new ParameterException($responseDesc, $responseData);
+				return new ParameterException($responseDesc, $responseData, $validationErrors);
 			case self::NOTFOUND_EXCEPTION:
 				return new DataNotFoundException($responseDesc, $responseData);
 			case self::INVALIDRULE_EXCEPTION:
