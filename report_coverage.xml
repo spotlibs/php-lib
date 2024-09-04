@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1725004036">
-  <project timestamp="1725004036">
+<coverage generated="1725426490">
+  <project timestamp="1725426490">
     <file name="./src/Dtos/TraitDtos.php">
       <class name="Spotlibs\PhpLib\Dtos\TraitDtos" namespace="global">
         <metrics complexity="5" methods="4" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="7" coveredstatements="0" elements="11" coveredelements="0"/>

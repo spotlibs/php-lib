@@ -17,7 +17,7 @@ namespace Spotlibs\PhpLib\Dtos;
 
 trait TraitDtos
 {
-    public function __construct(array $data) {
+    public function __construct(array $data = []) {
         foreach ($data as $key => $value) {
             $this->{$key} = $value;
         }
