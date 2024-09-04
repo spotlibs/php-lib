@@ -23,6 +23,6 @@
         "rregeer/phpunit-coverage-check": "^0.3.1"
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover test-reports/cov.xml && php prepare-coverage-report.php && ./vendor/bin/coverage-check test-reports/cov.xml 40"
+        "test": "./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover report_coverage.xml && php prepare-coverage-report.php && ./vendor/bin/coverage-check report_coverage.xml 40"
     }
 }

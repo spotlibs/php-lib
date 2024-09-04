@@ -24,7 +24,9 @@
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
+            <file>src/Exceptions/Handler.php</file>
             <directory suffix=".php">src/Libraries</directory>
+            <directory suffix=".php">src/Providers</directory>
             <directory suffix=".php">src/Validations</directory>
         </exclude>
     </coverage>

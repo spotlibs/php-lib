@@ -1,6 +1,6 @@
 <?php
 // Path to the Clover XML file
-$coverageFile = './test-reports/cov.xml';
+$coverageFile = './report_coverage.xml';
 
 // Load the file contents
 $xmlContent = file_get_contents($coverageFile);

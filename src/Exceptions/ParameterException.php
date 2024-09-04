@@ -38,7 +38,7 @@ class ParameterException extends Exception implements ExceptionInterface
     private string $errorMessage;
     private int $httpCode;
     private mixed $data;
-    public array $validationErrors;
+    private array $validationErrors;
 
     /**
      * Create a new ParameterException instance.
@@ -56,5 +56,15 @@ class ParameterException extends Exception implements ExceptionInterface
         $this->data = $data;
         $this->validationErrors = $validationErrors;
         parent::__construct($this->errorMessage, 1, null);
+    }
+
+    /**
+     * Get validation errors only for Parameter Exception type
+     *
+     * @return mixed
+     */
+    public function getValidationErrors(): mixed
+    {
+        return $this->validationErrors;
     }
 }

@@ -17,6 +17,7 @@ namespace Spotlibs\PhpLib\Responses;
 
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Illuminate\Http\Response;
+use Spotlibs\PhpLib\Exceptions\ParameterException;
 
 class StdResponse
 {
@@ -58,6 +59,9 @@ class StdResponse
         ];
         if ($exception->getData() !== null) {
             $result['responseData'] = $exception->getData();
+        }
+        if ($exception instanceof ParameterException) {
+            $result['responseValidation'] = $exception->getValidationErrors();
         }
 
         return new Response($result, $exception->getHttpCode(), self::$headers);
