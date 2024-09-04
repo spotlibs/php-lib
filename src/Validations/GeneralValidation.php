@@ -27,12 +27,10 @@ class GeneralValidation
     {
         $result = [];
         foreach ($rules as $key => $value) {
-            if (str_contains($value, 'required')) {
-                if (!isset($header[strtolower($key)])) {
-                    continue;
-                }
-                $result[$key] = $header[strtolower($key)][0];
+            if (!isset($header[strtolower($key)])) {
+                continue;
             }
+            $result[$key] = $header[strtolower($key)][0];
         }
         return $result;
     }
