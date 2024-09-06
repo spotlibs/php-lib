@@ -15,6 +15,15 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Dtos;
 
+/**
+ * TraitDtos
+ *
+ * @category Library
+ * @package  Dtos
+ * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/spotlibs
+ */
 trait TraitDtos
 {
     public function __construct(array $data = []) {
