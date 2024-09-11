@@ -26,12 +26,27 @@ namespace Spotlibs\PhpLib\Dtos;
  */
 trait TraitDtos
 {
-    public function __construct(array $data = []) {
+    /**
+     * Construct a DTO instance from associative array. Array key and value data type must comply DTO class property
+     *
+     * @param array $data associative array
+     *
+     * @return mixed
+     */
+    public function __construct(array $data = [])
+    {
         foreach ($data as $key => $value) {
             $this->{$key} = $value;
         }
     }
 
+    /**
+     * Create a DTO instance from associative array. Array key and value data type must comply DTO class property
+     *
+     * @param array $data associative array
+     *
+     * @return mixed
+     */
     public static function create(array $data): mixed
     {
         $self = new self($data);
@@ -39,11 +54,21 @@ trait TraitDtos
         return $self;
     }
 
+    /**
+     * Convert instance to associative array
+     *
+     * @return array
+     */
     public function toArray(): array
     {
         return (array) $this;
     }
 
+    /**
+     * Convert instance to json
+     *
+     * @return bool|string
+     */
     public function toJson()
     {
         $data = $this->toArray();

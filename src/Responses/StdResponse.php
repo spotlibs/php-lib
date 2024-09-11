@@ -4,14 +4,14 @@
  * PHP version 8
  *
  * @category Library
- * @package  Exceptions
+ * @package  Responses
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @version  GIT: 0.0.2
  * @link     https://github.com/spotlibs
  */
 
-declare(strict_types= 1);
+declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Responses;
 
@@ -19,19 +19,24 @@ use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Illuminate\Http\Response;
 use Spotlibs\PhpLib\Exceptions\ParameterException;
 
+/**
+ * StdResponse
+ *
+ * @category Library
+ * @package  Responses
+ * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/spotlibs
+ */
 class StdResponse
 {
-    public static array $headers = [
-        'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains; preload',
-        'Server'=> 'BRISPOT',
-        'X-Powered-By' => 'BRISPOT'
-    ];
     /**
      * Create success http response
      *
-     * @param  string  $responseDesc
-     * @param  mixed  $responseData nullable
-     * @return  \Illuminate\Http\Response
+     * @param string $responseDesc description of response
+     * @param mixed  $responseData data of response, nullable
+     *
+     * @return \Illuminate\Http\Response
      */
     public static function success(string $responseDesc, mixed $responseData = null): Response
     {
@@ -42,14 +47,15 @@ class StdResponse
         if ($responseData !== null) {
             $result['responseData'] = $responseData;
         }
-        return new Response($result, 200, self::$headers);
+        return new Response($result, 200);
     }
-    
+
     /**
      * Create failure http response
      *
-     * @param  \Spotlibs\PhpLib\Exceptions\ExceptionInterface $exception
-     * @return  \Illuminate\Http\Response
+     * @param \Spotlibs\PhpLib\Exceptions\ExceptionInterface $exception throwed exception
+     *
+     * @return \Illuminate\Http\Response
      */
     public static function error(ExceptionInterface $exception): Response
     {
@@ -64,6 +70,6 @@ class StdResponse
             $result['responseValidation'] = $exception->getValidationErrors();
         }
 
-        return new Response($result, $exception->getHttpCode(), self::$headers);
+        return new Response($result, $exception->getHttpCode());
     }
 }

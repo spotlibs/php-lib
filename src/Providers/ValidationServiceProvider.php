@@ -21,6 +21,15 @@ use Illuminate\Validation\Validator;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
 
+/**
+ * ValidationServiceProvider
+ *
+ * @category ServiceProvider
+ * @package  Providers
+ * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/spotlibs
+ */
 class ValidationServiceProvider extends ServiceProvider
 {
     private array $messages_validation = [
@@ -145,7 +154,7 @@ class ValidationServiceProvider extends ServiceProvider
         | Baris Bahasa untuk Validasi Kustom
         |---------------------------------------------------------------------------------------
         |
-        | Di sini Anda dapat menentukan pesan validasi untuk atribut sesuai keinginan dengan menggunakan 
+        | Di sini Anda dapat menentukan pesan validasi untuk atribut sesuai keinginan dengan menggunakan
         | konvensi "attribute.rule" dalam penamaan barisnya. Hal ini mempercepat dalam menentukan
         | baris bahasa kustom yang spesifik untuk aturan atribut yang diberikan.
         |
@@ -171,7 +180,7 @@ class ValidationServiceProvider extends ServiceProvider
         'attributes' => [
         ],
     ];
-    
+
     /**
      * Register services.
      *
@@ -179,14 +188,19 @@ class ValidationServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('validator', function ($app) {
-            $validator = $app->make(ValidationFactory::class);
-            $validator->resolver(function (Translator $translator, array $data, array $rules, array $messages, array $customAttributes) {
-                $messages = array_merge($messages, $this->messages_validation);
-                return new Validator($translator, $data, $rules, $messages, $customAttributes);
-            });
-            return $validator;
-        });
+        $this->app->singleton(
+            'validator',
+            function ($app) {
+                $validator = $app->make(ValidationFactory::class);
+                $validator->resolver(
+                    function (Translator $translator, array $data, array $rules, array $messages, array $customAttributes) {
+                        $messages = array_merge($messages, $this->messages_validation);
+                        return new Validator($translator, $data, $rules, $messages, $customAttributes);
+                    }
+                );
+                return $validator;
+            }
+        );
     }
 
     /**
@@ -196,25 +210,44 @@ class ValidationServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        ValidatorFacade::extend('nik_pattern', function ($attribute, $value, $parameters, $validator) {
-            return is_string($value) && strlen($value) === 16 && preg_match('/^[0-9]+$/', $value);
-        }, ':attribute harus 16 digit angka.');
+        ValidatorFacade::extend(
+            'nik_pattern',
+            function ($attribute, $value, $parameters, $validator) {
+                return is_string($value) && strlen($value) === 16 && preg_match('/^[0-9]+$/', $value);
+            },
+            ':attribute harus 16 digit angka.'
+        );
 
-        ValidatorFacade::extend('npwp_pattern', function ($attribute, $value, $parameters, $validator) {
-            return is_string($value) && in_array(strlen($value), [15, 16]) && preg_match('/^[0-9]+$/', $value);
-        }, ':attribute harus 15/16 digit angka.');
+        ValidatorFacade::extend(
+            'npwp_pattern',
+            function ($attribute, $value, $parameters, $validator) {
+                return is_string($value) && in_array(strlen($value), [15, 16]) && preg_match('/^[0-9]+$/', $value);
+            },
+            ':attribute harus 15/16 digit angka.'
+        );
 
-        ValidatorFacade::extend('gender_pattern', function ($attribute, $value, $parameters, $validator) {
-            return is_string($value) && in_array($value, ['L', 'P']);
-        }, ':attribute harus L/P.');
+        ValidatorFacade::extend(
+            'gender_pattern',
+            function ($attribute, $value, $parameters, $validator) {
+                return is_string($value) && in_array($value, ['L', 'P']);
+            },
+            ':attribute harus L/P.'
+        );
 
-        ValidatorFacade::extend('phone_pattern', function ($attribute, $value, $parameters, $validator) {
-            return is_string($value) && preg_match('/^[0-9]+$/', $value);
-        }, ':attribute harus digit angka.');
+        ValidatorFacade::extend(
+            'phone_pattern',
+            function ($attribute, $value, $parameters, $validator) {
+                return is_string($value) && preg_match('/^[0-9]+$/', $value);
+            },
+            ':attribute harus digit angka.'
+        );
 
-        ValidatorFacade::extend('email_pattern', function ($attribute, $value, $parameters, $validator) {
-            return is_string($value) && str_contains($value, '@');
-        }, ':attribute format tidak valid.');
+        ValidatorFacade::extend(
+            'email_pattern',
+            function ($attribute, $value, $parameters, $validator) {
+                return is_string($value) && str_contains($value, '@');
+            },
+            ':attribute format tidak valid.'
+        );
     }
 }
-

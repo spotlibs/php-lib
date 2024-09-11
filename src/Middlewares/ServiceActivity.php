@@ -1,4 +1,17 @@
-<?php declare(strict_types=1);
+<?php
+
+/**
+ * PHP version 8
+ *
+ * @category Library
+ * @package  Middlewares
+ * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.4
+ * @link     https://github.com/spotlibs
+ */
+
+declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Middlewares;
 
@@ -7,13 +20,23 @@ use StdClass;
 use Illuminate\Support\Facades\Log;
 use Spotlibs\PhpLib\Services\ContextService;
 
+/**
+ * ServiceActivity
+ *
+ * @category StandardMiddleware
+ * @package  Middlewares
+ * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/spotlibs
+ */
 class ServiceActivity
 {
     private ContextService $contextService;
 
     /**
      * Create instance of ServiceActivity
-     * @param \Spotlibs\PhpLib\Services\ContextService $contextService
+     *
+     * @param \Spotlibs\PhpLib\Services\ContextService $contextService context instance
      */
     public function __construct(ContextService $contextService)
     {
@@ -23,8 +46,9 @@ class ServiceActivity
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request http request instance
+     * @param \Closure                 $next    next middleware in the pipeline
+     *
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -53,20 +77,21 @@ class ServiceActivity
         $this->contextService->set('X-Path-Gateway', $request->header('X-Path-Gateway'));
         $this->contextService->set('Authorization', $request->header('Authorization'));
         $this->contextService->set('X-Api-Key', $request->header('X-Api-Key'));
-        
+
         return $next($request);
     }
 
     /**
      * Handle tasks after the response has been sent to the browser.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Http\Response  $response
+     * @param \Illuminate\Http\Request  $request  http request instance
+     * @param \Illuminate\Http\Response $response http response instance
+     *
      * @return mixed
      */
     public function terminate($request, $response)
     {
-        $log = new StdClass;
+        $log = new StdClass();
         $log->app_name = getenv('APP_NAME');
         $log->host = getenv('HTTP_HOST');
         $log->clientip = $request->header('X-Forwarded-For') !== null ? $request->header('X-Forwarded-For') : $request->ip();
@@ -79,21 +104,21 @@ class ServiceActivity
         $log->deviceID = $request->header('X-Device-ID') !== null ? $request->header('X-Device-ID') : null;
         $log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
         $log->requestBody = strlen(json_encode($request->all())) < 3000 ? $request->all() : null;
-        
-        # hashing secret information
-        if(isset($log->requestBody['password'])) {
+
+        // hashing secret information
+        if (isset($log->requestBody['password'])) {
             $log->requestBody['password'] = hash('sha256', $log->requestBody['password']);
         }
         $responseObjContent = json_decode($response->getContent());
-        if(strlen($response->getContent()) > 5000 && isset($responseObjContent->responseData)) {
+        if (strlen($response->getContent()) > 5000 && isset($responseObjContent->responseData)) {
             unset($responseObjContent->responseData);
         }
         $log->responseBody = $request->getPathInfo() !== '/docs' ? $responseObjContent : ['responseCode' => '00', 'responseDesc' => 'Sukses API Docs'];
-        $log->responseTime = round((microtime(true) - $request->server('REQUEST_TIME_FLOAT'))*1000);
+        $log->responseTime = round((microtime(true) - $request->server('REQUEST_TIME_FLOAT')) * 1000);
         $log->httpCode = $response->status();
         $log->memoryUsage = memory_get_usage();
         $log->requestAt = \DateTime::createFromFormat(
-            'U.u', 
+            'U.u',
             number_format((float) $request->server('REQUEST_TIME_FLOAT'), 6, '.', '')
         )
             ->setTimezone(new \DateTimeZone('Asia/Jakarta'))

@@ -21,7 +21,16 @@ use RdKafka\Message;
 use RdKafka\Producer;
 use RdKafka\KafkaConsumer;
 
-class KafkaCallable extends KafkaLibrary 
+/**
+ * KafkaCallable
+ *
+ * @category Library
+ * @package  Libraries
+ * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/spotlibs
+ */
+class KafkaCallable extends KafkaLibrary
 {
     public static function deliveryReportCallback(Producer $producer, Message $message) {
         if ($message->err == RD_KAFKA_RESP_ERR_NO_ERROR) {

@@ -25,6 +25,7 @@
         </include>
         <exclude>
             <file>src/Exceptions/Handler.php</file>
+            <directory suffix=".php">src/Commands</directory>
             <directory suffix=".php">src/Libraries</directory>
             <directory suffix=".php">src/Providers</directory>
             <directory suffix=".php">src/Validations</directory>
