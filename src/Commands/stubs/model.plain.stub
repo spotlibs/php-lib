@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Models
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://github.com/
+ */
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use Illuminate\Database\Eloquent\Model;
+use App\Collections\DummyClassCollection;
+
+/**
+ * DummyClass
+ *
+ * Entity of database
+ *
+ * @category DataClass
+ * @package  Models
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/
+ */
+class DummyClass extends Model
+{
+    public $timestamps = false;
+    
+    protected $fillable = [];
+    protected $casts = [];
+
+    /**
+     * Create a new Eloquent Collection instance.
+     *
+     * @param  array  $models
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function newCollection(array $models = [])
+    {
+        return new DummyClassCollection($models);
+    }
+}

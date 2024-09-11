@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Collections
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://github.com/
+ */
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use App\Models\DummyClass;
+use Illuminate\Database\Eloquent\Collection;
+
+/**
+ * DummyClassCollection
+ *
+ * Collection of eloquent models
+ *
+ * @category Collections
+ * @package  Collections
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/
+ */
+class DummyClassCollection extends Collection
+{
+    public function __construct(mixed $array)
+    {
+        $newarray = [];
+        foreach($array as $row) {
+            $newarray[] = $row instanceof DummyClass ? $row : new DummyClass((array) $row);
+        }
+        parent::__construct($newarray);
+    }
+}
