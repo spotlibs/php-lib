@@ -8,7 +8,7 @@
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @version  GIT: 0.0.1
- * @link     https://brispot.bri.co.id/
+ * @link     https://github.com/spotlibs
  */
 
 declare(strict_types=1);
@@ -28,7 +28,7 @@ use Illuminate\Support\Str;
  * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
- * @link     https://brispot.bri.co.id/
+ * @link     https://github.com/
  */
 class TestMakeCommand extends GeneratorCommand
 {
