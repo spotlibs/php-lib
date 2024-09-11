@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Controllers
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://brispot.bri.co.id/
+ */
+
+declare(strict_types=1);
+
+use Tests\TestCase;
+
+class DummyClassTest extends TestCase
+{
+    /**
+     * A basic test example.
+     *
+     * @return void
+     */
+    public function createApplication()
+    {
+        return require realpath(env('LARAVEL_BASE_PATH'));
+    }
+
+    /** @test */
+    /** @runInSeparateProcess */
+    public function testDummyClassMethod()
+    {
+        $this->assertTrue(true);
+    }
+}

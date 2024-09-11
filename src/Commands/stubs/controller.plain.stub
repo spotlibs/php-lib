@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Controllers
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://brispot.bri.co.id/
+ */
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use stdClass;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Spotlibs\PhpLib\Exceptions\ParameterException;
+use App\Usecases\DummyUsecase;
+
+/**
+ * DummyClassController
+ *
+ * Request and response handler
+ *
+ * @category Collections
+ * @package  Collections
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://brispot.bri.co.id/
+ */
+class DummyClassController extends Controller
+{
+    private $dummyUsecase;
+    private $output;
+    
+    public function __construct(DummyUsecase $dummyUsecase)
+    {
+        parent::__construct();
+        $this->dummyUsecase = $dummyUsecase;
+        $this->output = new stdClass();
+        $this->output->responseCode = '';
+        $this->output->responseDesc = '';
+    }
+}
