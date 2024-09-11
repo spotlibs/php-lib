@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Usecases
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://github.com/
+ */
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use Illuminate\Http\Request;
+
+/**
+ * DummyClassUsecase
+ *
+ * Execute business logic due to request
+ *
+ * @category BusinessLogic
+ * @package  Collections
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/
+ */
+class DummyClassUsecase
+{
+    
+}
