@@ -3,11 +3,11 @@
 /**
  * PHP version 8
  *
- * @category Application
+ * @category Library
  * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
- * @version  GIT: 0.0.7
+ * @version  GIT: 0.0.6
  * @link     https://github.com/spotlibs
  */
 
@@ -19,9 +19,9 @@ use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * RepositoryMakeCommand
+ * CollectionMakeCommand
  *
- * Custom command
+ * Standard command
  *
  * @category Console
  * @package  Commands
@@ -29,26 +29,27 @@ use Symfony\Component\Console\Input\InputOption;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class RepositoryMakeCommand extends GeneratorCommand
+class CollectionMakeCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:repository';
+    protected $name = 'make:collection';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new repository for model class';
+    protected $description = 'Create a new collection for model class';
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Repository';
+    protected $type = 'Collection';
+
     /**
      * Get the destination class path.
      *
@@ -58,8 +59,9 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     protected function getPath($name)
     {
-        return parent::getPath($name . 'Repository');
+        return parent::getPath($name . 'Collection');
     }
+
     /**
      * Get the stub file for the generator.
      *
@@ -68,20 +70,20 @@ class RepositoryMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         if ($this->option('resource')) {
-            return __DIR__ . '/stubs/repository.stub';
+            return __DIR__ . '/stubs/collection.stub';
         }
-        return __DIR__ . '/stubs/repository.plain.stub';
+        return __DIR__ . '/stubs/collection.plain.stub';
     }
     /**
      * Get the default namespace for the class.
      *
-     * @param string $rootNamespace root namespace (generally App)
+     * @param string $rootNamespace namespace of root (generally App)
      *
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . '\Repositories';
+        return $rootNamespace . '\Collections';
     }
     /**
      * Get the console command options.
@@ -91,7 +93,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['resource', null, InputOption::VALUE_NONE, 'Generate a resource repository class.'],
+            ['resource', null, InputOption::VALUE_NONE, 'Generate a resource collection class.'],
         ];
     }
 }

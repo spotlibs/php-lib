@@ -3,11 +3,11 @@
 /**
  * PHP version 8
  *
- * @category Application
+ * @category Library
  * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
- * @version  GIT: 0.0.7
+ * @version  GIT: 0.0.6
  * @link     https://github.com/spotlibs
  */
 
@@ -19,7 +19,7 @@ use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * RepositoryMakeCommand
+ * ModelMakeCommand
  *
  * Custom command
  *
@@ -29,36 +29,67 @@ use Symfony\Component\Console\Input\InputOption;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class RepositoryMakeCommand extends GeneratorCommand
+class ModelMakeCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:repository';
+    protected $name = 'make:model';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new repository for model class';
+    protected $description = 'Create a new model class';
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Repository';
+    protected $type = 'Model';
     /**
-     * Get the destination class path.
+     * Execute the console command.
      *
-     * @param string $name name of the type
-     *
-     * @return string
+     * @return void
      */
-    protected function getPath($name)
+    public function handle()
     {
-        return parent::getPath($name . 'Repository');
+        parent::handle();
+
+        $this->createCollection();
+        $this->createRepository();
+    }
+    /**
+     * Create a collection file for the model.
+     *
+     * @return void
+     */
+    protected function createCollection()
+    {
+        $className = class_basename($this->argument('name'));
+        $this->call(
+            'make:collection',
+            [
+            'name' => $className
+            ]
+        );
+    }
+    /**
+     * Create a collection file for the model.
+     *
+     * @return void
+     */
+    protected function createRepository()
+    {
+        $className = class_basename($this->argument('name'));
+        $this->call(
+            'make:repository',
+            [
+            'name' => $className
+            ]
+        );
     }
     /**
      * Get the stub file for the generator.
@@ -68,20 +99,20 @@ class RepositoryMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         if ($this->option('resource')) {
-            return __DIR__ . '/stubs/repository.stub';
+            return __DIR__ . '/stubs/model.stub';
         }
-        return __DIR__ . '/stubs/repository.plain.stub';
+        return __DIR__ . '/stubs/model.plain.stub';
     }
     /**
      * Get the default namespace for the class.
      *
-     * @param string $rootNamespace root namespace (generally App)
+     * @param string $rootNamespace namespace of root (generally App)
      *
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . '\Repositories';
+        return $rootNamespace . '\Models';
     }
     /**
      * Get the console command options.
@@ -91,7 +122,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['resource', null, InputOption::VALUE_NONE, 'Generate a resource repository class.'],
+            ['resource', null, InputOption::VALUE_NONE, 'Generate a resource model class.'],
         ];
     }
 }

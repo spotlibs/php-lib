@@ -19,7 +19,7 @@ use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * CollectionMakeCommand
+ * ControllerSwaggerMakeCommand
  *
  * Custom command
  *

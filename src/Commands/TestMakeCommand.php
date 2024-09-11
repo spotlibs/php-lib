@@ -20,7 +20,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Support\Str;
 
 /**
- * CollectionMakeCommand
+ * TestMakeCommand
  *
  * Custom command
  *
