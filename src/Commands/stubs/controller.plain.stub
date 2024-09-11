@@ -8,7 +8,7 @@
  * @author   
  * @license  https://mit-license.org/ MIT License
  * @version  GIT: 0.0.1
- * @link     https://brispot.bri.co.id/
+ * @link     https://github.com/
  */
 
 declare(strict_types=1);
@@ -31,7 +31,7 @@ use App\Usecases\DummyUsecase;
  * @package  Collections
  * @author   
  * @license  https://mit-license.org/ MIT License
- * @link     https://brispot.bri.co.id/
+ * @link     https://github.com/
  */
 class DummyClassController extends Controller
 {
