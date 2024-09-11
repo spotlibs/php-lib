@@ -7,7 +7,7 @@
  * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
- * @version  GIT: 0.0.6
+ * @version  GIT: 0.0.7
  * @link     https://github.com/spotlibs
  */
 
@@ -27,39 +27,39 @@ use Symfony\Component\Console\Input\InputOption;
  * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
- * @link     https://github.com/
+ * @link     https://github.com/spotlibs
  */
-class UsecaseMakeCommand extends GeneratorCommand
+class DtoMakeCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:usecase';
+    protected $name = 'make:dto';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new usecase for model class';
+    protected $description = 'Create a new data traversible object class';
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Usecase';
+    protected $type = 'DTO';
+
     /**
-     * Get the destination class path.
+     * Execute the console command.
      *
-     * @param string $name name of the type
-     *
-     * @return string
+     * @return void
      */
-    protected function getPath($name)
+    public function handle()
     {
-        return parent::getPath($name . 'Usecase');
+        parent::handle();
     }
+
     /**
      * Get the stub file for the generator.
      *
@@ -68,9 +68,9 @@ class UsecaseMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         if ($this->option('resource')) {
-            return __DIR__ . '/stubs/usecase.stub';
+            return __DIR__ . '/stubs/dto.stub';
         }
-        return __DIR__ . '/stubs/usecase.plain.stub';
+        return __DIR__ . '/stubs/dto.plain.stub';
     }
     /**
      * Get the default namespace for the class.
@@ -81,7 +81,7 @@ class UsecaseMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . '\Usecases';
+        return $rootNamespace . '\Models\Dtos';
     }
     /**
      * Get the console command options.
@@ -91,7 +91,7 @@ class UsecaseMakeCommand extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['resource', null, InputOption::VALUE_NONE, 'Generate a resource usecase class.'],
+            ['resource', null, InputOption::VALUE_NONE, 'Generate a resource data traversible object class.'],
         ];
     }
 }

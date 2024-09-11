@@ -1,9 +1,9 @@
 <?php
 
 /**
- * PHP version 8.0.30
+ * PHP version 8
  *
- * @category Application
+ * @category Library
  * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License

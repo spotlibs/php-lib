@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Dtos
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://github.com/
+ */
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use App\Models\Dtos\Output;
+
+/**
+ * DummyClassResponse
+ *
+ * Data traversible object
+ *
+ * @category DataClass
+ * @package  Dtos
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/
+ */
+class DummyClassResponse extends Output
+{
+    public DummyClass $responseData;
+
+    public function __construct(string $responseCode, string $responseDesc, DummyClass $responseData = null)
+    {
+        $this->responseData = $responseData;
+        parent::__construct($responseCode, $responseDesc);
+    }
+}

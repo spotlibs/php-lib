@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Dtos
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://github.com/
+ */
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use Spotlibs\PhpLib\Dtos\TraitDtos;
+
+/**
+ * DummyClass
+ *
+ * Data traversible object
+ *
+ * @category DataClass
+ * @package  Dtos
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/
+ */
+class DummyClass
+{
+    use TraitDtos;
+}

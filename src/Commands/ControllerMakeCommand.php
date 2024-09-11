@@ -4,7 +4,7 @@
  * PHP version 8
  *
  * @category Library
- * @package  Middlewares
+ * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @version  GIT: 0.0.6
