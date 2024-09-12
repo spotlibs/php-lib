@@ -113,10 +113,9 @@ class ControllerMakeCommand extends GeneratorCommand
     protected function replaceClass($stub, $name)
     {
         $stub = parent::replaceClass($stub, $name);
-        $stub = str_replace('DummyUsecase', Str::ucfirst($this->argument('name')) . 'Usecase', $stub);
-        $stub = str_replace('dummyUsecase', Str::lower($this->argument('name')) . 'Usecase', $stub);
-        $stub = str_replace("/", "\\", Str::ucfirst($this->argument('name')) . 'Usecase');
-        $stub = str_replace("/", "\\", Str::lower($this->argument('name')) . 'Usecase');
+        $usecaseClass = Str::ucfirst(explode("/", $this->argument('name'))[-1]) . 'Usecase';
+        $stub = str_replace('DummyUsecase', $usecaseClass, $stub);
+        $stub = str_replace('dummyUsecase', Str::lower($usecaseClass), $stub);
         return $stub;
     }
     /**
