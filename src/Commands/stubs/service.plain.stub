@@ -37,4 +37,27 @@ class DummyClassService
     {
         $this->rest_client = $restClient;
     }
+
+    public function dummyUrlCall(array $requestDto): DummyClassResponse
+    {
+        $clientResponse = $this->rest_client->call(
+            $requestDto,
+            'http://dummy-microservice.com',
+            '/v1/dummyEndpoint'
+        );
+        if (!isset($clientResponse->responseCode) || $clientResponse->responseCode <> '00') {
+            throw StdException::create(
+                $clientResponse->responseCode,
+                $clientResponse->responseDesc ?? 'Unknown response from host role'
+            );
+        }
+        $dummyData = new DummyClass(isset($clientResponse->responseData) ? (array) $clientResponse->responseData : []);
+        $dummyResponse = new DummyClassResponse(
+            $clientResponse->responseCode,
+            $clientResponse->responseDesc,
+            $dummyData
+        );
+
+        return $dummyResponse;
+    }
 }
