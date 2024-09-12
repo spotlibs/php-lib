@@ -7,7 +7,7 @@
  * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
- * @version  GIT: 0.0.6
+ * @version  GIT: 0.0.9
  * @link     https://github.com/spotlibs
  */
 
@@ -19,7 +19,7 @@ use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * UsecaseMakeCommand
+ * ServiceMakeCommand
  *
  * Custom command
  *
@@ -29,36 +29,26 @@ use Symfony\Component\Console\Input\InputOption;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/
  */
-class UsecaseMakeCommand extends GeneratorCommand
+class ServiceMakeCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:usecase';
+    protected $name = 'make:service';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new usecase for model class';
+    protected $description = 'Create a new service for model class';
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Usecase';
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        parent::handle();
-        $this->createTest();
-    }
+    protected $type = 'Service';
     /**
      * Get the destination class path.
      *
@@ -68,23 +58,7 @@ class UsecaseMakeCommand extends GeneratorCommand
      */
     protected function getPath($name)
     {
-        return parent::getPath($name . 'Usecase');
-    }
-    /**
-     * Create a unit test file.
-     *
-     * @return void
-     */
-    protected function createTest()
-    {
-        $dirPath = "Usecases";
-        $className = class_basename($this->argument('name')) . 'Usecase';
-        $this->call(
-            'make:test',
-            [
-            'name' => $dirPath . "/" . $className
-            ]
-        );
+        return parent::getPath($name . 'Service');
     }
     /**
      * Get the stub file for the generator.
@@ -94,9 +68,9 @@ class UsecaseMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         if ($this->option('resource')) {
-            return __DIR__ . '/stubs/usecase.stub';
+            return __DIR__ . '/stubs/service.stub';
         }
-        return __DIR__ . '/stubs/usecase.plain.stub';
+        return __DIR__ . '/stubs/service.plain.stub';
     }
     /**
      * Get the default namespace for the class.
@@ -107,7 +81,7 @@ class UsecaseMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . '\Usecases';
+        return $rootNamespace . '\Services';
     }
     /**
      * Get the console command options.
@@ -117,7 +91,7 @@ class UsecaseMakeCommand extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['resource', null, InputOption::VALUE_NONE, 'Generate a resource usecase class.'],
+            ['resource', null, InputOption::VALUE_NONE, 'Generate a resource service class.'],
         ];
     }
 }

@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Services
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://github.com/
+ */
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Library\RestClient;
+use Spotlibs\PhpLib\Exceptions\StdException;
+use Spotlibs\PhpLib\Exceptions\ThirdPartyServiceException;
+
+/**
+ * DummyClassService
+ *
+ * Call to surrounding microservices
+ *
+ * @category Surrounding
+ * @package  App\Services
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/
+ */
+class DummyClassService
+{
+    private RestClient $rest_client;
+    public function __construct(RestClient $restClient)
+    {
+        $this->rest_client = $restClient;
+    }
+}

@@ -60,7 +60,10 @@ class TestMakeCommand extends GeneratorCommand
     protected function getPath($name)
     {
         $name = Str::replaceFirst($this->laravel->getNamespace(), '', $name);
-        return $this->laravel->basePath() . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $name . 'Test') . '.php';
+        $temp = explode("\\", $name);
+        $name = implode(DIRECTORY_SEPARATOR, $temp);
+        $testPath = $this->laravel->basePath() . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . $name . 'Test.php';
+        return $testPath;
     }
     /**
      * Get the stub file for the generator.
