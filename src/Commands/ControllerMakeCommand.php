@@ -60,6 +60,7 @@ class ControllerMakeCommand extends GeneratorCommand
         parent::handle();
         $this->createSwagger();
         $this->createTest();
+        $this->createUsecase();
     }
     /**
      * Create a swagger file controller.
@@ -83,11 +84,17 @@ class ControllerMakeCommand extends GeneratorCommand
      */
     protected function createTest()
     {
-        $className = class_basename($this->argument('name'));
+        $dirPath = "Controllers";
+        $temp = explode("/", $this->argument('name'));
+        if (count($temp) > 1) {
+            array_pop($temp);
+            $dirPath .= "/" . implode("/", $temp);
+        }
+        $className = class_basename($this->argument('name')) . 'Controller';
         $this->call(
             'make:test',
             [
-            'name' => $className
+            'name' => $dirPath . "/" . $className
             ]
         );
     }
@@ -113,10 +120,26 @@ class ControllerMakeCommand extends GeneratorCommand
     protected function replaceClass($stub, $name)
     {
         $stub = parent::replaceClass($stub, $name);
-        $usecaseClass = Str::ucfirst(explode("/", $this->argument('name'))[-1]) . 'Usecase';
+        $temp = explode("/", $this->argument('name'));
+        $usecaseClass = Str::ucfirst($temp[count($temp) - 1]) . 'Usecase';
         $stub = str_replace('DummyUsecase', $usecaseClass, $stub);
         $stub = str_replace('dummyUsecase', Str::lower($usecaseClass), $stub);
         return $stub;
+    }
+    /**
+     * Create a usecase file.
+     *
+     * @return void
+     */
+    protected function createUsecase()
+    {
+        $className = class_basename($this->argument('name'));
+        $this->call(
+            'make:usecase',
+            [
+            'name' => $className
+            ]
+        );
     }
     /**
      * Get the stub file for the generator.
