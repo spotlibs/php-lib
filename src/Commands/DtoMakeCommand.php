@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands;
+namespace Spotlibs\PhpLib\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
