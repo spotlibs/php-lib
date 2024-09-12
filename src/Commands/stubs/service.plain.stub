@@ -18,6 +18,8 @@ namespace App\Services;
 use App\Library\RestClient;
 use Spotlibs\PhpLib\Exceptions\StdException;
 use Spotlibs\PhpLib\Exceptions\ThirdPartyServiceException;
+use App\Models\Dtos\DummyClassResponse;
+use App\Models\Dtos\DummyClass;
 
 /**
  * DummyClassService
