@@ -50,6 +50,31 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected $type = 'Service';
     /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        parent::handle();
+        $this->createResponseDto();
+    }
+    /**
+     * Create a unit test file.
+     *
+     * @return void
+     */
+    protected function createResponseDto()
+    {
+        $className = class_basename($this->argument('name'));
+        $this->call(
+            'make:response_dto',
+            [
+            'name' => $className
+            ]
+        );
+    }
+    /**
      * Get the destination class path.
      *
      * @param string $name name of the type
