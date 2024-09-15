@@ -15,6 +15,9 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Dtos;
 
+use Carbon\Carbon;
+use Throwable;
+
 /**
  * TraitDtos
  *
@@ -35,7 +38,54 @@ trait TraitDtos
      */
     public function __construct(array $data = [])
     {
+        $reflector = new \ReflectionClass(static::class);
         foreach ($data as $key => $value) {
+            try {
+                $prop = $reflector->getProperty($key);
+            } catch (Throwable) {
+                continue;
+            }
+            if (gettype($value) != $prop->getType()->getName()) {
+                switch ($prop->getType()) {
+                    case 'integer':
+                        $value = (int) $value;
+                        break;
+
+                    case 'string':
+                        $value = (string) $value;
+                        break;
+
+                    case 'double':
+                        $value = (double) $value;
+                        break;
+
+                    case 'float':
+                        $value = (float) $value;
+                        break;
+
+                    case 'bool':
+                        if (!is_bool($value)) {
+                            $value = false;
+                        }
+                        break;
+
+                    default:
+                        if ($value == null && $prop->getType()->allowsNull()) {
+                            break;
+                        } elseif (gettype($value) == 'object') {
+                            $reflector2 = new \ReflectionClass($value);
+                            if ($reflector2->getName() == $prop->getType()) {
+                                break;
+                            }
+                        } elseif ($prop->getType()->getName() == 'Carbon\Carbon') {
+                            $value = Carbon::parse((string) $value);
+                            break;
+                        }
+                        echo $key . " " . gettype($value) . " <> ";
+                        echo $prop->getType() . "<br>";
+                        break;
+                }
+            }
             $this->{$key} = $value;
         }
     }
