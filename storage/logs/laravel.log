@@ -1,0 +1,846 @@
+[2024-09-17 09:36:34] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(88): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(950): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:36:34] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:44:40] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(88): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(950): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:44:40] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:45:34] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(62): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(950): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:45:34] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:46:15] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(60): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(950): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:46:15] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:47:00] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(60): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(950): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:47:00] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:47:00] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(86): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(950): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:47:00] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:53:13] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(950): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:53:13] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:53:13] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(950): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:53:13] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:55:31] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:55:31] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:55:31] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(98): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:55:31] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:59:55] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(931): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:59:55] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 09:59:55] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(931): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 09:59:55] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:00:22] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(931): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:00:22] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:00:22] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(931): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:00:22] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:01:27] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:01:27] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:01:27] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:01:27] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:02:41] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:02:41] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:02:41] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:02:41] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::age of type int" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:02:41] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:02:41] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::chores of type array" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:02:41] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:02:41] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:04:34] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:04:34] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:04:34] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(59): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('Sergey', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:04:34] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::age of type int" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:04:34] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:04:34] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::salary of type float" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:04:34] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:04:34] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::chores of type array" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:04:34] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(81): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('perhaps', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:04:34] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::married of type bool" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:04:34] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:04:34] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:07:06] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:07:06] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:07:06] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(59): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('Sergey', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:07:06] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::age of type int" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:07:06] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:07:06] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::salary of type float" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:07:06] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(73): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('must be high', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:07:06] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::gpa of type float" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:07:06] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:07:06] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::chores of type array" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:07:06] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(81): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('perhaps', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:07:06] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::married of type bool" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:07:06] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(95): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:07:06] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:11:57] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:11:57] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:11:57] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(59): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('Sergey', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:11:57] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::age of type int" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:11:57] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:11:57] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::salary of type float" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:11:58] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(73): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('must be high', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:11:58] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::gpa of type float" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:11:58] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:11:58] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::chores of type array" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:11:58] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(81): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('perhaps', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:11:58] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::married of type bool" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:11:58] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:11:58] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:13:39] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(66): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(333, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:13:39] laravel.ERROR: [0] "Cannot assign int to property Tests\Dtos\Dto::name of type string" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:13:39] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(59): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('Sergey', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:13:39] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::age of type int" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:13:39] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:13:39] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::salary of type float" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:13:39] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(73): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('must be high', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:13:39] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::gpa of type float" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:13:39] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(105): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(NULL, Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:13:39] laravel.ERROR: [0] "Cannot assign null to property Tests\Dtos\Dto::chores of type array" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:13:39] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(81): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType('perhaps', Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:13:39] laravel.ERROR: [0] "Cannot assign string to property Tests\Dtos\Dto::married of type bool" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  
+[2024-09-17 10:13:39] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [runtime] is not defined. at /var/www/html/vendor/illuminate/log/LogManager.php:200)
+[stacktrace]
+#0 /var/www/html/vendor/illuminate/log/LogManager.php(125): Illuminate\\Log\\LogManager->resolve('runtime', NULL)
+#1 /var/www/html/vendor/illuminate/log/LogManager.php(112): Illuminate\\Log\\LogManager->get('runtime')
+#2 /var/www/html/vendor/illuminate/log/LogManager.php(101): Illuminate\\Log\\LogManager->driver('runtime')
+#3 /var/www/html/vendor/illuminate/support/Facades/Facade.php(261): Illuminate\\Log\\LogManager->channel('runtime')
+#4 /var/www/html/src/Dtos/TypeConverter.php(92): Illuminate\\Support\\Facades\\Facade::__callStatic('channel', Array)
+#5 /var/www/html/src/Dtos/TraitDtos.php(49): Spotlibs\\PhpLib\\Dtos\\TypeConverter::assertType(Object(Tests\\Dtos\\Vehicle), Object(ReflectionClass), Object(ReflectionProperty))
+#6 /var/www/html/tests/Dtos/DtosTest.php(96): Tests\\Dtos\\Dto->__construct(Array)
+#7 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1617): Tests\\Dtos\\DtosTest->testConstructDto3()
+#8 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(1223): PHPUnit\\Framework\\TestCase->runTest()
+#9 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestResult.php(729): PHPUnit\\Framework\\TestCase->runBare()
+#10 /var/www/html/vendor/phpunit/phpunit/src/Framework/TestCase.php(973): PHPUnit\\Framework\\TestResult->run(Object(Tests\\Dtos\\DtosTest))
+#11 Standard input code(492): PHPUnit\\Framework\\TestCase->run(Object(PHPUnit\\Framework\\TestResult))
+#12 Standard input code(951): __phpunit_run_isolated_test()
+#13 {main}
+"} 
+[2024-09-17 10:13:39] laravel.ERROR: [0] "Cannot assign Tests\Dtos\Vehicle to property Tests\Dtos\Dto::company of type Tests\Dtos\Company" on line 50 of file /var/www/html/vendor/spotlibs/php-lib/src/Dtos/TraitDtos.php [requestID:]  

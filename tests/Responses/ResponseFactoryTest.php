@@ -45,4 +45,12 @@ final class StdResponseTest extends TestCase
         $this->assertEquals(StdException::INVALIDRULE_EXCEPTION, $responseBody['responseCode']);
         $this->assertEquals('Validasi tidak terpenuhi', $responseBody['responseDesc']);
     }
+    public function testFailureResponse3(): void
+    {
+        $r = StdResponse::error(StdException::create(StdException::PARAMETER_EXCEPTION, 'Parameter tidak sesuai', ['x' => 'y'], ['username' => 'can not be empty']));
+        $this->assertEquals(200, $r->getStatusCode());
+        $responseBody = json_decode($r->getContent(), true);
+        $this->assertEquals(StdException::PARAMETER_EXCEPTION, $responseBody['responseCode']);
+        $this->assertEquals('Parameter tidak sesuai', $responseBody['responseDesc']);
+    }
 }
