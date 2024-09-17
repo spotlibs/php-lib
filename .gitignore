@@ -3,3 +3,5 @@
 .phpunit.result.cache
 .env
 /.vscode
+report_coverage.xml
+/storage

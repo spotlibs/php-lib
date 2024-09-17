@@ -7,6 +7,7 @@
     <exclude name="PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore" />
 		<exclude name="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore" />
 		<exclude name="Generic.Files.LineEndings"/>
+    <exclude name="PEAR.WhiteSpace.ScopeIndent.IncorrectExact" />
   </rule>
   <rule ref="Generic.Files.LineLength">
     <properties>
@@ -22,4 +23,5 @@
   <exclude-pattern>resources</exclude-pattern>
   <exclude-pattern>database/</exclude-pattern>
   <exclude-pattern>storage/</exclude-pattern>
+  <exclude-pattern>bootstrap/</exclude-pattern>
 </ruleset>
