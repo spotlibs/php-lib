@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Dtos;
 
 use Carbon\Carbon;
-use Spotlibs\PhpLib\Dtos\TraitDtos;
 
 class Company
 {
