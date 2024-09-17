@@ -70,9 +70,7 @@ trait TraitDtos
                         break;
 
                     default:
-                        if ($value == null && $prop->getType()->allowsNull()) {
-                            break;
-                        } elseif (gettype($value) == 'object') {
+                        if (gettype($value) == 'object') {
                             $reflector2 = new \ReflectionClass($value);
                             if ($reflector2->getName() == $prop->getType()) {
                                 break;
