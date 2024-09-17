@@ -6,6 +6,7 @@ namespace Tests\Dtos;
 
 use Carbon\Carbon;
 use Spotlibs\PhpLib\Dtos\TraitDtos;
+use Tests\Dtos\Company;
 
 class Dto
 {
