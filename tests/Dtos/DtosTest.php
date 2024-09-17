@@ -6,8 +6,6 @@ namespace Tests\Dtos;
 
 use Carbon\Carbon;
 use Laravel\Lumen\Testing\TestCase;
-use Tests\Dtos\Company;
-use Tests\Dtos\Vehicle;
 
 class DtosTest extends TestCase
 {
