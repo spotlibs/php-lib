@@ -4,3 +4,4 @@
 .env
 /.vscode
 report_coverage.xml
+/storage
