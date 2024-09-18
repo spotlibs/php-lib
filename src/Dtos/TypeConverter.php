@@ -64,6 +64,10 @@ class TypeConverter
                     $message .= get_debug_type($value);
                     self::concatMessage($message, $reflector, $prop);
                     Log::channel('runtime')->error($message);
+                    if (get_debug_type($value) == 'Carbon\Carbon') {
+                        $value = $value->toDateString();
+                        break;
+                    }
                     $value = (string) $value;
                     break;
 

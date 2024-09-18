@@ -19,4 +19,5 @@ class Dto
     public ?string $referal;
     public Company $company;
     public Carbon $createdAt;
+    public string $dob;
 }

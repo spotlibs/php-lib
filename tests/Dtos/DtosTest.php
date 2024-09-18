@@ -91,7 +91,8 @@ class DtosTest extends TestCase
             'married' => 'perhaps',
             'referal' => 'Larry',
             'company' => $vehicle,
-            'createdAt' => "2024-09-17"
+            'createdAt' => "2024-09-17",
+            'dob' => Carbon::parse("1973-08-21")
         ];
         $dto = new Dto($data);
         $this->assertEquals('string', get_debug_type($dto->name));
@@ -101,5 +102,6 @@ class DtosTest extends TestCase
         $this->assertEquals('float', get_debug_type($dto->salary));
         $this->assertEquals('Carbon\Carbon', get_debug_type($dto->createdAt));
         $this->assertFalse($dto->married);
+        $this->assertEquals("1973-08-21", $dto->dob);
     }
 }
