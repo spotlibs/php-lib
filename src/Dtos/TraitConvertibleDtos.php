@@ -15,6 +15,9 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Dtos;
 
+use ReflectionClass;
+use Throwable;
+
 /**
  * TraitDtos
  *
@@ -24,7 +27,7 @@ namespace Spotlibs\PhpLib\Dtos;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-trait TraitDtos
+trait TraitConvertibleDtos
 {
     /**
      * Construct a DTO instance from associative array. Array key and value data type must comply DTO class property
@@ -35,7 +38,15 @@ trait TraitDtos
      */
     public function __construct(array $data = [])
     {
+        $reflector = new ReflectionClass(static::class);
         foreach ($data as $key => $value) {
+            try {
+                $prop = $reflector->getProperty($key);
+            } catch (Throwable) {
+                // array key is not one of constructed DTO's property name
+                continue;
+            }
+            $value = TypeConverter::assertType($value, $reflector, $prop);
             $this->{$key} = $value;
         }
     }
