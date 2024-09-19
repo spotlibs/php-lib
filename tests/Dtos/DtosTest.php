@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Dtos;
 
 use Carbon\Carbon;
+use Exception;
 use Laravel\Lumen\Testing\TestCase;
+use TypeError;
 
 class DtosTest extends TestCase
 {
@@ -31,7 +33,8 @@ class DtosTest extends TestCase
             'chores' => ['eat', 'sleep', 'coding'],
             'married' => true,
             'referal' => null,
-            'company' => $company
+            'company' => $company,
+            'createdAt' => Carbon::parse("2024-06-18")
         ];
         $dto = new Dto($data);
         $this->assertEquals('string', get_debug_type($dto->name));
@@ -43,6 +46,7 @@ class DtosTest extends TestCase
         $this->assertEquals('array', get_debug_type($arrDto));
         $jsonDto = $dto->toJson();
         $this->assertEquals('string', get_debug_type($jsonDto));
+        $this->assertEquals('2024-06-18 00:00:00', $arrDto['createdAt']);
     }
 
     /** @test */
@@ -91,7 +95,8 @@ class DtosTest extends TestCase
             'married' => 'perhaps',
             'referal' => 'Larry',
             'company' => $vehicle,
-            'createdAt' => "2024-09-17"
+            'createdAt' => "2024-09-17",
+            'dob' => Carbon::parse("1973-08-21")
         ];
         $dto = new Dto($data);
         $this->assertEquals('string', get_debug_type($dto->name));
@@ -101,5 +106,60 @@ class DtosTest extends TestCase
         $this->assertEquals('float', get_debug_type($dto->salary));
         $this->assertEquals('Carbon\Carbon', get_debug_type($dto->createdAt));
         $this->assertFalse($dto->married);
+        $this->assertEquals("1973-08-21 00:00:00", $dto->dob);
+    }
+
+    /** @test */
+    /** @runInSeparateProcess */
+    public function testConstructDto4()
+    {
+        $vehicle = new Vehicle("BMW", "matic", 2000);
+        $data = [
+            'name' => 'andrew',
+            'employeeId' => 1,
+            'isActive' => true,
+            'relatives' => ['robert', 'lana', 'garry'],
+            'vehicle' => $vehicle
+        ];
+        $dto = new Dto2($data);
+        $this->assertEquals('string', get_debug_type($dto->name));
+        $this->assertEquals($dto->name, 'andrew');
+        $arrDto = $dto->toArray();
+        $jsonDto = $dto->toJson();
+        $this->assertEquals('array', get_debug_type($arrDto));
+        $this->assertEquals('string', get_debug_type($jsonDto));
+    }
+
+    /** @test */
+    /** @runInSeparateProcess */
+    public function testConstructDto5()
+    {
+        $vehicle = new Vehicle("BMW", "matic", 2000);
+        $data = [
+            'name' => 'andrew',
+            'employeeId' => 1,
+            'isActive' => true,
+            'relatives' => ['robert', 'lana', 'garry'],
+            'vehicle' => $vehicle
+        ];
+        $dto = Dto2::create($data);
+        $this->assertEquals('string', get_debug_type($dto->name));
+        $this->assertEquals($dto->name, 'andrew');
+    }
+
+    /** @test */
+    /** @runInSeparateProcess */
+    public function testConstructDtoError()
+    {
+        $this->expectException(TypeError::class);
+        $vehicle = new Vehicle("BMW", "matic", 2000);
+        $data = [
+            'name' => 123,
+            'employeeId' => 1,
+            'isActive' => true,
+            'relatives' => ['robert', 'lana', 'garry'],
+            'vehicle' => $vehicle
+        ];
+        new Dto2($data);
     }
 }
