@@ -191,7 +191,7 @@ class RestClient extends Client
      * @param string $uri      URI to request
      * @param string $method   request method (POST, GET, etc)
      *
-     * @return void
+     * @return StdClass
      */
     public function call(mixed $jsonBody, string $base_uri, string $uri = '/', string $method = ''): StdClass
     {
