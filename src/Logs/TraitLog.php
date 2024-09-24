@@ -35,7 +35,7 @@ trait TraitLog
      *
      * @return void
      */
-    public function info($data)
+    public function info(array $data)
     {
         BaseLog::channel($this->channel)->info(json_encode($data));
     }

@@ -39,7 +39,7 @@ class Runtime
      *
      * @return void
      */
-    public function warning($data)
+    public function warning(array $data)
     {
         BaseLog::channel($this->channel)->warning(json_encode($data));
     }
@@ -51,7 +51,7 @@ class Runtime
      *
      * @return void
      */
-    public function error($data)
+    public function error(array $data)
     {
         BaseLog::channel($this->channel)->error(json_encode($data));
     }
