@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace Spotlibs\PhpLib\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Spotlibs\PhpLib\Services\Context;
