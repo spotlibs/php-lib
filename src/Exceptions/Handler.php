@@ -17,7 +17,7 @@ namespace Spotlibs\PhpLib\Exceptions;
 
 use Exception;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Support\Facades\Log;
+use Spotlibs\PhpLib\Logs\Log;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -28,6 +28,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Spotlibs\PhpLib\Exceptions\DataNotFoundException;
 use Spotlibs\PhpLib\Responses\StdResponse;
 use Throwable;
+use TypeError;
 
 /**
  * Class Handler
@@ -64,12 +65,16 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        // parent::report($exception);
+        $logData = [
+            'exception_code' => $exception->getCode(),
+            'message' => $exception->getMessage(),
+            'line' => $exception->getLine(),
+            'file' => $exception->getFile(),
+            'requestID' => app()->request->header('X-Request-ID') ?? null
+        ];
         if (!$exception instanceof ExceptionInterface && !$exception instanceof NotFoundHttpException && !$exception instanceof ValidationException) {
             if (!config('app.debug')) {
-                $message = '[' . $exception->getCode() . '] "' . $exception->getMessage() . '" on line ';
-                $message .= $exception->getLine() . ' of file ' . $exception->getFile() . ' [requestID:' . (app()->request->header('X-Request-ID') ?? null) . ']';
-                Log::channel('runtime')->error($message);
+                Log::runtime()->error($logData);
             } else {
                 parent::report($exception);
             }

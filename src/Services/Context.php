@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Services;
 
 /**
- * ContextService
+ * Context
  *
  * Standard validation static methods
  *
@@ -26,20 +26,24 @@ namespace Spotlibs\PhpLib\Services;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class ContextService
+class Context
 {
     protected $data = [];
 
     /**
      * Set new key value to context
      *
-     * @param string $key   context key
+     * @param string $key   context key. override on key:Spotlibs\PhpLib\Services\Metadata is prohibited
      * @param mixed  $value context value
      *
      * @return void
      */
     public function set(string $key, mixed $value)
     {
+        // Prevent context metadata override
+        if ($key == Metadata::class && isset($this->data[Metadata::class])) {
+            return;
+        }
         $this->data[$key] = $value;
     }
 

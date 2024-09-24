@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Libraries;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Response;
-use Spotlibs\PhpLib\Services\ContextService;
+use Spotlibs\PhpLib\Services\Context;
 use StdClass;
 
 /**
@@ -30,7 +30,6 @@ use StdClass;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-
 class RestClient extends Client
 {
     private array $header;
@@ -38,7 +37,7 @@ class RestClient extends Client
     private int $timeout;
     private bool $verify;
     private ?Response $response;
-    private ContextService $contextService;
+    private Context $contextService;
 
     /**
      * Create a new controller instance.
@@ -49,7 +48,7 @@ class RestClient extends Client
     {
         parent::__construct();
 
-        $this->contextService = app(ContextService::class);
+        $this->contextService = app(Context::class);
 
         $this->header = [];
         $this->method = $this->contextService->get('method') ?? 'POST';
