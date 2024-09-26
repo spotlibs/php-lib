@@ -25,6 +25,11 @@ $app = new Laravel\Lumen\Application(
 
 $app->withFacades();
 
+$app->singleton(
+    Illuminate\Contracts\Debug\ExceptionHandler::class,
+    Spotlibs\PhpLib\Exceptions\Handler::class
+);
+
 // $app->withEloquent();
 
 /*

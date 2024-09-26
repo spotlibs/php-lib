@@ -4,25 +4,25 @@
  * PHP version 8
  *
  * @category Library
- * @package  Libraries
+ * @package  Middlewares
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
- * @version  GIT: 0.3.0
+ * @version  GIT: 0.3.1
  * @link     https://github.com/spotlibs
  */
 
 declare(strict_types=1);
 
-namespace Spotlibs\PhpLib\Libraries;
+namespace App\Library;
 
+use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Response;
 use Spotlibs\PhpLib\Services\Context;
 use StdClass;
 
 /**
- * RestClient
+ * RestFileClient
  *
  * @category Library
  * @package  Libraries
@@ -30,7 +30,7 @@ use StdClass;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class RestClient extends Client
+class RestFileClient extends Client
 {
     private array $header;
     private string $method;
@@ -40,7 +40,7 @@ class RestClient extends Client
     private Context $contextService;
 
     /**
-     * Create a new RestClient instance.
+     * Create a new RestClientFile instance.
      *
      * @return self
      */
@@ -185,46 +185,66 @@ class RestClient extends Client
     /**
      * Perform http request to given url
      *
-     * @param mixed  $jsonBody request body in json format
-     * @param string $base_uri base URI to request
-     * @param string $uri      URI to request
-     * @param string $method   request method (POST, GET, etc)
+     * @param array|object $param    request body in json format
+     * @param string       $filename base URI to request
+     * @param string       $base_uri base URI to request
+     * @param string       $uri      URI to request
      *
      * @return StdClass
      */
-    public function call(mixed $jsonBody, string $base_uri, string $uri = '/', string $method = ''): StdClass
+    public function call(array|object $param, string $filename, string $base_uri, string $uri = '/'): self
     {
-        $client = new Client(['base_uri' => $base_uri, 'allow_redirects' => true, 'timeout' => $this->timeout, 'verify' => $this->verify, 'headers' => $this->header, 'json' => $jsonBody]);
-        $this->response = $client->request(!empty($method) ? strtoupper($method) : strtoupper($this->method), $uri);
-        $clientResponse = json_decode($this->response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
-        $clientResponse->responseDesc = trim(preg_replace('/Ln.\d+/i', '', isset($clientResponse->responseDesc) ? $clientResponse->responseDesc : ''));
-        return $clientResponse;
+        $param_data = is_object($param) ? (array) $param : $param;
+        $multiparts_array = [];
+        foreach ($param_data as $key => $value) {
+            $multiparts_array[] = array('name' => $key, 'contents' => $value);
+        }
+        array_push($multiparts_array, array('name' => 'file_upload', 'contents' => fopen($filename, 'r')));
+        $this->response = $this->post(
+            $base_uri . $uri,
+            [
+                'allow_redirects' => true,
+                'timeout' => $this->timeout,
+                'verify' => $this->verify,
+                'headers' => $this->header,
+                'multipart' => $multiparts_array
+            ]
+        );
+
+        return $this;
     }
 
     /**
-     * Perform asynchronous/non blocking http request to given url
+     * Get response
      *
-     * @param mixed  $jsonBody request body in json format
-     * @param string $base_uri base URI to request
-     * @param string $uri      URI to request
-     * @param string $method   request method (POST, GET, etc)
-     *
-     * @return PromiseInterface
-     */
-    public function callAsync(mixed $jsonBody, string $base_uri, string $uri = '/', string $method = ''): PromiseInterface
-    {
-        $client = new Client(['base_uri' => $base_uri, 'allow_redirects' => true, 'timeout' => $this->timeout, 'verify' => $this->verify, 'headers' => $this->header, 'json' => $jsonBody]);
-        $promise = $client->requestAsync(!empty($method) ? strtoupper($method) : strtoupper(string: $this->method), $uri);
-        return $promise;
-    }
-
-    /**
-     * Get response from RestClient
-     *
-     * @return \Illuminate\Http\Response
+     * @return \GuzzleHttp\Psr7\Response
      */
     public function getResponse(): Response
     {
         return $this->response;
+    }
+
+    /**
+     * Get response in standard class format
+     *
+     * @return \stdClass
+     */
+    public function getObjectResponse(): stdClass
+    {
+        $clientResponse = json_decode($this->response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
+        $clientResponse->responseDesc = trim(preg_replace('/Ln.\d+/i', '', $clientResponse->responseDesc));
+        return $clientResponse;
+    }
+
+    /**
+     * Get response in array format
+     *
+     * @return array
+     */
+    public function getArrayResponse(): array
+    {
+        $clientResponse = json_decode($this->response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        $clientResponse['responseDesc'] = trim(preg_replace('/Ln.\d+/i', '', $clientResponse['responseDesc']));
+        return $clientResponse;
     }
 }

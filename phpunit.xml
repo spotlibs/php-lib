@@ -17,6 +17,10 @@
             <directory>tests</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="APP_NAME" value="SPOTLIBS_MICROSERVICE"/>
+        <env name="APP_ENV" value="local"/>
+    </php>
 
     <coverage cacheDirectory=".phpunit.cache/code-coverage"
               processUncoveredFiles="true">
