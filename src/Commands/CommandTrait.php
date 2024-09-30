@@ -15,8 +15,6 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Commands;
 
-use Spotlibs\PhpLib\Services\Context;
-
 /**
  * Command
  *
