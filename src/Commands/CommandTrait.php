@@ -38,11 +38,6 @@ trait CommandTrait
      */
     final public function setTaskID(): void
     {
-        $context = app(Context::class);
-        if ($context->get('X-Request-ID')) {
-            $this->taskID = $context->get('X-Request-ID');
-            return;
-        }
         $this->taskID = uniqid() . '00000';
     }
 }
