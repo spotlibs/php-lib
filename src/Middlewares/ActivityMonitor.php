@@ -107,6 +107,7 @@ class ActivityMonitor
         $log->deviceID = $request->header('X-Device-ID') !== null ? $request->header('X-Device-ID') : null;
         $log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
         $log->requestBody = strlen(json_encode($request->all())) < 3000 ? $request->all() : null;
+        $this->logFileRequest($log, $request);
 
         // hashing secret information
         if (isset($log->requestBody['password'])) {
@@ -127,5 +128,35 @@ class ActivityMonitor
             ->setTimezone(new \DateTimeZone('Asia/Jakarta'))
             ->format(\DateTimeInterface::RFC3339_EXTENDED);
         Log::channel('activity')->info(json_encode($log));
+    }
+
+    /**
+     * Write request file details to log
+     *
+     * @param StdClass                 $log     pointer of log instance
+     * @param \Illuminate\Http\Request $request pointer of http request
+     *
+     * @return void
+     */
+    private function logFileRequest(StdClass &$log, &$request): void
+    {
+        foreach ($request->allFiles() as $key => $value) {
+            $log->requestBody[$key] = [];
+            if (is_array($files = $request->file($key))) {
+                foreach ($files as $file) {
+                    $log->requestBody[$key][] = [
+                        'filename' => $file->getClientOriginalName(),
+                        'mimetype' => $file->getMimeType(),
+                        'size' => $file->getSize()
+                    ];
+                }
+                continue;
+            }
+            $log->requestBody[$key][] = [
+                'filename' => $value->getClientOriginalName(),
+                'mimetype' => $value->getMimeType(),
+                'size' => $value->getSize()
+            ];
+        }
     }
 }
