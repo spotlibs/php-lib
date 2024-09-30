@@ -29,9 +29,18 @@ use Illuminate\Console\Command as BaseCommand;
  * @link     https://github.com/spotlibs
  */
 
-class Command extends BaseCommand
+abstract class Command extends BaseCommand implements CommandInterface
 {
-    use CommandTrait;
+    public string $taskID;
+    /**
+     * Obligatory function of set task ID
+     *
+     * @return void
+     */
+    final public function setTaskID(): void
+    {
+        $this->taskID = uniqid() . '00000';
+    }
 
     /**
      * Creating instance

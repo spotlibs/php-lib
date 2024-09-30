@@ -33,5 +33,5 @@ interface CommandInterface
      *
      * @return void
      */
-    abstract public function setTaskID(): void
+    public function setTaskID(): void;
 }
