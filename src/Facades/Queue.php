@@ -49,11 +49,9 @@ class Queue extends BaseQueue
             $meta = $context->get(Metadata::class);
             if (isset($meta->req_id)) {
                 $taskID = $meta->req_id;
-            } elseif ($context->get('taskID')) {
-                $taskID = self::generateTaskID();
             }
         }
-        $data = ['taskID' => $taskID];
+        $job->taskID = $taskID;
 
         return parent::pushOn($queue, $job, $data);
     }
