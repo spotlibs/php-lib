@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Commands;
 
 use Illuminate\Console\Command as BaseCommand;
+use Spotlibs\PhpLib\Services\Context;
 
 /**
  * CommandInterface
@@ -50,6 +51,8 @@ abstract class Command extends BaseCommand implements CommandInterface
     public function __construct()
     {
         parent::__construct();
+        $context = app(Context::class);
         $this->setTaskID();
+        $context->set('taskID', $this->taskID);
     }
 }
