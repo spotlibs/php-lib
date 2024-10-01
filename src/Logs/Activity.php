@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Logs;
 
+use Illuminate\Support\Facades\Log as BaseLog;
+
 /**
  * Activity
  *
@@ -26,7 +28,17 @@ namespace Spotlibs\PhpLib\Logs;
  */
 class Activity
 {
-    use TraitLog;
+    /**
+     * Logging with loglevel info
+     *
+     * @param array $data Log data in form of associative array
+     *
+     * @return void
+     */
+    public function info(array $data)
+    {
+        BaseLog::channel($this->channel)->info(json_encode($data));
+    }
 
     protected string $channel = 'activity';
 }
