@@ -17,6 +17,7 @@ namespace Spotlibs\PhpLib\Commands;
 
 use Illuminate\Console\Command as BaseCommand;
 use Spotlibs\PhpLib\Services\Context;
+use Spotlibs\PhpLib\Services\Metadata;
 
 /**
  * CommandInterface
@@ -53,6 +54,9 @@ abstract class Command extends BaseCommand implements CommandInterface
         parent::__construct();
         $context = app(Context::class);
         $this->setTaskID();
-        $context->set('taskID', $this->taskID);
+        $meta = $context->get(Metadata::class);
+        if ($meta instanceof Metadata) {
+            $meta->task_id = $this->taskID;
+        }
     }
 }

@@ -48,4 +48,5 @@ class Metadata
     public ?string $req_kode_region;
     public ?string $req_jenis_uker;
     public ?string $path_gateway;
+    public ?string $identifier;
 }

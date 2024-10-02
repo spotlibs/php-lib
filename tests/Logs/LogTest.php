@@ -6,6 +6,8 @@ namespace Tests\Logs;
 
 use Laravel\Lumen\Testing\TestCase;
 use Spotlibs\PhpLib\Logs\Log;
+use Spotlibs\PhpLib\Services\Context;
+use Spotlibs\PhpLib\Services\Metadata;
 
 class LogTest extends TestCase
 {
@@ -13,6 +15,16 @@ class LogTest extends TestCase
     {
         return require __DIR__.'/../../bootstrap/app.php';
     }
+
+    private function setContext(): void
+    {
+        $meta = new Metadata();
+        $meta->req_id = '123123';
+        $context = app(Context::class);
+        $context->set(Metadata::class, $meta);
+    }
+
+    private string $expected = '{"test":"let me know","TraceID":{"requestID":"","taskID":""},"identifier":""}';
 
     public function testCreateRuntimeErrorLog()
     {
@@ -25,7 +37,7 @@ class LogTest extends TestCase
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
         $this->assertEquals('ERROR', $logLevel);
-        $this->assertEquals(json_encode($mockData), $logMessage);
+        $this->assertEquals($this->expected, $logMessage);
     }
     public function testCreateRuntimeInfoLog()
     {
@@ -38,7 +50,7 @@ class LogTest extends TestCase
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
         $this->assertEquals('INFO', $logLevel);
-        $this->assertEquals(json_encode($mockData), $logMessage);
+        $this->assertEquals($this->expected, $logMessage);
     }
     public function testCreateRuntimeWarningLog()
     {
@@ -51,7 +63,7 @@ class LogTest extends TestCase
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
         $this->assertEquals('WARNING', $logLevel);
-        $this->assertEquals(json_encode($mockData), $logMessage);
+        $this->assertEquals($this->expected, $logMessage);
     }
     public function testCreateActivityInfoLog()
     {
@@ -64,7 +76,7 @@ class LogTest extends TestCase
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
         $this->assertEquals('INFO', $logLevel);
-        $this->assertEquals(json_encode($mockData), $logMessage);
+        $this->assertEquals($this->expected, $logMessage);
     }
     public function testCreateWorkerInfoLog()
     {
@@ -77,6 +89,6 @@ class LogTest extends TestCase
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
         $this->assertEquals('INFO', $logLevel);
-        $this->assertEquals(json_encode($mockData), $logMessage);
+        $this->assertEquals($this->expected, $logMessage);
     }
 }
