@@ -24,10 +24,11 @@ class LogTest extends TestCase
         $context->set(Metadata::class, $meta);
     }
 
-    private string $expected = '{"test":"let me know","TraceID":{"requestID":"","taskID":""},"identifier":""}';
+    private string $expected = '{"test":"let me know","TraceID":{"requestID":"123123","taskID":""},"identifier":""}';
 
     public function testCreateRuntimeErrorLog()
     {
+        $this->setContext();
         $mockData = ['test' => 'let me know'];
         Log::runtime()->error($mockData);
         $file = file("./storage/logs/runtime.log");
@@ -41,6 +42,7 @@ class LogTest extends TestCase
     }
     public function testCreateRuntimeInfoLog()
     {
+        $this->setContext();
         $mockData = ['test' => 'let me know'];
         Log::runtime()->info($mockData);
         $file = file("./storage/logs/runtime.log");
@@ -54,6 +56,7 @@ class LogTest extends TestCase
     }
     public function testCreateRuntimeWarningLog()
     {
+        $this->setContext();
         $mockData = ['test' => 'let me know'];
         Log::runtime()->warning($mockData);
         $file = file("./storage/logs/runtime.log");
@@ -67,6 +70,7 @@ class LogTest extends TestCase
     }
     public function testCreateActivityInfoLog()
     {
+        $this->setContext();
         $mockData = ['test' => 'let me know'];
         Log::activity()->info($mockData);
         $file = file("./storage/logs/activity.log");
@@ -80,6 +84,7 @@ class LogTest extends TestCase
     }
     public function testCreateWorkerInfoLog()
     {
+        $this->setContext();
         $mockData = ['test' => 'let me know'];
         Log::worker()->info($mockData);
         $file = file("./storage/logs/worker.log");

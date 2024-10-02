@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Middlewares;
 use Closure;
 use Spotlibs\PhpLib\Services\Metadata;
 use StdClass;
-use Illuminate\Support\Facades\Log;
+use Spotlibs\PhpLib\Logs\Log;
 use Spotlibs\PhpLib\Services\Context;
 
 /**
@@ -106,7 +106,7 @@ class ActivityMonitor
         $log->requestUser = $request->header('X-Request-User') !== null ? $request->header('X-Request-User') : null;
         $log->deviceID = $request->header('X-Device-ID') !== null ? $request->header('X-Device-ID') : null;
         $log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
-        $log->requestBody = strlen(json_encode($request->all())) < 3000 ? $request->all() : null;
+        $log->requestBody = strlen(json_encode($request->all())) > 5000 ? 'more than 5000 characters' : $request->all();
         $this->logFileRequest($log, $request);
         // hashing secret information
         if (isset($log->requestBody['password'])) {
@@ -114,7 +114,7 @@ class ActivityMonitor
         }
         $responseObjContent = json_decode($response->getContent());
         if (strlen($response->getContent()) > 5000 && isset($responseObjContent->responseData)) {
-            unset($responseObjContent->responseData);
+            $responseObjContent->responseData = 'more than 5000 characters';
         }
         $log->responseBody = $request->getPathInfo() !== '/docs' ? $responseObjContent : ['responseCode' => '00', 'responseDesc' => 'Sukses API Docs'];
         $log->responseTime = round((microtime(true) - $request->server('REQUEST_TIME_FLOAT')) * 1000);
@@ -126,7 +126,7 @@ class ActivityMonitor
         )
             ->setTimezone(new \DateTimeZone('Asia/Jakarta'))
             ->format(\DateTimeInterface::RFC3339_EXTENDED);
-        Log::channel('activity')->info(json_encode($log));
+        Log::activity()->info((array) $log);
     }
 
     /**
