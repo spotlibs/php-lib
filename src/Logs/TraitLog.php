@@ -67,9 +67,9 @@ trait TraitLog
         $data['identifier'] = '';
         if ($meta = $this->context->get(Metadata::class)) {
             if ($meta instanceof Metadata) {
-                if (!is_null($meta->req_id)) {
+                if (isset($meta->req_id)) {
                     $data['TraceID']['requestID'] = $meta->req_id;
-                } elseif (!is_null($meta->task_id)) {
+                } elseif (isset($meta->task_id)) {
                     $data['TraceID']['taskID'] = $meta->req_id;
                 }
             }
