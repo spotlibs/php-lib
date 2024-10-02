@@ -101,14 +101,12 @@ class ActivityMonitor
         $log->clientapp = $request->header('X-App') !== null ? $request->header('X-App') : null;
         $log->path = $request->getPathInfo();
         $log->path_alias = $request->header('X-Path-Gateway') !== null ? $request->header('X-Path-Gateway') : null;
-        $log->requestID = $request->header('X-Request-ID') !== null ? $request->header('X-Request-ID') : null;
         $log->requestFrom = $request->header('X-Request-From') !== null ? $request->header('X-Request-From') : null;
         $log->requestUser = $request->header('X-Request-User') !== null ? $request->header('X-Request-User') : null;
         $log->deviceID = $request->header('X-Device-ID') !== null ? $request->header('X-Device-ID') : null;
         $log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
         $log->requestBody = strlen(json_encode($request->all())) < 3000 ? $request->all() : null;
         $this->logFileRequest($log, $request);
-
         // hashing secret information
         if (isset($log->requestBody['password'])) {
             $log->requestBody['password'] = hash('sha256', $log->requestBody['password']);

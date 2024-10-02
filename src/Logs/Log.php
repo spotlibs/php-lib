@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Logs;
 
+use Spotlibs\PhpLib\Services\Context;
+
 /**
  * Log
  *
@@ -33,7 +35,8 @@ class Log
      */
     public static function activity(): Activity
     {
-        return new Activity();
+        $context = app(Context::class);
+        return new Activity(context: $context);
     }
 
     /**
@@ -43,7 +46,8 @@ class Log
      */
     public static function runtime(): Runtime
     {
-        return new Runtime();
+        $context = app(Context::class);
+        return new Runtime($context);
     }
 
     /**
@@ -53,6 +57,7 @@ class Log
      */
     public static function worker(): Worker
     {
-        return new Worker();
+        $context = app(Context::class);
+        return new Worker($context);
     }
 }

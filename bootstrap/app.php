@@ -95,5 +95,6 @@ $app->configure('logging');
 // ], function ($router) {
 //     require __DIR__ . '/../routes/api.php';
 // });
+$app->register(\Spotlibs\PhpLib\Providers\ContextServiceProvider::class);
 
 return $app;

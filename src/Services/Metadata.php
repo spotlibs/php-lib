@@ -38,6 +38,7 @@ class Metadata
     public ?string $app;
     public ?string $version_app;
     public ?string $req_id;
+    public ?string $task_id;
     public ?string $req_tags;
     public ?string $req_user;
     public ?string $req_nama;
