@@ -34,15 +34,6 @@ use Spotlibs\PhpLib\Services\Metadata;
 abstract class Command extends BaseCommand implements CommandInterface
 {
     public string $taskID;
-    /**
-     * Obligatory function of set task ID
-     *
-     * @return void
-     */
-    final public function setTaskID(): void
-    {
-        $this->taskID = uniqid() . '00000';
-    }
 
     /**
      * Creating instance
@@ -52,11 +43,8 @@ abstract class Command extends BaseCommand implements CommandInterface
     public function __construct()
     {
         parent::__construct();
+        $taskID = uniqid() . '00000';
         $context = app(Context::class);
-        $this->setTaskID();
-        $meta = $context->get(Metadata::class);
-        if ($meta instanceof Metadata) {
-            $meta->task_id = $this->taskID;
-        }
+        $context->set('taskID', $taskID);
     }
 }
