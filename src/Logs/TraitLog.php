@@ -65,12 +65,14 @@ trait TraitLog
     {
         $data['TraceID'] = ['requestID' => '', 'taskID' => ''];
         $data['identifier'] = '';
+        if ($taskID = $this->context->get('taskID')) {
+            $data['TraceID']['taskID'] = $taskID;
+            return;
+        }
         if ($meta = $this->context->get(Metadata::class)) {
             if ($meta instanceof Metadata) {
                 if (isset($meta->req_id)) {
                     $data['TraceID']['requestID'] = $meta->req_id;
-                } elseif (isset($meta->task_id)) {
-                    $data['TraceID']['taskID'] = $meta->task_id;
                 }
             }
         }
