@@ -43,8 +43,8 @@ abstract class Command extends BaseCommand
     public function __construct()
     {
         parent::__construct();
-        $taskID = uniqid() . '00000';
+        $this->taskID = uniqid() . '00000';
         $context = app(Context::class);
-        $context->set('taskID', $taskID);
+        $context->set('taskID', $this->taskID);
     }
 }
