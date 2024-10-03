@@ -44,14 +44,16 @@ class Queue extends BaseQueue
     public static function pushOn(string $queue, object|string $job, mixed $data = ''): mixed
     {
         $context = app(Context::class);
-        $taskID = '';
         if ($context) {
-            $meta = $context->get(Metadata::class);
-            if (isset($meta->req_id)) {
-                $taskID = $meta->req_id;
+            if ($taskID = $context->get('taskID')) {
+                $job->taskID = $taskID;
+            } else {
+                $meta = $context->get(Metadata::class);
+                if (isset($meta->req_id)) {
+                    $job->taskID = $meta->req_id;
+                }
             }
         }
-        $job->taskID = $taskID;
 
         return parent::pushOn($queue, $job, $data);
     }
