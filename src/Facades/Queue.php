@@ -47,24 +47,16 @@ class Queue extends BaseQueue
         if ($context) {
             if ($taskID = $context->get('taskID')) {
                 $job->taskID = $taskID;
+                $job->identifier = $context->get('identifier');
             } else {
                 $meta = $context->get(Metadata::class);
                 if (isset($meta->req_id)) {
                     $job->taskID = $meta->req_id;
+                    $job->identifier = $meta->identifier;
                 }
             }
         }
 
         return parent::pushOn($queue, $job, $data);
-    }
-
-    /**
-     * Generate new task ID
-     *
-     * @return string
-     */
-    private static function generateTaskID(): string
-    {
-        return uniqid() . '00000';
     }
 }

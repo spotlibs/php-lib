@@ -46,5 +46,6 @@ abstract class Command extends BaseCommand
         $this->taskID = uniqid() . '00000';
         $context = app(Context::class);
         $context->set('taskID', $this->taskID);
+        $context->set('identifier', $this->signature);
     }
 }
