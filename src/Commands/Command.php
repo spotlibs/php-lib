@@ -31,7 +31,7 @@ use Spotlibs\PhpLib\Services\Metadata;
  * @link     https://github.com/spotlibs
  */
 
-abstract class Command extends BaseCommand implements CommandInterface
+abstract class Command extends BaseCommand
 {
     public string $taskID;
 
