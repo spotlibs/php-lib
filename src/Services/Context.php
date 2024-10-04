@@ -44,10 +44,13 @@ class Context
     public function set(string $key, mixed $value)
     {
         // prevent replace metadata
-        if ($key == Metadata::class && isset($this->data[Metadata::class])) {
-            throw new Exception("you shall not pass");
-        } elseif (!$value instanceof Metadata) {
-            throw new TypeError("this key require value type of " . Metadata::class . ". " . get_debug_type($value) . " found.");
+        if ($key == Metadata::class) {
+            if (isset($this->data[Metadata::class])) {
+                return;
+            }
+            if (!($value instanceof Metadata)) {
+                throw new TypeError("this key require value type of " . Metadata::class . ". " . get_debug_type($value) . " found.");
+            }
         }
         $this->data[$key] = $value;
     }
