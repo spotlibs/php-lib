@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Middlewares;
 use Closure;
 use Spotlibs\PhpLib\Services\Metadata;
 use StdClass;
-use Illuminate\Support\Facades\Log;
+use Spotlibs\PhpLib\Logs\Log;
 use Spotlibs\PhpLib\Services\Context;
 
 /**
@@ -74,6 +74,7 @@ class ActivityMonitor
         $meta->request_from = $request->header('X-Request-From');
         $meta->user_agent = $request->header('User-Agent');
         $meta->version_app = $request->header('X-Version-App');
+        $meta->identifier = $request->server('REQUEST_URI');
         $this->contextService->set(Metadata::class, $meta);
 
         $this->contextService->set('method', $request->method());
@@ -101,20 +102,20 @@ class ActivityMonitor
         $log->clientapp = $request->header('X-App') !== null ? $request->header('X-App') : null;
         $log->path = $request->getPathInfo();
         $log->path_alias = $request->header('X-Path-Gateway') !== null ? $request->header('X-Path-Gateway') : null;
-        $log->requestID = $request->header('X-Request-ID') !== null ? $request->header('X-Request-ID') : null;
         $log->requestFrom = $request->header('X-Request-From') !== null ? $request->header('X-Request-From') : null;
         $log->requestUser = $request->header('X-Request-User') !== null ? $request->header('X-Request-User') : null;
         $log->deviceID = $request->header('X-Device-ID') !== null ? $request->header('X-Device-ID') : null;
+        $log->requestID = $request->header('X-Request-ID') !== null ? $request->header('X-Request-ID') : null;
         $log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
-        $log->requestBody = strlen(json_encode($request->all())) < 3000 ? $request->all() : null;
-
+        $log->requestBody = strlen(json_encode($request->all())) > 5000 ? 'more than 5000 characters' : $request->all();
+        $this->logFileRequest($log, $request);
         // hashing secret information
         if (isset($log->requestBody['password'])) {
             $log->requestBody['password'] = hash('sha256', $log->requestBody['password']);
         }
         $responseObjContent = json_decode($response->getContent());
         if (strlen($response->getContent()) > 5000 && isset($responseObjContent->responseData)) {
-            unset($responseObjContent->responseData);
+            $responseObjContent->responseData = 'more than 5000 characters';
         }
         $log->responseBody = $request->getPathInfo() !== '/docs' ? $responseObjContent : ['responseCode' => '00', 'responseDesc' => 'Sukses API Docs'];
         $log->responseTime = round((microtime(true) - $request->server('REQUEST_TIME_FLOAT')) * 1000);
@@ -126,6 +127,36 @@ class ActivityMonitor
         )
             ->setTimezone(new \DateTimeZone('Asia/Jakarta'))
             ->format(\DateTimeInterface::RFC3339_EXTENDED);
-        Log::channel('activity')->info(json_encode($log));
+        Log::activity()->info((array) $log);
+    }
+
+    /**
+     * Write request file details to log
+     *
+     * @param StdClass                 $log     pointer of log instance
+     * @param \Illuminate\Http\Request $request pointer of http request
+     *
+     * @return void
+     */
+    private function logFileRequest(StdClass &$log, &$request): void
+    {
+        foreach ($request->allFiles() as $key => $value) {
+            $log->requestBody[$key] = [];
+            if (is_array($files = $request->file($key))) {
+                foreach ($files as $file) {
+                    $log->requestBody[$key][] = [
+                        'filename' => $file->getClientOriginalName(),
+                        'mimetype' => $file->getMimeType(),
+                        'size' => $file->getSize()
+                    ];
+                }
+                continue;
+            }
+            $log->requestBody[$key][] = [
+                'filename' => $value->getClientOriginalName(),
+                'mimetype' => $value->getMimeType(),
+                'size' => $value->getSize()
+            ];
+        }
     }
 }

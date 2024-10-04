@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Validator as ValidatorFacade;
  * ValidationServiceProvider
  *
  * @category ServiceProvider
- * @package  Providers
+ * @package  ServiceProvider
  * @author   Hendri Nursyahbani <hendrinursyahbani@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs

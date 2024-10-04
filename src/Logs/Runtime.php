@@ -41,6 +41,7 @@ class Runtime
      */
     public function warning(array $data)
     {
+        $this->getEmbeddedInfo($data);
         BaseLog::channel($this->channel)->warning(json_encode($data));
     }
 
@@ -53,6 +54,7 @@ class Runtime
      */
     public function error(array $data)
     {
+        $this->getEmbeddedInfo($data);
         BaseLog::channel($this->channel)->error(json_encode($data));
     }
 }
