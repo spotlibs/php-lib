@@ -45,7 +45,9 @@ abstract class Command extends BaseCommand
         parent::__construct();
         $this->taskID = uniqid() . '00000';
         $context = app(Context::class);
-        $context->set('taskID', $this->taskID);
-        $context->set('identifier', $this->signature);
+        $meta = new Metadata();
+        $meta->task_id = $this->taskID;
+        $meta->identifier = $this->signature;
+        $context->set(Metadata::class, $meta);
     }
 }
