@@ -67,10 +67,10 @@ trait TraitLog
             if ($meta instanceof Metadata) {
                 if (isset($meta->req_id)) {
                     $data['traceID'] = $meta->req_id;
+                } elseif (isset($meta->task_id)) {
+                    $data['traceID'] = $meta->task_id;
                 }
-                if ($data['identifier'] == '') {
-                    $data['identifier'] = $meta->identifier;
-                }
+                $data['identifier'] = $meta->identifier;
             }
         }
     }
