@@ -47,7 +47,7 @@ class HeaderException extends Exception implements ExceptionInterface
      *
      * @return void
      */
-    public function __construct(?string $message, mixed $data = null)
+    public function __construct(?string $message = null, mixed $data = null)
     {
         $this->errorCode = StdException::HEADER_EXCEPTION;
         $this->errorMessage = $message ?? 'Header Request tidak valid';

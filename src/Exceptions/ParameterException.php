@@ -43,12 +43,13 @@ class ParameterException extends Exception implements ExceptionInterface
     /**
      * Create a new ParameterException instance.
      *
-     * @param string $message Message of Exception
-     * @param mixed  $data    Optional data when exception has response data
+     * @param string $message          Message of Exception
+     * @param mixed  $data             Optional data when exception has response data
+     * @param array  $validationErrors Optional data when exception has response data
      *
      * @return void
      */
-    public function __construct(?string $message, mixed $data = null, array $validationErrors = [])
+    public function __construct(?string $message = null, mixed $data = null, array $validationErrors = [])
     {
         $this->errorCode = StdException::PARAMETER_EXCEPTION;
         $this->errorMessage = $message ?? 'Parameter tidak sesuai';

@@ -15,6 +15,15 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Exceptions;
 
+/**
+ * Class TraitException
+ *
+ * @category Library
+ * @package  Exceptions
+ * @author   Nur Arif Prihutomo <ayip.eiger@gmail.com>
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/spotlibs
+ */
 trait TraitException
 {
     /**

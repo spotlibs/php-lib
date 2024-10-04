@@ -47,7 +47,7 @@ class ThirdPartyServiceException extends Exception implements ExceptionInterface
      *
      * @return void
      */
-    public function __construct(?string $message, mixed $data = null)
+    public function __construct(?string $message = null, mixed $data = null)
     {
         $this->errorCode = StdException::THIRDPARTY_EXCEPTION;
         $this->errorMessage = $message ?? 'Service ThirdParty bermasalah';

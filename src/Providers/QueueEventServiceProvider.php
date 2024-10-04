@@ -46,6 +46,7 @@ class QueueEventServiceProvider extends ServiceProvider
     {
         Queue::before(
             function (JobProcessing $event) {
+                app()->forgetInstance(Context::class);
                 $job = unserialize($event->job->payload()['data']['command']);
                 $context = app(Context::class);
                 $meta = new Metadata();
@@ -55,18 +56,18 @@ class QueueEventServiceProvider extends ServiceProvider
             }
         );
 
-        Queue::after(
-            function (JobProcessed $event) {
-                Log::runtime()->info(['message' => 'job is done, clearing context in app...']);
-                app()->forgetInstance(Context::class);
-            }
-        );
+        // Queue::after(
+        //     function (JobProcessed $event) {
+        //         Log::runtime()->info(['message' => 'job is done, clearing context in app...']);
+        //         app()->forgetInstance(Context::class);
+        //     }
+        // );
 
-        Queue::failing(
-            function (JobFailed $event) {
-                Log::runtime()->info(['message' => 'job is failing, still we should clearing context in app...']);
-                app()->forgetInstance(Context::class);
-            }
-        );
+        // Queue::failing(
+        //     function (JobFailed $event) {
+        //         Log::runtime()->info(['message' => 'job is failing, still we should clearing context in app...']);
+        //         app()->forgetInstance(Context::class);
+        //     }
+        // );
     }
 }
