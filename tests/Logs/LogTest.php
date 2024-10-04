@@ -20,11 +20,21 @@ class LogTest extends TestCase
     {
         $meta = new Metadata();
         $meta->req_id = '123123';
+        $meta->identifier = 'spotlibs-unittest';
         $context = app(Context::class);
         $context->set(Metadata::class, $meta);
     }
 
-    private string $expected = '{"test":"let me know","TraceID":{"requestID":"123123","taskID":""},"identifier":""}';
+    private function setContext2(): void
+    {
+        $meta = new Metadata();
+        $meta->task_id = '123123';
+        $meta->identifier = 'spotlibs-unittest';
+        $context = app(Context::class);
+        $context->set(Metadata::class, $meta);
+    }
+
+    private string $expected = '{"test":"let me know","traceID":"123123","identifier":"spotlibs-unittest"}';
 
     public function testCreateRuntimeErrorLog()
     {
@@ -42,7 +52,7 @@ class LogTest extends TestCase
     }
     public function testCreateRuntimeInfoLog()
     {
-        $this->setContext();
+        $this->setContext2();
         $mockData = ['test' => 'let me know'];
         Log::runtime()->info($mockData);
         $file = file("./storage/logs/runtime.log");
