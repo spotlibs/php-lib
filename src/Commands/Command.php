@@ -7,7 +7,7 @@
  * @package  Commands
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
- * @version  GIT: 0.3.2
+ * @version  GIT: 0.3.1
  * @link     https://github.com/spotlibs
  */
 

@@ -24,7 +24,7 @@ use Spotlibs\PhpLib\Services\Context;
  * Service provider for context
  *
  * @category StandardService
- * @package  Services
+ * @package  ServiceProvider
  * @author   Made Mas Adi Winata <m45adiwinata@gmail.com>
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
