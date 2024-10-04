@@ -160,4 +160,13 @@ final class StdExceptionTest extends TestCase
         $this->assertEquals(200, $e->getHttpCode());
         throw $e;
     }
+    public function testWaitingException2(): void
+    {
+        $this->expectException(WaitingException::class);
+        $e = new WaitingException();
+        $this->assertEquals(StdException::WAITING_EXCEPTION, $e->getErrorCode());
+        $this->assertEquals('Masih proses harap tunggu', $e->getErrorMessage());
+        $this->assertEquals(200, $e->getHttpCode());
+        throw $e;
+    }
 }
