@@ -63,16 +63,10 @@ trait TraitLog
      */
     private function getEmbeddedInfo(array &$data): void
     {
-        $data['TraceID'] = [];
-        $data['identifier'] = '';
-        if ($taskID = $this->context->get('taskID')) {
-            $data['TraceID']['taskID'] = $taskID;
-            $data['identifier'] = $this->context->get('identifier');
-        }
         if ($meta = $this->context->get(Metadata::class)) {
             if ($meta instanceof Metadata) {
                 if (isset($meta->req_id)) {
-                    $data['TraceID']['requestID'] = $meta->req_id;
+                    $data['traceID'] = $meta->req_id;
                 }
                 if ($data['identifier'] == '') {
                     $data['identifier'] = $meta->identifier;

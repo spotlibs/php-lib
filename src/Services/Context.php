@@ -40,10 +40,6 @@ class Context
      */
     public function set(string $key, mixed $value)
     {
-        // Prevent context metadata override
-        if ($key == Metadata::class && isset($this->data[Metadata::class])) {
-            return;
-        }
         $this->data[$key] = $value;
     }
 
