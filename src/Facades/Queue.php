@@ -45,15 +45,14 @@ class Queue extends BaseQueue
     {
         $context = app(Context::class);
         if ($context) {
-            if ($taskID = $context->get('taskID')) {
-                $job->taskID = $taskID;
-                $job->identifier = $context->get('identifier');
-            } else {
-                $meta = $context->get(Metadata::class);
+            $meta = $context->get(Metadata::class);
+            if ($meta instanceof Metadata) {
                 if (isset($meta->req_id)) {
                     $job->taskID = $meta->req_id;
-                    $job->identifier = $meta->identifier;
+                } elseif (isset($meta->task_id)) {
+                    $job->taskID = $meta->task_id;
                 }
+                $job->identifier = $meta->identifier;
             }
         }
 

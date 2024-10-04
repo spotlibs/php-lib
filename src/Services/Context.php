@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Services;
 
+use TypeError;
+
 /**
  * Context
  *
@@ -40,6 +42,10 @@ class Context
      */
     public function set(string $key, mixed $value)
     {
+        // validate data type for metadata key
+        if ($key == Metadata::class && !($value instanceof Metadata)) {
+            throw new TypeError("this key require value type of " . Metadata::class . ". " . get_debug_type($value) . " found.");
+        }
         $this->data[$key] = $value;
     }
 
