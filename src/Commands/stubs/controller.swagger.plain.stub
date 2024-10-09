@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace DummyNamespace;
 
 use App\Http\Controllers\Controller;
-use App\Usecases\DummyUsecase;
 
 class DummyClassController extends Controller
 {   
-    public function __construct(DummyUsecase $dummyUsecase)
+    public function __construct()
     {
         header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
     }
