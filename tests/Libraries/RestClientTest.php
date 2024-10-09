@@ -19,7 +19,7 @@ class RestClientTest extends TestCase
     {
         $startTime = time();
         $client = new RestClient();
-        $client->call(null, "https://reqres.in", "/api/users?delay=2", "GET");
+        $client->call(null, "https://dummyjson.com", "/test?delay=2000", "GET");
         $duration = time() - $startTime;
         $this->assertTrue($duration > 1); // more than 1 second
     }
@@ -28,8 +28,8 @@ class RestClientTest extends TestCase
     {
         $startTime = time();
         $client = new RestClient();
-        $client->callAsync(null, "https://reqres.in", "/api/users?delay=3", "GET");
-        $client->callAsync(null, "https://reqres.in", "/api/users?delay=5", "GET");
+        $client->callAsync(null, "https://dummyjson.com", "/test?delay=3000", "GET");
+        $client->callAsync(null, "https://dummyjson.com", "/test?delay=5000", "GET");
         $duration = time() - $startTime;
         $this->assertTrue($duration < 1); // less than 1 second
     }
@@ -38,8 +38,8 @@ class RestClientTest extends TestCase
     {
         $startTime = microtime(true);
         $client = new RestClient();
-        $promise = $client->callAsync(null, "https://reqres.in", "/api/users?delay=2", "GET");
-        $promise2 = $client->callAsync(null, "https://reqres.in", "/api/users?delay=2", "GET");
+        $promise = $client->callAsync(null, "https://dummyjson.com", "/test?delay=2000", "GET");
+        $promise2 = $client->callAsync(null, "https://dummyjson.com", "/test?delay=2000", "GET");
         $response = new Response();
         $promise->then(
             function(ResponseInterface $res) use (&$response) {
@@ -61,6 +61,5 @@ class RestClientTest extends TestCase
         $promise2->wait();
         $duration = microtime(true) - $startTime;
         $this->assertTrue($duration > 2);
-        $this->assertEquals("https://reqres.in/#support-heading", $response->support->url);
     }
 }

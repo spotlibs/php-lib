@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Logs;
 
-use Laravel\Lumen\Testing\TestCase;
+use Tests\TestCase;
 use Spotlibs\PhpLib\Logs\Log;
 use Spotlibs\PhpLib\Services\Context;
 use Spotlibs\PhpLib\Services\Metadata;
 
 class LogTest extends TestCase
 {
-    public function createApplication()
-    {
-        return require __DIR__.'/../../bootstrap/app.php';
-    }
-
     private function setContext(): void
     {
         $meta = new Metadata();
