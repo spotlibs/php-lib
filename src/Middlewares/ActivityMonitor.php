@@ -59,7 +59,7 @@ class ActivityMonitor
         $meta->app = $request->header('X-App');
         $meta->authorization = $request->header('Authorization');
         $meta->cache_control = $request->header('Cache-Control');
-        $meta->device_id = $request->header('X-Request-From');
+        $meta->device_id = $request->header('X-Device-ID');
         $meta->forwarded_for = $request->header('X-Forwarded-For');
         $meta->path_gateway = $request->header('X-Path-Gateway');
         $meta->req_id = $request->header('X-Request-ID');
