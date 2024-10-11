@@ -47,6 +47,8 @@ class Metadata
     public ?string $req_kode_main_uker;
     public ?string $req_kode_region;
     public ?string $req_jenis_uker;
+    public ?string $req_kode_uker;
+    public ?string $req_nama_uker;
     public ?string $path_gateway;
     public ?string $identifier;
 }
