@@ -63,6 +63,8 @@ class ActivityMonitor
         $meta->forwarded_for = $request->header('X-Forwarded-For');
         $meta->path_gateway = $request->header('X-Path-Gateway');
         $meta->req_id = $request->header('X-Request-ID');
+        $meta->req_kode_uker = $request->header('X-Request-Kode-Uker');
+        $meta->req_nama_uker = $request->header('X-Request-Nama-Uker');
         $meta->req_jenis_uker = $request->header('X-Request-Jenis-Uker');
         $meta->req_kode_jabatan = $request->header('X-Request-Kode-Jabatan');
         $meta->req_kode_main_uker = $request->header('X-Request-Kode-MainUker');
