@@ -108,8 +108,9 @@ class Introduction
 - Context
 
 Implement a context as an object containing several key:value from the begining to the end of request lifecycle. To use context, add this service provider to your bootstrap/app.php for Lumen or config/app.php for Laravel
-> $app->register(\Spotlibs\PhpLib\Providers\ContextServiceProvider::class);
-
+```php
+$app->register(\Spotlibs\PhpLib\Providers\ContextServiceProvider::class);
+```
 - Activity Middleware
 
 Request and response middleware to initiate context and writing activity log. To use this middleware, add this line to your app middleware setting
