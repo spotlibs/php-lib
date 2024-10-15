@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/spotlibs/php-lib/actions/workflows/php.yml/badge.svg)](https://github.com/spotlibs/php-lib/actions)
 [![Total Downloads](https://img.shields.io/packagist/dt/spotlibs/php-lib)](https://packagist.org/packages/spotlibs/php-lib)
-[![Latest Stable Version](https://img.shields.io/packagist/v/spotlibs/php-lib)](https://packagist.org/packages/laravel/lumen-framework)
+[![Latest Stable Version](https://img.shields.io/packagist/v/spotlibs/php-lib)](https://packagist.org/packages/spotlibs/php-lib)
 [![License](https://img.shields.io/packagist/l/spotlibs/php-lib)](https://packagist.org/packages/spotlibs/php-lib)
 
 ## Description
