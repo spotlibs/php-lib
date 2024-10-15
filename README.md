@@ -10,3 +10,35 @@ This library is used to support easier development of Spotlibs Microservice Proj
 
 This library provides rest client for communication between microservice.
 This library provides kafka client both producer and consumer with support avro serde.
+
+## Install
+
+    composer require spotlibs/php-lib
+
+## Usage
+- Exception
+```php
+<?php
+
+declare(strict_types=1);
+
+use Spotlibs\PhpLib\Exceptions\StdException;
+use Spotlibs\PhpLib\Exceptions\AccessException;
+
+class ExceptionUsage
+{
+    public function ThrowingException()
+    {
+        throw new AccessException('You shall not pass!');
+    }
+
+    // you can also throw any exception by static function of StdException
+    public function ThrowingStandardException()
+    {
+        throw StdException::create(
+            StdException::HEADER_EXCEPTION,
+            'Invalid headers to access this resource',
+        );
+    }
+}
+```
