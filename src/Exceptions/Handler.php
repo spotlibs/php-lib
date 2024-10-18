@@ -65,19 +65,14 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        $logData = [
-            'exception_code' => $exception->getCode(),
-            'message' => $exception->getMessage(),
-            'line' => $exception->getLine(),
-            'file' => $exception->getFile(),
-            'requestID' => app()->request->header('X-Request-ID') ?? null
-        ];
-        if (!$exception instanceof ExceptionInterface && !$exception instanceof NotFoundHttpException && !$exception instanceof ValidationException) {
-            if (!config('app.debug')) {
-                Log::runtime()->error($logData);
-            } else {
-                parent::report($exception);
-            }
+        if ((!$exception instanceof ExceptionInterface && !$exception instanceof NotFoundHttpException && !$exception instanceof ValidationException) || $exception instanceof RuntimeException) {
+            Log::runtime()->error(
+                [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage() . 'on line ' . $exception->getLine() . ' of file ' . $exception->getFile(),
+                    'requestID' => app()->request->header('X-Request-ID') ?? null
+                ]
+            );
         }
     }
 
