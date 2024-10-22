@@ -56,7 +56,7 @@ class StdException
      * @param mixed       $responseData     response data
      * @param array       $validationErrors additional validation error
      *
-     * @return void
+     * @return ExceptionInterface
      */
     public static function create(
         string $responseCode,
