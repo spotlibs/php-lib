@@ -29,9 +29,10 @@
         </include>
         <exclude>
             <file>src/Exceptions/Handler.php</file>
+            <file>src/Libraries/Kafka.php</file>
+            <file>src/Libraries/KafkaCallable.php</file>
             <directory suffix=".php">src/Commands</directory>
             <directory suffix=".php">src/Facades</directory>
-            <directory suffix=".php">src/Libraries</directory>
             <directory suffix=".php">src/Middlewares</directory>
             <directory suffix=".php">src/Providers</directory>
             <directory suffix=".php">src/Validations</directory>

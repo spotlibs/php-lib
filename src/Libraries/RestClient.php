@@ -18,6 +18,7 @@ namespace Spotlibs\PhpLib\Libraries;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Services\Context;
 use StdClass;
 
@@ -36,7 +37,7 @@ class RestClient extends Client
     private string $method;
     private int $timeout;
     private bool $verify;
-    private ?Response $response;
+    private ResponseInterface $response;
     private Context $contextService;
 
     /**
@@ -54,7 +55,6 @@ class RestClient extends Client
         $this->method = $this->contextService->get('method') ?? 'POST';
         $this->timeout = 10;
         $this->verify = false;
-        $this->response = null;
 
         if ($this->contextService->get('User-Agent') !== null) {
             $this->header['User-Agent'] = $this->contextService->get('User-Agent');

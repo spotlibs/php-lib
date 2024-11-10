@@ -13,16 +13,17 @@
 
 declare(strict_types=1);
 
-namespace App\Library;
+namespace Spotlibs\PhpLib\Libraries;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Spotlibs\PhpLib\Services\Context;
+use Psr\Http\Message\ResponseInterface;
 use StdClass;
 
 /**
- * RestFileClient
+ * RestClientFile
  *
  * @category Library
  * @package  Libraries
@@ -30,13 +31,13 @@ use StdClass;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class RestFileClient extends Client
+class RestClientFile extends Client
 {
     private array $header;
     private string $method;
     private int $timeout;
     private bool $verify;
-    private ?Response $response;
+    private ResponseInterface $response;
     private Context $contextService;
 
     /**
@@ -54,7 +55,6 @@ class RestFileClient extends Client
         $this->method = $this->contextService->get('method') ?? 'POST';
         $this->timeout = 10;
         $this->verify = false;
-        $this->response = null;
 
         if ($this->contextService->get('User-Agent') !== null) {
             $this->header['User-Agent'] = $this->contextService->get('User-Agent');
