@@ -15,12 +15,14 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Libraries;
 
+use Carbon\Exceptions\InvalidTypeException;
 use Exception;
 use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
+use Spotlibs\PhpLib\Libraries\ClientHelpers\Multipart;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -43,11 +45,34 @@ class Client extends BaseClient
      */
     public float $timeout = 10;
     /**
+     * Set to true to enable SSL certificate verification and use the default CA bundle provided by operating system
+     *
+     * @var bool $verify
+     */
+    public bool $verify = false;
+    /**
      * Request body, set according to the request
      *
      * @var array $body
      */
     protected array $body = [];
+    /**
+     * Request header if only headers are not set in the request. Will be appended on call method
+     *
+     * @var array $requestHeaders
+     */
+    protected array $requestHeaders = [];
+    /**
+     * Customize response header
+     *
+     * @var array $responseHeaders
+     */
+    protected array $responseHeaders = [];
+    /**
+     * Body type of the
+     *
+     * @var array $responseHeaders
+     */
     protected string $request_body_type = 'json';
 
     /**
@@ -70,6 +95,32 @@ class Client extends BaseClient
     public function setTimeout(int $timeout): self
     {
         $this->timeout = $timeout;
+        return $this;
+    }
+
+    /**
+     * Set verify
+     *
+     * @param bool $verify number of desired timeout
+     *
+     * @return self
+     */
+    public function setVerify(bool $verify): self
+    {
+        $this->verify = $verify;
+        return $this;
+    }
+
+    /**
+     * Set request body
+     *
+     * @param array $body number of desired timeout
+     *
+     * @return self
+     */
+    public function setRequestBody(array $body): self
+    {
+        $this->body = $body;
         return $this;
     }
 
@@ -97,6 +148,32 @@ class Client extends BaseClient
     }
 
     /**
+     * Set request headers in associative array
+     *
+     * @param array<string[]> $headers example: ['Content-Type' => ['application/json']]
+     *
+     * @return self
+     */
+    public function injectRequestHeader(array $headers): self
+    {
+        $this->responseHeaders = $headers;
+        return $this;
+    }
+
+    /**
+     * Set response headers in associative array
+     *
+     * @param array<string[]> $headers example: ['Content-Type' => ['application/json']]
+     *
+     * @return self
+     */
+    public function injectResponseHeader(array $headers): self
+    {
+        $this->responseHeaders = $headers;
+        return $this;
+    }
+
+    /**
      * Set the timeout for Http Client
      *
      * @param Request $request HTTP Request instance
@@ -105,22 +182,28 @@ class Client extends BaseClient
      */
     public function call(Request $request): ResponseInterface
     {
-        $body = $request->getBody()->getContents();
-        if (!empty($body)) {
-            if ($this->request_body_type == 'json') {
-                $arr_body = json_decode($body, true);
-                $this->body = [
-                    $this->request_body_type => $arr_body
-                ];
-            } else {
-                $this->body = [
-                    $this->request_body_type => $body
-                ];
+        $body = [];
+        if (!empty($this->body)) {
+            if ($this->request_body_type == RequestOptions::MULTIPART) {
+                foreach ($this->body as $b) {
+                    if (! $b instanceof Multipart) {
+                        throw new InvalidTypeException('Request body does not comply multipart form-data structure');
+                    }
+                }
             }
+            $body = [
+                $this->request_body_type => $this->body
+            ];
         }
         $options = ['timeout' => $this->timeout];
-        $options = array_merge($options, $this->body);
+        $options = array_merge($options, $body);
+        foreach ($this->requestHeaders as $key => $header) {
+            $request->withHeader($key, $header);
+        }
         $response = $this->send($request, $options);
+        foreach ($this->responseHeaders as $key => $header) {
+            $response->withHeader($key, $header);
+        }
         return $response;
     }
 }
