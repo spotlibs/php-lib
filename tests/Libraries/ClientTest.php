@@ -43,7 +43,7 @@ class ClientTest extends TestCase
             'https://dummyjson.com/test',
         );
         $client = new Client();
-        $response = $client->setTimeout(5, TimeoutUnit::$second_)
+        $response = $client->setTimeout(5)
             ->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512);
@@ -65,7 +65,7 @@ class ClientTest extends TestCase
             $json
         );
         $client = new Client();
-        $response = $client->setTimeout(1, TimeoutUnit::$second_)
+        $response = $client->setTimeout(5)
             ->setFormType('json')
             ->call($request);
         $contents = $response->getBody()->getContents();
@@ -91,7 +91,7 @@ class ClientTest extends TestCase
             $json
         );
         $client = new Client();
-        $client->setTimeout(1, TimeoutUnit::$second_)
+        $client->setTimeout(1)
             ->setFormType('video')
             ->call($request);
     }
@@ -103,7 +103,7 @@ class ClientTest extends TestCase
             'https://dummyjson.com/test',
         );
         $client = new Client();
-        $response = $client->setTimeout(1, TimeoutUnit::$second_)
+        $response = $client->setTimeout(1)
             ->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);

@@ -36,8 +36,17 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Client extends BaseClient
 {
-    protected float $timeout = 10;
-    protected int $timeout_unit = 1;
+    /**
+     * Timeout in seconds, default is 10 seconds
+     *
+     * @var float $timeout
+     */
+    public float $timeout = 10;
+    /**
+     * Request body, set according to the request
+     *
+     * @var array $body
+     */
     protected array $body = [];
     protected string $request_body_type = 'json';
 
@@ -55,13 +64,12 @@ class Client extends BaseClient
      * Set the timeout for Http Client
      *
      * @param int $timeout number of desired timeout
-     * @param int $unit    time unit like second, milisecond, nanosecond, etc. Use static var from TimeoutUnit for clearer name
      *
      * @return self
      */
-    public function setTimeout(int $timeout, float $unit = 1): self
+    public function setTimeout(int $timeout): self
     {
-        $this->timeout = $timeout * $unit;
+        $this->timeout = $timeout;
         return $this;
     }
 
@@ -99,9 +107,16 @@ class Client extends BaseClient
     {
         $body = $request->getBody()->getContents();
         if (!empty($body)) {
-            $this->body = [
-                $this->request_body_type => json_decode($body, true, 512, JSON_THROW_ON_ERROR)
-            ];
+            if ($this->request_body_type == 'json') {
+                $arr_body = json_decode($body, true);
+                $this->body = [
+                    $this->request_body_type => $arr_body
+                ];
+            } else {
+                $this->body = [
+                    $this->request_body_type => $body
+                ];
+            }
         }
         $options = ['timeout' => $this->timeout];
         $options = array_merge($options, $this->body);

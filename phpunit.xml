@@ -26,6 +26,7 @@
               processUncoveredFiles="true">
         <include>
             <directory suffix=".php">src</directory>
+            <file>src/Libraries/Client.php</file>
         </include>
         <exclude>
             <file>src/Exceptions/Handler.php</file>
