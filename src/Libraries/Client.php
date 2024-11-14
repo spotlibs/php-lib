@@ -235,6 +235,7 @@ class Client extends BaseClient
                     }
                     $this->body[$key] = $x->toArray();
                 }
+                array_push($this->body, $temp);
             }
             $body = [
                 $this->request_body_type => $this->body
