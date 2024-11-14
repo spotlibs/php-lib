@@ -14,4 +14,10 @@ class Dto2
     public bool $isActive;
     public array $relatives;
     public Vehicle $vehicle;
+    public Human $partner;
+    /**
+     * Summary of siblings
+     * @var Human[] $siblings
+     */
+    public array $siblings;
 }

@@ -162,4 +162,44 @@ class DtosTest extends TestCase
         ];
         new Dto2($data);
     }
+
+    /** @test */
+    /** @runInSeparateProcess */
+    public function testDtoNestedArray(): void
+    {
+        $data = [
+            'name' => 'Bruce',
+            'employeeId' => 1,
+            'isActive' => true,
+            'relatives' => ['robert', 'lana', 'garry'],
+            'partner' => [
+                'name' => 'Amanda',
+                'age' => 24,
+                'dob' => '2000-10-31',
+                'is_alive' => true,
+                'dog' => [
+                    'name' => 'Joshua',
+                    'age' => 3
+                ]
+            ],
+            'siblings' => [
+                [
+                    'name' => 'Jacob',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+                [
+                    'name' => 'Tony',
+                    'age' => 35,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+            ]
+        ];
+        $x = new Dto2($data);
+        $this->assertEquals('Amanda', $x->partner->name);
+        $this->assertEquals('Joshua', $x->partner->dog->name);
+        $this->assertEquals('Tony', $x->siblings[1]->name);
+    }
 }

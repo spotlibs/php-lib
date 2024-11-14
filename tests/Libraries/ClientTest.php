@@ -135,17 +135,17 @@ class ClientTest extends TestCase
             ->call($request);
     }
 
-    public function testCallLocalX(): void
-    {
-        $request = new Request(
-            'GET',
-            'localhost:8585',
-        );
-        $client = new Client();
-        $response = $client->call($request);
-        $contents = $response->getBody()->getContents();
-        print_r($contents);
-    }
+    // public function testCallLocalX(): void
+    // {
+    //     $request = new Request(
+    //         'GET',
+    //         'localhost:8585',
+    //     );
+    //     $client = new Client();
+    //     $response = $client->call($request);
+    //     $contents = $response->getBody()->getContents();
+    //     print_r($contents);
+    // }
     
     // public function testCallMultipartY(): void
     // {
