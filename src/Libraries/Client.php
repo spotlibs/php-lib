@@ -211,7 +211,7 @@ class Client extends BaseClient
                                  *
                                  * @var \Illuminate\Http\UploadedFile $v multipart
                                  */
-                                $y = new Multipart(['name' => $b->name, 'headers' => ['Content-Type' => $v->getMimeType()]]);
+                                $y = new Multipart(['name' => $b->name . '[]', 'headers' => ['Content-Type' => $v->getMimeType()]]);
                                 $y->contents = fopen($v->getRealPath(), 'r');
                                 array_push($temp, $y);
                             }
