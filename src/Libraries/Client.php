@@ -186,56 +186,62 @@ class Client extends BaseClient
         if (!empty($this->body)) {
             if ($this->request_body_type == RequestOptions::MULTIPART) {
                 $temp = [];
+                $key_of_contents = [];
                 foreach ($this->body as $key => $b) {
                     if (! $b instanceof Multipart) {
                         throw new InvalidTypeException('Request body does not comply multipart form-data structure');
                     }
                     if (is_array($b->contents)) {
+                        $key_of_contents[] = $key;
                         /**
                          * Check if contents is array of files
                          *
                          * @var array $b->contents
                          */
                         if (isset($b->contents[0]) && $b->contents[0] instanceof \Illuminate\Http\UploadedFile) {
-                            foreach ($b->contents as $v) {
+                            $z = $b->contents;
+                            /**
+                             * Array $b->contents
+                             *
+                             * @var \Illuminate\Http\UploadedFile[] $z
+                             */
+                            foreach ($z as $v) {
                                 /**
                                  * Multipart
                                  *
-                                 * @var Multipart $v multipart
+                                 * @var \Illuminate\Http\UploadedFile $v multipart
                                  */
-                                if ($v->contents instanceof \Illuminate\Http\UploadedFile) {
-                                    $z = $v->contents;
-                                    /**
-                                     * Uploaded file
-                                     *
-                                     * @var \Illuminate\Http\UploadedFile $z uploaded file
-                                     */
-                                    $v->contents = fopen($z->getRealPath(), 'r');
-                                }
-                                $y = $b;
-                                $y->contents = $v;
-                                $temp[] = $y;
+                                $y = new Multipart(['name' => $b->name, 'headers' => ['Content-Type' => $v->getMimeType()]]);
+                                $y->contents = fopen($v->getRealPath(), 'r');
+                                array_push($temp, $y);
                             }
                         }
-                    }
-                    $x = $this->body[$key];
-                    /**
-                     * Multipart
-                     *
-                     * @var Multipart $x multipart
-                     */
-                    if ($x->contents instanceof \Illuminate\Http\UploadedFile) {
-                        $z = $x->contents;
+                    } else {
+                        $x = $this->body[$key];
                         /**
-                         * Uploaded file
+                         * Multipart
                          *
-                         * @var \Illuminate\Http\UploadedFile $z uploaded file
+                         * @var Multipart $x multipart
                          */
-                        $x->contents = fopen($z->getRealPath(), 'r');
+                        if ($x->contents instanceof \Illuminate\Http\UploadedFile) {
+                            $z = $x->contents;
+                            /**
+                             * Uploaded file
+                             *
+                             * @var \Illuminate\Http\UploadedFile $z uploaded file
+                             */
+                            $x->contents = fopen($z->getRealPath(), 'r');
+                        }
+                        $this->body[$key] = $x->toArray();
                     }
-                    $this->body[$key] = $x->toArray();
                 }
-                array_push($this->body, $temp);
+                if (count($temp) > 0) {
+                    foreach ($key_of_contents as $key) {
+                        unset($this->body[$key]);
+                    }
+                    $this->body = array_values($this->body);
+                    $this->body = array_merge($this->body, $temp);
+                }
             }
             $body = [
                 $this->request_body_type => $this->body
