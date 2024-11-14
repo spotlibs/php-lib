@@ -185,10 +185,55 @@ class Client extends BaseClient
         $body = [];
         if (!empty($this->body)) {
             if ($this->request_body_type == RequestOptions::MULTIPART) {
-                foreach ($this->body as $b) {
+                $temp = [];
+                foreach ($this->body as $key => $b) {
                     if (! $b instanceof Multipart) {
                         throw new InvalidTypeException('Request body does not comply multipart form-data structure');
                     }
+                    if (is_array($b->contents)) {
+                        /**
+                         * Check if contents is array of files
+                         *
+                         * @var array $b->contents
+                         */
+                        if (isset($b->contents[0]) && $b->contents[0] instanceof \Illuminate\Http\UploadedFile) {
+                            foreach ($b->contents as $v) {
+                                /**
+                                 * Multipart
+                                 *
+                                 * @var Multipart $v multipart
+                                 */
+                                if ($v->contents instanceof \Illuminate\Http\UploadedFile) {
+                                    $z = $v->contents;
+                                    /**
+                                     * Uploaded file
+                                     *
+                                     * @var \Illuminate\Http\UploadedFile $z uploaded file
+                                     */
+                                    $v->contents = fopen($z->getRealPath(), 'r');
+                                }
+                                $y = $b;
+                                $y->contents = $v;
+                                $temp[] = $y;
+                            }
+                        }
+                    }
+                    $x = $this->body[$key];
+                    /**
+                     * Multipart
+                     *
+                     * @var Multipart $x multipart
+                     */
+                    if ($x->contents instanceof \Illuminate\Http\UploadedFile) {
+                        $z = $x->contents;
+                        /**
+                         * Uploaded file
+                         *
+                         * @var \Illuminate\Http\UploadedFile $z uploaded file
+                         */
+                        $x->contents = fopen($z->getRealPath(), 'r');
+                    }
+                    $this->body[$key] = $x->toArray();
                 }
             }
             $body = [
