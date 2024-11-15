@@ -213,7 +213,7 @@ class Client extends BaseClient
                                  */
                                 $y = new Multipart(['name' => $b->name . '[]', 'headers' => ['Content-Type' => $v->getMimeType()]]);
                                 $y->contents = fopen($v->getRealPath(), 'r');
-                                array_push($temp, $y);
+                                array_push($temp, $y->toArray());
                             }
                         }
                     } else {
