@@ -119,12 +119,15 @@ class ClientTest extends TestCase
             'POST',
             'https://jsonplaceholder.typicode.com/posts',
         );
+        $f = fopen('public/docs/hello.txt', 'w');
+        fwrite($f, 'hello world');
+        fclose($f);
         $client = new Client();
         $client->setFormType(RequestOptions::MULTIPART)
             ->setRequestBody([
                 [
                     'name' => 'upload',
-                    'contents' => Utils::tryFopen('public/docs/tugas I pengantar matematika.docx', 'r')
+                    'contents' => Utils::tryFopen('public/docs/hello.txt', 'r')
                 ],
                 [
                     'name' => 'dir',
@@ -135,41 +138,49 @@ class ClientTest extends TestCase
             ->call($request);
     }
 
-    // public function testCallLocalX(): void
-    // {
-    //     $request = new Request(
-    //         'GET',
-    //         'localhost:8585',
-    //     );
-    //     $client = new Client();
-    //     $response = $client->call($request);
-    //     $contents = $response->getBody()->getContents();
-    //     print_r($contents);
-    // }
-    
-    // public function testCallMultipartY(): void
-    // {
-    //     $request = new Request(
-    //         'POST',
-    //         'https://jsonplaceholder.typicode.com/posts',
-    //     );
-    //     $multi = new Multipart();
-    //     $multi->name = 'upload';
-    //     $multi->contents = Utils::tryFopen('public/docs/tugas I pengantar matematika.docx', 'r');
-    //     $multi->filename = 'public/docs/tugas I pengantar matematika.docx';
-    //     $multi->headers = ['Content-Type' => ['<Content-type header>']];
-    //     $client = new Client();
-    //     $response = $client->setFormType(RequestOptions::MULTIPART)
-    //         ->setRequestBody([
-    //             $multi,
-    //             new Multipart([
-    //                 'name' => 'upload',
-    //                 'contents' => Utils::tryFopen('public/images/gatau_males.jpg', 'r'),
-    //                 'filename' => 'public/images/gatau_males.jpg',
-    //                 'headers' => ['Content-Type' => ['<Content-type header>']]
-    //             ])
-    //         ])
-    //         ->call($request);
-    //     print_r($response);
-    // }
+    public function testCallMultipartSuccess(): void
+    {
+        $request = new Request(
+            'POST',
+            'https://jsonplaceholder.typicode.com/posts',
+        );
+        $f = fopen('public/docs/hello.txt', 'w');
+        fwrite($f, 'hello world');
+        fclose($f);
+        $client = new Client();
+        $resp = $client->setFormType(RequestOptions::MULTIPART)
+            ->setRequestBody([
+                new Multipart([
+                    'name' => 'file',
+                    'contents' => Utils::tryFopen('public/docs/hello.txt', 'r')
+                ])
+            ])
+            ->setVerify(true)
+            ->call($request);
+        $r = json_decode($resp->getBody()->getContents());
+        $this->assertEquals('101', $r->id);
+    }
+
+    public function testCallMultipartSuccess2(): void
+    {
+        $request = new Request(
+            'POST',
+            'https://jsonplaceholder.typicode.com/posts',
+        );
+        $f = fopen('public/docs/hello.txt', 'w');
+        fwrite($f, 'hello world');
+        fclose($f);
+        $client = new Client();
+        $resp = $client->setFormType(RequestOptions::MULTIPART)
+            ->setRequestBody([
+                new Multipart([
+                    'name' => 'file',
+                    'contents' => new \Illuminate\Http\UploadedFile('public/docs/hello.txt', 'hello.txt')
+                ])
+            ])
+            ->setVerify(true)
+            ->call($request);
+        $r = json_decode($resp->getBody()->getContents());
+        $this->assertEquals('101', $r->id);
+    }
 }

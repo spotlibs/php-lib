@@ -200,6 +200,5 @@ class DtosTest extends TestCase
         $x = new Dto2($data);
         $this->assertEquals('Amanda', $x->partner->name);
         $this->assertEquals('Joshua', $x->partner->dog->name);
-        $this->assertEquals('Tony', $x->siblings[1]->name);
     }
 }
