@@ -92,7 +92,7 @@ class Client extends BaseClient
      *
      * @return self
      */
-    public function setTimeout(int $timeout): self
+    public function setTimeout(float $timeout): self
     {
         $this->timeout = $timeout;
         return $this;
