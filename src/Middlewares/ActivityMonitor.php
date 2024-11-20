@@ -84,6 +84,8 @@ class ActivityMonitor
         $this->contextService->set('Content-Type', $request->header('Content-Type'));
         $this->contextService->set('Accept', $request->header('Accept'));
         $this->contextService->set('Accept-Encoding', $request->header('Accept-Encoding'));
+
+        $this->log->requestBody = strlen(json_encode($request->all())) > 5000 ? 'more than 5000 characters' : $request->all();
         $this->logFileRequest($request);
 
         return $next($request);
@@ -110,7 +112,6 @@ class ActivityMonitor
         $this->log->deviceID = $request->header('X-Device-ID') !== null ? $request->header('X-Device-ID') : null;
         $this->log->requestID = $request->header('X-Request-ID') !== null ? $request->header('X-Request-ID') : null;
         $this->log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
-        $this->log->requestBody = strlen(json_encode($request->all())) > 5000 ? 'more than 5000 characters' : $request->all();
         // hashing secret information
         if (isset($this->log->requestBody['password'])) {
             $this->log->requestBody['password'] = hash('sha256', $this->log->requestBody['password']);
