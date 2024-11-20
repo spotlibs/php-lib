@@ -43,6 +43,7 @@ class ActivityMonitor
     public function __construct(Context $contextService)
     {
         $this->contextService = $contextService;
+        $this->log = new StdClass();
     }
 
     /**
