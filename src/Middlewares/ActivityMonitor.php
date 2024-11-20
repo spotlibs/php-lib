@@ -33,6 +33,7 @@ use Spotlibs\PhpLib\Services\Context;
 class ActivityMonitor
 {
     private Context $contextService;
+    private array $fileData = [];
 
     /**
      * Create instance of ServiceActivity
@@ -84,6 +85,9 @@ class ActivityMonitor
         $this->contextService->set('Accept', $request->header('Accept'));
         $this->contextService->set('Accept-Encoding', $request->header('Accept-Encoding'));
 
+        $this->logFileRequest($request);
+        $this->contextService->set('fileData', $this->fileData);
+
         return $next($request);
     }
 
@@ -97,6 +101,7 @@ class ActivityMonitor
      */
     public function terminate($request, $response)
     {
+        $fileData = (array) $this->contextService->get('fileData');
         $log = new StdClass();
         $log->app_name = getenv('APP_NAME');
         $log->host = getenv('HTTP_HOST');
@@ -110,7 +115,9 @@ class ActivityMonitor
         $log->requestID = $request->header('X-Request-ID') !== null ? $request->header('X-Request-ID') : null;
         $log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
         $log->requestBody = strlen(json_encode($request->all())) > 5000 ? 'more than 5000 characters' : $request->all();
-        $this->logFileRequest($log, $request);
+        if (count($fileData) > 0) {
+            $log->requestBody = array_merge($log->requestBody, $fileData);
+        }
         // hashing secret information
         if (isset($log->requestBody['password'])) {
             $log->requestBody['password'] = hash('sha256', $log->requestBody['password']);
@@ -135,18 +142,17 @@ class ActivityMonitor
     /**
      * Write request file details to log
      *
-     * @param StdClass                 $log     pointer of log instance
      * @param \Illuminate\Http\Request $request pointer of http request
      *
      * @return void
      */
-    private function logFileRequest(StdClass &$log, &$request): void
+    private function logFileRequest(&$request): void
     {
         foreach ($request->allFiles() as $key => $value) {
-            $log->requestBody[$key] = [];
+            $this->fileData[$key] = [];
             if (is_array($files = $request->file($key))) {
                 foreach ($files as $file) {
-                    $log->requestBody[$key][] = [
+                    $this->fileData[$key][] = [
                         'filename' => $file->getClientOriginalName(),
                         'mimetype' => $file->getMimeType(),
                         'size' => $file->getSize()
@@ -154,7 +160,7 @@ class ActivityMonitor
                 }
                 continue;
             }
-            $log->requestBody[$key][] = [
+            $this->fileData[$key][] = [
                 'filename' => $value->getClientOriginalName(),
                 'mimetype' => $value->getMimeType(),
                 'size' => $value->getSize()

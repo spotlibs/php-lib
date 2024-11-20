@@ -26,6 +26,7 @@ use Spotlibs\PhpLib\Exceptions\UnsupportedException;
 use Spotlibs\PhpLib\Exceptions\WaitingException;
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
 use PHPUnit\Framework\TestCase;
+use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 
 final class StdExceptionTest extends TestCase
 {
@@ -38,6 +39,7 @@ final class StdExceptionTest extends TestCase
             null,
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::ACCESS_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Akses tidak diijinkan', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
@@ -52,6 +54,7 @@ final class StdExceptionTest extends TestCase
             null,
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::NOTFOUND_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Data tidak ditemukan', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
@@ -66,6 +69,7 @@ final class StdExceptionTest extends TestCase
             null,
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::HEADER_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Header Request tidak valid', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
@@ -80,6 +84,7 @@ final class StdExceptionTest extends TestCase
             null,
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::INVALIDRULE_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Validasi tidak terpenuhi', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
@@ -95,6 +100,7 @@ final class StdExceptionTest extends TestCase
             ['x' => 'y'],
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::PARAMETER_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Parameter tidak sesuai', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
@@ -112,6 +118,7 @@ final class StdExceptionTest extends TestCase
             null,
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::RUNTIME_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Runtime error happens', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
@@ -126,6 +133,7 @@ final class StdExceptionTest extends TestCase
             'google not responding',
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::THIRDPARTY_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('google not responding', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
@@ -140,6 +148,7 @@ final class StdExceptionTest extends TestCase
             null,
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::UNSUPPORTED_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Tidak disupport', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());
@@ -154,6 +163,7 @@ final class StdExceptionTest extends TestCase
             null,
             ['x' => 'y']
         );
+        /** @var ExceptionInterface $e */
         $this->assertEquals(StdException::WAITING_EXCEPTION, $e->getErrorCode());
         $this->assertEquals('Masih proses harap tunggu', $e->getErrorMessage());
         $this->assertEquals(['x' => 'y'], $e->getData());

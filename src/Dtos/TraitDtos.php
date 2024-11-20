@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Dtos;
 
+use ReflectionClass;
+
 /**
  * TraitDtos
  *
@@ -35,7 +37,16 @@ trait TraitDtos
      */
     public function __construct(array $data = [])
     {
+        $reflector = new ReflectionClass(static::class);
         foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $prop = $reflector->getProperty($key);
+                $type = $prop->getType()->getName();
+                //construct object if type is not array
+                if ($type != 'array') {
+                    $value = new $type($value);
+                }
+            }
             $this->{$key} = $value;
         }
     }
