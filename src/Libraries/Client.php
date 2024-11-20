@@ -156,7 +156,7 @@ class Client extends BaseClient
      */
     public function injectRequestHeader(array $headers): self
     {
-        $this->responseHeaders = $headers;
+        $this->requestHeaders = $headers;
         return $this;
     }
 

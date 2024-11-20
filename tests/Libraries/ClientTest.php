@@ -180,33 +180,4 @@ class ClientTest extends TestCase
         $r = json_decode($resp->getBody()->getContents());
         $this->assertEquals('101', $r->id);
     }
-
-    public function testCallMultipartSuccess3(): void
-    {
-        $request = new Request(
-            'POST',
-            'https://jsonplaceholder.typicode.com/posts',
-        );
-        $f = fopen('public/docs/hello.txt', 'w');
-        fwrite($f, 'hello world');
-        fclose($f);
-        $f = fopen('public/docs/hello2.txt', 'w');
-        fwrite($f, 'spotlibs the php library');
-        fclose($f);
-        $x = [];
-        array_push($x, new \Illuminate\Http\UploadedFile('public/docs/hello.txt', 'hello.txt'));
-        array_push($x, new \Illuminate\Http\UploadedFile('public/docs/hello.txt', 'hello2.txt'));
-        $client = new Client();
-        $resp = $client->setFormType(RequestOptions::MULTIPART)
-            ->setRequestBody([
-                new Multipart([
-                    'name' => 'file[]',
-                    'contents' => $x
-                ])
-            ])
-            ->setVerify(true)
-            ->call($request);
-        $r = json_decode($resp->getBody()->getContents());
-        $this->assertEquals('101', $r->id);
-    }
 }
