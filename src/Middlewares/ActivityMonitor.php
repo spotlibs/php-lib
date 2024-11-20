@@ -33,6 +33,7 @@ use Spotlibs\PhpLib\Services\Context;
 class ActivityMonitor
 {
     private Context $contextService;
+    private StdClass $log;
 
     /**
      * Create instance of ServiceActivity
@@ -83,6 +84,7 @@ class ActivityMonitor
         $this->contextService->set('Content-Type', $request->header('Content-Type'));
         $this->contextService->set('Accept', $request->header('Accept'));
         $this->contextService->set('Accept-Encoding', $request->header('Accept-Encoding'));
+        $this->logFileRequest($request);
 
         return $next($request);
     }
@@ -97,56 +99,53 @@ class ActivityMonitor
      */
     public function terminate($request, $response)
     {
-        $log = new StdClass();
-        $log->app_name = getenv('APP_NAME');
-        $log->host = getenv('HTTP_HOST');
-        $log->clientip = $request->header('X-Forwarded-For') !== null ? $request->header('X-Forwarded-For') : $request->ip();
-        $log->clientapp = $request->header('X-App') !== null ? $request->header('X-App') : null;
-        $log->path = $request->getPathInfo();
-        $log->path_alias = $request->header('X-Path-Gateway') !== null ? $request->header('X-Path-Gateway') : null;
-        $log->requestFrom = $request->header('X-Request-From') !== null ? $request->header('X-Request-From') : null;
-        $log->requestUser = $request->header('X-Request-User') !== null ? $request->header('X-Request-User') : null;
-        $log->deviceID = $request->header('X-Device-ID') !== null ? $request->header('X-Device-ID') : null;
-        $log->requestID = $request->header('X-Request-ID') !== null ? $request->header('X-Request-ID') : null;
-        $log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
-        $log->requestBody = strlen(json_encode($request->all())) > 5000 ? 'more than 5000 characters' : $request->all();
-        $this->logFileRequest($log, $request);
+        $this->log->app_name = getenv('APP_NAME');
+        $this->log->host = getenv('HTTP_HOST');
+        $this->log->clientip = $request->header('X-Forwarded-For') !== null ? $request->header('X-Forwarded-For') : $request->ip();
+        $this->log->clientapp = $request->header('X-App') !== null ? $request->header('X-App') : null;
+        $this->log->path = $request->getPathInfo();
+        $this->log->path_alias = $request->header('X-Path-Gateway') !== null ? $request->header('X-Path-Gateway') : null;
+        $this->log->requestFrom = $request->header('X-Request-From') !== null ? $request->header('X-Request-From') : null;
+        $this->log->requestUser = $request->header('X-Request-User') !== null ? $request->header('X-Request-User') : null;
+        $this->log->deviceID = $request->header('X-Device-ID') !== null ? $request->header('X-Device-ID') : null;
+        $this->log->requestID = $request->header('X-Request-ID') !== null ? $request->header('X-Request-ID') : null;
+        $this->log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
+        $this->log->requestBody = strlen(json_encode($request->all())) > 5000 ? 'more than 5000 characters' : $request->all();
         // hashing secret information
-        if (isset($log->requestBody['password'])) {
-            $log->requestBody['password'] = hash('sha256', $log->requestBody['password']);
+        if (isset($this->log->requestBody['password'])) {
+            $this->log->requestBody['password'] = hash('sha256', $this->log->requestBody['password']);
         }
         $responseObjContent = json_decode($response->getContent());
         if (strlen($response->getContent()) > 5000 && isset($responseObjContent->responseData)) {
             $responseObjContent->responseData = 'more than 5000 characters';
         }
-        $log->responseBody = $request->getPathInfo() !== '/docs' ? $responseObjContent : ['responseCode' => '00', 'responseDesc' => 'Sukses API Docs'];
-        $log->responseTime = round((microtime(true) - $request->server('REQUEST_TIME_FLOAT')) * 1000);
-        $log->httpCode = $response->status();
-        $log->memoryUsage = memory_get_usage();
-        $log->requestAt = \DateTime::createFromFormat(
+        $this->log->responseBody = $request->getPathInfo() !== '/docs' ? $responseObjContent : ['responseCode' => '00', 'responseDesc' => 'Sukses API Docs'];
+        $this->log->responseTime = round((microtime(true) - $request->server('REQUEST_TIME_FLOAT')) * 1000);
+        $this->log->httpCode = $response->status();
+        $this->log->memoryUsage = memory_get_usage();
+        $this->log->requestAt = \DateTime::createFromFormat(
             'U.u',
             number_format((float) $request->server('REQUEST_TIME_FLOAT'), 6, '.', '')
         )
             ->setTimezone(new \DateTimeZone('Asia/Jakarta'))
             ->format(\DateTimeInterface::RFC3339_EXTENDED);
-        Log::activity()->info((array) $log);
+        Log::activity()->info((array) $this->log);
     }
 
     /**
      * Write request file details to log
      *
-     * @param StdClass                 $log     pointer of log instance
      * @param \Illuminate\Http\Request $request pointer of http request
      *
      * @return void
      */
-    private function logFileRequest(StdClass &$log, &$request): void
+    private function logFileRequest(&$request): void
     {
         foreach ($request->allFiles() as $key => $value) {
-            $log->requestBody[$key] = [];
+            $this->log->requestBody[$key] = [];
             if (is_array($files = $request->file($key))) {
                 foreach ($files as $file) {
-                    $log->requestBody[$key][] = [
+                    $this->log->requestBody[$key][] = [
                         'filename' => $file->getClientOriginalName(),
                         'mimetype' => $file->getMimeType(),
                         'size' => $file->getSize()
@@ -154,7 +153,7 @@ class ActivityMonitor
                 }
                 continue;
             }
-            $log->requestBody[$key][] = [
+            $this->log->requestBody[$key][] = [
                 'filename' => $value->getClientOriginalName(),
                 'mimetype' => $value->getMimeType(),
                 'size' => $value->getSize()
