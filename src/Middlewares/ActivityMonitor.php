@@ -115,7 +115,7 @@ class ActivityMonitor
         $log->requestID = $request->header('X-Request-ID') !== null ? $request->header('X-Request-ID') : null;
         $log->requestTags = $request->header('X-Request-Tags') !== null ? $request->header('X-Request-Tags') : null;
         $log->requestBody = strlen(json_encode($request->all())) > 5000 ? 'more than 5000 characters' : $request->all();
-        if (count($fileData) > 0) {
+        if (count($fileData) > 0 && $log->requestBody != 'more than 5000 characters') {
             $log->requestBody = array_merge($log->requestBody, $fileData);
         }
         // hashing secret information
