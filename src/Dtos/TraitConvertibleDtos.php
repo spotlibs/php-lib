@@ -40,14 +40,16 @@ trait TraitConvertibleDtos
     {
         $reflector = new ReflectionClass(static::class);
         foreach ($data as $key => $value) {
-            try {
-                $prop = $reflector->getProperty($key);
-            } catch (Throwable) {
-                // array key is not one of constructed DTO's property name
-                continue;
+            if (property_exists($this, $key)) {
+                try {
+                    $prop = $reflector->getProperty($key);
+                } catch (Throwable) {
+                    // array key is not one of constructed DTO's property name
+                    continue;
+                }
+                $value = TypeConverter::assertType($value, $reflector, $prop);
+                $this->{$key} = $value;
             }
-            $value = TypeConverter::assertType($value, $reflector, $prop);
-            $this->{$key} = $value;
         }
     }
 

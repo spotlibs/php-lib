@@ -171,6 +171,7 @@ class DtosTest extends TestCase
             'name' => 'Bruce',
             'employeeId' => 1,
             'isActive' => true,
+            'friend' => 'Yuri',
             'relatives' => ['robert', 'lana', 'garry'],
             'partner' => [
                 'name' => 'Amanda',
