@@ -88,7 +88,7 @@ class Client extends BaseClient
     /**
      * Set the timeout for Http Client
      *
-     * @param int $timeout number of desired timeout
+     * @param float $timeout number of desired timeout
      *
      * @return self
      */
