@@ -39,15 +39,17 @@ trait TraitDtos
     {
         $reflector = new ReflectionClass(static::class);
         foreach ($data as $key => $value) {
-            if (is_array($value)) {
-                $prop = $reflector->getProperty($key);
-                $type = $prop->getType()->getName();
-                //construct object if type is not array
-                if ($type != 'array') {
-                    $value = new $type($value);
+            if (property_exists($this, $key)) {
+                if (is_array($value)) {
+                    $prop = $reflector->getProperty($key);
+                    $type = $prop->getType()->getName();
+                    //construct object if type is not array
+                    if ($type != 'array') {
+                        $value = new $type($value);
+                    }
                 }
+                $this->{$key} = $value;
             }
-            $this->{$key} = $value;
         }
     }
 
