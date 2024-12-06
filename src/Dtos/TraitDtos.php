@@ -46,6 +46,10 @@ trait TraitDtos
                     //construct object if type is not array
                     if ($type != 'array') {
                         $value = new $type($value);
+                    } else {
+                        if (array_key_exists($key, $this->arrayOfObjectMap)) {
+                            $value = $this->createArrayOfObject($this->arrayOfObjectMap[$key], $value);
+                        }
                     }
                 }
                 $this->{$key} = $value;
@@ -82,9 +86,27 @@ trait TraitDtos
      *
      * @return bool|string
      */
-    public function toJson()
+    public function toJson(): bool|string
     {
         $data = $this->toArray();
         return json_encode($data);
+    }
+
+    /**
+     * Map array of objects
+     *
+     * @param string $className map of ClassName => property_name
+     * @param array  $data      map of ClassName => property_name
+     *
+     * @return array
+     */
+    private function createArrayOfObject(string $className, array $data): array
+    {
+        $result = [];
+        foreach ($data as $d) {
+            array_push($result, new $className($d));
+        }
+
+        return $result;
     }
 }

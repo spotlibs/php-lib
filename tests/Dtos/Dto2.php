@@ -20,4 +20,8 @@ class Dto2
      * @var Human[] $siblings
      */
     public array $siblings;
+    
+    protected array $arrayOfObjectMap = [
+        'siblings' => Human::class
+    ];
 }
