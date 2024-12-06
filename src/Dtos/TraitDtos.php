@@ -37,6 +37,9 @@ trait TraitDtos
      */
     public function __construct(array $data = [])
     {
+        if (!isset($this->arrayOfObjectMap)) {
+            $this->arrayOfObjectMap = [];
+        }
         $reflector = new ReflectionClass(static::class);
         foreach ($data as $key => $value) {
             if (property_exists($this, $key)) {
