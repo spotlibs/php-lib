@@ -78,7 +78,9 @@ trait TraitDtos
      */
     public function toArray(): array
     {
-        return (array) $this;
+        $data = json_encode($this);
+
+        return json_decode($data, true);
     }
 
     /**
@@ -88,8 +90,7 @@ trait TraitDtos
      */
     public function toJson(): bool|string
     {
-        $data = $this->toArray();
-        return json_encode($data);
+        return json_encode($this);
     }
 
     /**
