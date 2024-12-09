@@ -217,4 +217,46 @@ class DtosTest extends TestCase
         $x = new Dto3($data);
         $this->assertEquals('Johan', $x->name);
     }
+
+    /** @test */
+    /** @runInSeparateProcess */
+    public function testDtoWithAliases(): void
+    {
+        $vehicle = new Vehicle("BMW", "matic", 2000);
+        $data = [
+            'nama' => 'Johan',
+            'employeeId' => 1234,
+            'is_active' => true,
+            'friend' => 'Yuri',
+            'relatives' => ['robert', 'lana', 'garry'],
+            'kendaraan' => $vehicle,
+            'partner' => [
+                'name' => 'Amanda',
+                'age' => 24,
+                'dob' => '2000-10-31',
+                'is_alive' => true,
+                'dog' => [
+                    'name' => 'Joshua',
+                    'age' => 3
+                ]
+            ],
+            'Saudara' => [
+                [
+                    'name' => 'Jacob',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+                [
+                    'name' => 'Tony',
+                    'age' => 35,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+            ]
+        ];
+        $x = new Dto4($data);
+        $this->assertEquals('Johan', $x->name);
+        $this->assertEquals('Tony', $x->siblings[1]->name);
+    }
 }

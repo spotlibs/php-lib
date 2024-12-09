@@ -40,22 +40,41 @@ trait TraitDtos
         if (!isset($this->arrayOfObjectMap)) {
             $this->arrayOfObjectMap = [];
         }
+        if (!isset($this->aliases)) {
+            $this->aliases = [];
+        }
         $reflector = new ReflectionClass(static::class);
         foreach ($data as $key => $value) {
+            $temp_key = array_search($key, $this->aliases, true);
+            $key = is_string($temp_key) ? $temp_key : $key;
             if (property_exists($this, $key)) {
                 if (is_array($value)) {
-                    $prop = $reflector->getProperty($key);
-                    $type = $prop->getType()->getName();
-                    //construct object if type is not array
-                    if ($type != 'array') {
-                        $value = new $type($value);
-                    } else {
-                        if (array_key_exists($key, $this->arrayOfObjectMap)) {
-                            $value = $this->createArrayOfObject($this->arrayOfObjectMap[$key], $value);
-                        }
-                    }
+                    $this->convertArray($reflector, $key, $value);
                 }
                 $this->{$key} = $value;
+            }
+        }
+    }
+
+    /**
+     * Convert if value is array
+     *
+     * @param ReflectionClass $reflector type reflection helper
+     * @param string          $key       class property
+     * @param array           $value     array value
+     *
+     * @return void
+     */
+    private function convertArray(ReflectionClass &$reflector, string $key, array &$value)
+    {
+        $prop = $reflector->getProperty($key);
+        $type = $prop->getType()->getName();
+        //construct object if type is not array
+        if ($type != 'array') {
+            $value = new $type($value);
+        } else {
+            if (array_key_exists($key, $this->arrayOfObjectMap)) {
+                $value = $this->createArrayOfObject($this->arrayOfObjectMap[$key], $value);
             }
         }
     }
