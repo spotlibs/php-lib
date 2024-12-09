@@ -36,4 +36,6 @@ class Multipart
     public mixed $contents;
     public array $headers;
     public string $filename;
+    private array $arrayOfObjectMap = [];
+    protected array $aliases = [];
 }

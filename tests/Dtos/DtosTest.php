@@ -256,7 +256,9 @@ class DtosTest extends TestCase
             ]
         ];
         $x = new Dto4($data);
+        $y = $x->toArray();
         $this->assertEquals('Johan', $x->name);
         $this->assertEquals('Tony', $x->siblings[1]->name);
+        $this->assertIsArray($y['partner']['dog']);
     }
 }

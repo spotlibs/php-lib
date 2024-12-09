@@ -100,9 +100,35 @@ trait TraitDtos
      */
     public function toArray(): array
     {
-        $data = json_encode($this);
+        $data = $this->recursiveToArray(get_object_vars($this));
 
-        return json_decode($data, true);
+        return $data;
+    }
+
+    /**
+     * Recursively convert instance to associative array
+     *
+     * @param array $x array to convert
+     *
+     * @return array
+     */
+    public function recursiveToArray(array $x): array
+    {
+        $result = [];
+        foreach ($x as $key => $value) {
+            if (is_array($value)) {
+                $result[$key] = $this->recursiveToArray($value);
+            } elseif (is_object($value)) {
+                if (method_exists($value, 'recursiveToArray')) {
+                    $result[$key] = $value->recursiveToArray((array) $value);
+                    continue;
+                }
+                $result[$key] = get_object_vars($value);
+            } else {
+                $result[$key] = $value;
+            }
+        }
+        return $result;
     }
 
     /**
