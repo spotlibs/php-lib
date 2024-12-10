@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Dtos;
 use Spotlibs\PhpLib\Dtos\TraitDtos;
 
-class Dto2
+class Dto4
 {
     use TraitDtos;
 
@@ -23,5 +23,12 @@ class Dto2
     
     protected array $arrayOfObjectMap = [
         'siblings' => Human::class
+    ];
+
+    protected array $aliases = [
+        'name' => 'nama',
+        'isActive' => 'is_active',
+        'vehicle' => 'kendaraan',
+        'siblings' => 'Saudara'
     ];
 }

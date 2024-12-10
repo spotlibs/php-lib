@@ -37,18 +37,44 @@ trait TraitDtos
      */
     public function __construct(array $data = [])
     {
+        if (!isset($this->arrayOfObjectMap)) {
+            $this->arrayOfObjectMap = [];
+        }
+        if (!isset($this->aliases)) {
+            $this->aliases = [];
+        }
         $reflector = new ReflectionClass(static::class);
         foreach ($data as $key => $value) {
+            $temp_key = array_search($key, $this->aliases, true);
+            $key = is_string($temp_key) ? $temp_key : $key;
             if (property_exists($this, $key)) {
                 if (is_array($value)) {
-                    $prop = $reflector->getProperty($key);
-                    $type = $prop->getType()->getName();
-                    //construct object if type is not array
-                    if ($type != 'array') {
-                        $value = new $type($value);
-                    }
+                    $this->convertArray($reflector, $key, $value);
                 }
                 $this->{$key} = $value;
+            }
+        }
+    }
+
+    /**
+     * Convert if value is array
+     *
+     * @param ReflectionClass $reflector type reflection helper
+     * @param string          $key       class property
+     * @param array           $value     array value
+     *
+     * @return void
+     */
+    private function convertArray(ReflectionClass &$reflector, string $key, array &$value)
+    {
+        $prop = $reflector->getProperty($key);
+        $type = $prop->getType()->getName();
+        //construct object if type is not array
+        if ($type != 'array') {
+            $value = new $type($value);
+        } else {
+            if (array_key_exists($key, $this->arrayOfObjectMap)) {
+                $value = $this->createArrayOfObject($this->arrayOfObjectMap[$key], $value);
             }
         }
     }
@@ -74,7 +100,35 @@ trait TraitDtos
      */
     public function toArray(): array
     {
-        return (array) $this;
+        $data = $this->recursiveToArray(get_object_vars($this));
+
+        return $data;
+    }
+
+    /**
+     * Recursively convert instance to associative array
+     *
+     * @param array $x array to convert
+     *
+     * @return array
+     */
+    public function recursiveToArray(array $x): array
+    {
+        $result = [];
+        foreach ($x as $key => $value) {
+            if (is_array($value)) {
+                $result[$key] = $this->recursiveToArray($value);
+            } elseif (is_object($value)) {
+                if (method_exists($value, 'recursiveToArray')) {
+                    $result[$key] = $value->recursiveToArray((array) $value);
+                    continue;
+                }
+                $result[$key] = get_object_vars($value);
+            } else {
+                $result[$key] = $value;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -82,9 +136,26 @@ trait TraitDtos
      *
      * @return bool|string
      */
-    public function toJson()
+    public function toJson(): bool|string
     {
-        $data = $this->toArray();
-        return json_encode($data);
+        return json_encode($this);
+    }
+
+    /**
+     * Map array of objects
+     *
+     * @param string $className map of ClassName => property_name
+     * @param array  $data      map of ClassName => property_name
+     *
+     * @return array
+     */
+    private function createArrayOfObject(string $className, array $data): array
+    {
+        $result = [];
+        foreach ($data as $d) {
+            array_push($result, new $className($d));
+        }
+
+        return $result;
     }
 }
