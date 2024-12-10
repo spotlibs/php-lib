@@ -31,4 +31,19 @@ use Spotlibs\PhpLib\Dtos\TraitDtos;
 class DummyClass
 {
     use TraitDtos;
+
+    /**
+     * Define which properties as array of Dtos
+     *
+     * @var array
+     */
+    protected array $arrayOfObjectMap = [];
+
+    /**
+     * Define which array keys to be recognized as property in Dtos.
+     * This will override the default property assignment in Dtos that no longer lookup by match property to array key insted match alias to array key
+     *
+     * @var array
+     */
+    protected array $aliases = [];
 }

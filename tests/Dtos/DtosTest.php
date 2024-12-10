@@ -240,6 +240,14 @@ class DtosTest extends TestCase
                     'age' => 3
                 ]
             ],
+            'siblings' => [
+                [
+                    'name' => 'Johannes',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ]
+            ],
             'Saudara' => [
                 [
                     'name' => 'Jacob',
@@ -260,5 +268,7 @@ class DtosTest extends TestCase
         $this->assertEquals('Johan', $x->name);
         $this->assertEquals('Tony', $x->siblings[1]->name);
         $this->assertIsArray($y['partner']['dog']);
+        $this->assertEquals('Joshua', $y['partner']['dog']['name']);
+        $this->assertEquals('Jacob', $x->siblings[0]->name);
     }
 }
