@@ -182,4 +182,25 @@ class ClientTest extends TestCase
         $r = json_decode($resp->getBody()->getContents());
         $this->assertEquals('101', $r->id);
     }
+
+    public function testCallXWwwUrlEncoded(): void
+    {
+        $request = new Request(
+            'POST',
+            'https://jsonplaceholder.typicode.com/posts',
+            [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
+            http_build_query([
+                "status" => "ok",
+                "message" => "welcome"
+            ])
+        );
+        $client = new Client();
+        $resp = $client
+            ->setVerify(true)
+            ->call($request);
+        $r = json_decode($resp->getBody()->getContents());
+        $this->assertEquals('101', $r->id);
+    }
 }
