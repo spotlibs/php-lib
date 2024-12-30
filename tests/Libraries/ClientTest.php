@@ -7,6 +7,7 @@ namespace Tests\Libraries;
 use Carbon\Exceptions\InvalidTypeException;
 use Exception;
 use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Psr7\Utils;
@@ -137,21 +138,22 @@ class ClientTest extends TestCase
 
     public function testCallMultipartSuccess(): void
     {
-        $request = new Request(
-            'POST',
-            'https://jsonplaceholder.typicode.com/posts',
-        );
         $f = fopen('public/docs/hello.txt', 'w');
         fwrite($f, 'hello world');
         fclose($f);
-        $client = new Client();
-        $resp = $client->setFormType(RequestOptions::MULTIPART)
-            ->setRequestBody([
-                new Multipart([
+        $request = new Request(
+            'POST',
+            'https://jsonplaceholder.typicode.com/posts',
+            [],
+            new MultipartStream([
+                [
                     'name' => 'file',
-                    'contents' => Utils::tryFopen('public/docs/hello.txt', 'r')
-                ])
+                    'contents' => fopen('public/docs/hello.txt', 'r')
+                ]
             ])
+        );
+        $client = new Client();
+        $resp = $client
             ->setVerify(true)
             ->call($request);
         $r = json_decode($resp->getBody()->getContents());
