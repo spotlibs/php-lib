@@ -112,42 +112,6 @@ class Client extends BaseClient
     }
 
     /**
-     * Set request body
-     *
-     * @param array $body number of desired timeout
-     *
-     * @return self
-     */
-    public function setRequestBody(array $body): self
-    {
-        $this->body = $body;
-        return $this;
-    }
-
-    /**
-     * Set request body in associative array
-     *
-     * @param string $form_type RequestOptions::FORM_PARAMS|JSON|MULTIPART|QUERY|...
-     *
-     * @return self
-     */
-    public function setFormType(string $form_type): self
-    {
-        $allowed = [
-            RequestOptions::FORM_PARAMS,
-            RequestOptions::JSON,
-            RequestOptions::MULTIPART,
-            RequestOptions::QUERY,
-            RequestOptions::BODY
-        ];
-        if (!in_array($form_type, $allowed)) {
-            throw new Exception('form type not allowed. supporting ' . implode(", ", $allowed));
-        }
-        $this->request_body_type = $form_type;
-        return $this;
-    }
-
-    /**
      * Set request headers in associative array
      *
      * @param array<string[]> $headers example: ['Content-Type' => ['application/json']]
@@ -182,15 +146,7 @@ class Client extends BaseClient
      */
     public function call(Request $request): ResponseInterface
     {
-        $body = [];
-        if (!empty($this->body)) {
-            $this->checkMultipartBody();
-            $body = [
-                $this->request_body_type => $this->body
-            ];
-        }
-        $options = ['timeout' => $this->timeout];
-        $options = array_merge($options, $body);
+        $options = ['timeout' => $this->timeout, 'verify' => $this->verify];
         foreach ($this->requestHeaders as $key => $header) {
             $request->withHeader($key, $header);
         }
@@ -199,73 +155,5 @@ class Client extends BaseClient
             $response->withHeader($key, $header);
         }
         return $response;
-    }
-
-    /**
-     * Check and setup multipart request body if form type is multipart
-     *
-     * @return void
-     */
-    private function checkMultipartBody(): void
-    {
-        if ($this->request_body_type == RequestOptions::MULTIPART) {
-            $temp = [];
-            $key_of_contents = [];
-            foreach ($this->body as $key => $b) {
-                if (! $b instanceof Multipart) {
-                    throw new InvalidTypeException('Request body does not comply multipart form-data structure');
-                }
-                if (is_array($b->contents)) {
-                    $key_of_contents[] = $key;
-                    /**
-                     * Check if contents is array of files
-                     *
-                     * @var array $b->contents
-                     */
-                    if (isset($b->contents[0]) && $b->contents[0] instanceof \Illuminate\Http\UploadedFile) {
-                        $z = $b->contents;
-                        /**
-                         * Array $b->contents
-                         *
-                         * @var \Illuminate\Http\UploadedFile[] $z
-                         */
-                        foreach ($z as $v) {
-                            /**
-                             * Multipart
-                             *
-                             * @var \Illuminate\Http\UploadedFile $v multipart
-                             */
-                            $y = new Multipart(['name' => $b->name . '[]', 'headers' => ['Content-Type' => $v->getMimeType()]]);
-                            $y->contents = fopen($v->getRealPath(), 'r');
-                            array_push($temp, $y->toArray());
-                        }
-                    }
-                } else {
-                    $x = $this->body[$key];
-                    /**
-                     * Multipart
-                     *
-                     * @var Multipart $x multipart
-                     */
-                    if ($x->contents instanceof \Illuminate\Http\UploadedFile) {
-                        $z = $x->contents;
-                        /**
-                         * Uploaded file
-                         *
-                         * @var \Illuminate\Http\UploadedFile $z uploaded file
-                         */
-                        $x->contents = fopen($z->getRealPath(), 'r');
-                    }
-                    $this->body[$key] = $x->toArray();
-                }
-            }
-            if (count($temp) > 0) {
-                foreach ($key_of_contents as $key) {
-                    unset($this->body[$key]);
-                }
-                $this->body = array_values($this->body);
-                $this->body = array_merge($this->body, $temp);
-            }
-        }
     }
 }

@@ -60,17 +60,16 @@ class ClientTest extends TestCase
             [
                 'Content-Type' => 'application/json',
                 'Strict-Transport-Security' => ['max-age=31536000', 'includeSubDomains', 'preload']
-            ]
+            ],
+            json_encode([
+                "status" => "ok",
+                "message" => "welcome"
+            ])
         );
         $client = new Client();
         $response = $client->setTimeout(5)
             ->injectRequestHeader(['X-Powered-By' => ['Money']])
             ->injectResponseHeader(['X-Server' => ['tinyurl'], 'X-Overhead' => ['true', 'allowed']])
-            ->setFormType('json')
-            ->setRequestBody([
-                "status" => "ok",
-                "message" => "welcome"
-            ])
             ->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
@@ -79,21 +78,6 @@ class ClientTest extends TestCase
         $this->assertStringContainsString('application/json', $headers['Content-Type'][0]);
     }
 
-    public function testCallError(): void
-    {
-        $this->expectException(Exception::class);
-        $request = new Request(
-            'POST',
-            'https://jsonplaceholder.typicode.com/posts',
-            [
-                'Content-Type' => 'application/json',
-            ],
-        );
-        $client = new Client();
-        $client->setFormType('video')
-            ->call($request);
-    }
-    
     public function testCallEksternal(): void
     {
         $request = new Request(
@@ -108,32 +92,6 @@ class ClientTest extends TestCase
         $headers = $response->getHeaders();
         $this->assertEquals('ok', $contents_arr['status']);
         $this->assertStringContainsString('application/json', $headers['Content-Type'][0]);
-    }
-
-    public function testCallMultipartError(): void
-    {
-        $this->expectException(InvalidTypeException::class);
-        $request = new Request(
-            'POST',
-            'https://jsonplaceholder.typicode.com/posts',
-        );
-        $f = fopen('public/docs/hello.txt', 'w');
-        fwrite($f, 'hello world');
-        fclose($f);
-        $client = new Client();
-        $client->setFormType(RequestOptions::MULTIPART)
-            ->setRequestBody([
-                [
-                    'name' => 'upload',
-                    'contents' => Utils::tryFopen('public/docs/hello.txt', 'r')
-                ],
-                [
-                    'name' => 'dir',
-                    'contents' => 'public/images'
-                ]
-            ])
-            ->setVerify(true)
-            ->call($request);
     }
 
     public function testCallMultipartSuccess(): void
@@ -162,21 +120,22 @@ class ClientTest extends TestCase
 
     public function testCallMultipartSuccess2(): void
     {
-        $request = new Request(
-            'POST',
-            'https://jsonplaceholder.typicode.com/posts',
-        );
         $f = fopen('public/docs/hello.txt', 'w');
         fwrite($f, 'hello world');
         fclose($f);
-        $client = new Client();
-        $resp = $client->setFormType(RequestOptions::MULTIPART)
-            ->setRequestBody([
-                new Multipart([
+        $request = new Request(
+            'POST',
+            'https://jsonplaceholder.typicode.com/posts',
+            ['Content-Type' => 'multipart/form-data'],
+            new MultipartStream([
+                [
                     'name' => 'file',
                     'contents' => new \Illuminate\Http\UploadedFile('public/docs/hello.txt', 'hello.txt')
-                ])
+                ]
             ])
+        );
+        $client = new Client();
+        $resp = $client
             ->setVerify(true)
             ->call($request);
         $r = json_decode($resp->getBody()->getContents());
