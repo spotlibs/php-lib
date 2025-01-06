@@ -4,17 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Libraries;
 
-use Carbon\Exceptions\InvalidTypeException;
-use Exception;
-use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Stream;
-use GuzzleHttp\Psr7\Utils;
-use GuzzleHttp\RequestOptions;
 use Laravel\Lumen\Testing\TestCase;
 use Spotlibs\PhpLib\Libraries\Client;
-use Spotlibs\PhpLib\Libraries\ClientHelpers\Multipart;
 
 class ClientTest extends TestCase
 {
