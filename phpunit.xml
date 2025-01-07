@@ -20,6 +20,7 @@
     <php>
         <env name="APP_NAME" value="SPOTLIBS_MICROSERVICE"/>
         <env name="APP_ENV" value="local"/>
+        <env name="APP_DEBUG" value="TRUE"/>
     </php>
 
     <coverage cacheDirectory=".phpunit.cache/code-coverage"
