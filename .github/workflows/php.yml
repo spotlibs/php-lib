@@ -2,9 +2,9 @@ name: unit test
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "master8.3" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "master8.3" ]
 
 permissions:
   contents: read
