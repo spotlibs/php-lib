@@ -16,8 +16,10 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries;
 
 use GuzzleHttp\Client as BaseClient;
+use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use Spotlibs\PhpLib\Logs\Log;
 
 /**
  * ClientTimeoutUnit
@@ -30,7 +32,7 @@ use Psr\Http\Message\ResponseInterface;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class Client extends BaseClient
+class ClientExternal extends BaseClient
 {
     /**
      * Timeout in seconds, default is 10 seconds
@@ -140,13 +142,43 @@ class Client extends BaseClient
      */
     public function call(Request $request): ResponseInterface
     {
+        $startime = microtime(true);
         $options = ['timeout' => $this->timeout, 'verify' => $this->verify];
         foreach ($this->requestHeaders as $key => $header) {
             $request = $request->withHeader($key, $header);
         }
+        if (!$request->hasHeader('Content-Type')) {
+            $request = $request->withHeader('Content-Type', 'application/json');
+        }
         $response = $this->send($request, $options);
         foreach ($this->responseHeaders as $key => $header) {
             $response = $response->withHeader($key, $header);
+        }
+        $elapsed = microtime(true) - $startime;
+        if (env('APP_DEBUG', false)) {
+            $request->getBody()->rewind();
+            if (strlen($reqbody = $request->getBody()->getContents()) > 5000) {
+                $reqbody = "more than 5000 characters";
+            }
+            if (strlen($respbody = $response->getBody()->getContents()) > 5000) {
+                $respbody = "more than 5000 characters";
+            }
+            $logData = [
+                'host' => $request->getUri()->getHost(),
+                'url' => $request->getUri()->getPath(),
+                'request' => [
+                    'headers' => $request->getHeaders(),
+                    'body' => json_decode($reqbody, true)
+                ],
+                'response' => [
+                    'headers' => $response->getHeaders(),
+                    'body' => json_decode($respbody, true)
+                ],
+                'responseTime' => round($elapsed * 1000),
+                'memoryUsage' => memory_get_usage()
+            ];
+            $response->getBody()->rewind();
+            Log::activity()->info($logData);
         }
         return $response;
     }
