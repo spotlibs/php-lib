@@ -147,9 +147,6 @@ class ClientExternal extends BaseClient
         foreach ($this->requestHeaders as $key => $header) {
             $request = $request->withHeader($key, $header);
         }
-        if (!$request->hasHeader('Content-Type')) {
-            $request = $request->withHeader('Content-Type', 'application/json');
-        }
         $response = $this->send($request, $options);
         foreach ($this->responseHeaders as $key => $header) {
             $response = $response->withHeader($key, $header);
