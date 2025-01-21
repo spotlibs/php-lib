@@ -39,7 +39,7 @@ class Runtime
      *
      * @return void
      */
-    public function warning(array $data)
+    public function warning(array $data): void
     {
         $this->getEmbeddedInfo($data);
         BaseLog::channel($this->channel)->warning(json_encode($data));
@@ -52,7 +52,7 @@ class Runtime
      *
      * @return void
      */
-    public function error(array $data)
+    public function error(array $data): void
     {
         $this->getEmbeddedInfo($data);
         BaseLog::channel($this->channel)->error(json_encode($data));

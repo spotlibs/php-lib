@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Services;
 
-use Exception;
 use TypeError;
 
 /**
@@ -31,7 +30,7 @@ use TypeError;
  */
 class Context
 {
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * Set new key value to context
@@ -41,7 +40,7 @@ class Context
      *
      * @return void
      */
-    public function set(string $key, mixed $value)
+    public function set(string $key, mixed $value): void
     {
         // prevent replace metadata
         if ($key == Metadata::class) {
@@ -62,7 +61,7 @@ class Context
      *
      * @return mixed
      */
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         return $this->data[$key] ?? null;
     }

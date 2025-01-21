@@ -16,10 +16,10 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Middlewares;
 
 use Closure;
-use Spotlibs\PhpLib\Services\Metadata;
-use StdClass;
 use Spotlibs\PhpLib\Logs\Log;
 use Spotlibs\PhpLib\Services\Context;
+use Spotlibs\PhpLib\Services\Metadata;
+use StdClass;
 
 /**
  * ActivityMonitor
@@ -52,6 +52,9 @@ class ActivityMonitor
      * @param \Closure                 $next    next middleware in the pipeline
      *
      * @return mixed
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint
      */
     public function handle($request, Closure $next)
     {
@@ -98,6 +101,9 @@ class ActivityMonitor
      * @param \Illuminate\Http\Response $response http response instance
      *
      * @return mixed
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint
      */
     public function terminate($request, $response)
     {
@@ -145,6 +151,8 @@ class ActivityMonitor
      * @param \Illuminate\Http\Request $request pointer of http request
      *
      * @return void
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
     private function logFileRequest(&$request): void
     {

@@ -15,22 +15,22 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Libraries;
 
-use GuzzleHttp\Client;
-use Jobcloud\Kafka\Message\KafkaAvroSchema;
-use Jobcloud\Kafka\Message\KafkaAvroSchemaInterface;
-use Jobcloud\Kafka\Message\Registry\AvroSchemaRegistry;
 use FlixTech\AvroSerializer\Objects\RecordSerializer;
-use FlixTech\SchemaRegistryApi\Registry\CachedRegistry;
 use FlixTech\SchemaRegistryApi\Registry\BlockingRegistry;
-use FlixTech\SchemaRegistryApi\Registry\PromisingRegistry;
 use FlixTech\SchemaRegistryApi\Registry\Cache\AvroObjectCacheAdapter;
-use Jobcloud\Kafka\Producer\KafkaProducerBuilder;
-use Jobcloud\Kafka\Message\Encoder\AvroEncoder;
-use Jobcloud\Kafka\Message\Encoder\JsonEncoder;
+use FlixTech\SchemaRegistryApi\Registry\CachedRegistry;
+use FlixTech\SchemaRegistryApi\Registry\PromisingRegistry;
+use GuzzleHttp\Client;
 use Jobcloud\Kafka\Consumer\KafkaConsumerBuilder;
 use Jobcloud\Kafka\Consumer\KafkaConsumerInterface;
 use Jobcloud\Kafka\Message\Decoder\AvroDecoder;
 use Jobcloud\Kafka\Message\Decoder\JsonDecoder;
+use Jobcloud\Kafka\Message\Encoder\AvroEncoder;
+use Jobcloud\Kafka\Message\Encoder\JsonEncoder;
+use Jobcloud\Kafka\Message\KafkaAvroSchema;
+use Jobcloud\Kafka\Message\KafkaAvroSchemaInterface;
+use Jobcloud\Kafka\Message\Registry\AvroSchemaRegistry;
+use Jobcloud\Kafka\Producer\KafkaProducerBuilder;
 use Jobcloud\Kafka\Producer\KafkaProducerInterface;
 
 /**

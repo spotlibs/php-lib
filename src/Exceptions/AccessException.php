@@ -17,8 +17,8 @@ namespace Spotlibs\PhpLib\Exceptions;
 
 use Exception;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
-use Spotlibs\PhpLib\Exceptions\TraitException;
 use Spotlibs\PhpLib\Exceptions\StdException;
+use Spotlibs\PhpLib\Exceptions\TraitException;
 
 /**
  * Class AccessException
