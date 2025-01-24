@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Facades;
 
-use DateTime;
 use Illuminate\Support\Facades\Queue as BaseQueue;
 use Spotlibs\PhpLib\Services\Context;
 use Spotlibs\PhpLib\Services\Metadata;

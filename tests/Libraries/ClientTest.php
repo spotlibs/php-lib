@@ -38,8 +38,7 @@ class ClientTest extends TestCase
             'https://dummyjson.com/test',
         );
         $client = new Client();
-        $response = $client->setTimeout(5)
-            ->call($request);
+        $response = $client->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512);
         $this->assertEquals('ok', $contents_arr['status']);
@@ -60,7 +59,7 @@ class ClientTest extends TestCase
             ])
         );
         $client = new Client();
-        $response = $client->setTimeout(5)
+        $response = $client
             ->injectRequestHeader(['X-Powered-By' => ['Money']])
             ->injectResponseHeader(['X-Server' => ['tinyurl'], 'X-Overhead' => ['true', 'allowed']])
             ->call($request);
@@ -78,7 +77,7 @@ class ClientTest extends TestCase
             'https://dummyjson.com/test',
         );
         $client = new Client();
-        $response = $client->setTimeout(8)
+        $response = $client
             ->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
@@ -105,7 +104,6 @@ class ClientTest extends TestCase
         );
         $client = new Client();
         $resp = $client
-            ->setVerify(true)
             ->call($request);
         $r = json_decode($resp->getBody()->getContents());
         $this->assertEquals('101', $r->id);
@@ -129,7 +127,6 @@ class ClientTest extends TestCase
         );
         $client = new Client();
         $resp = $client
-            ->setVerify(true)
             ->call($request);
         $r = json_decode($resp->getBody()->getContents());
         $this->assertEquals('101', $r->id);
@@ -149,9 +146,7 @@ class ClientTest extends TestCase
             ])
         );
         $client = new Client();
-        $resp = $client
-            ->setVerify(true)
-            ->call($request);
+        $resp = $client->call($request);
         $r = json_decode($resp->getBody()->getContents());
         $this->assertEquals('101', $r->id);
     }

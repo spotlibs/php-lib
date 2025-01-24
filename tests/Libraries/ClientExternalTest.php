@@ -7,6 +7,7 @@ namespace Tests\Libraries;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Utils;
 use Laravel\Lumen\Testing\TestCase;
 use Spotlibs\PhpLib\Libraries\ClientExternal;
 
@@ -22,11 +23,11 @@ class ClientExternalTest extends TestCase
         $request = new Request(
             'POST',
             'https://jsonplaceholder.typicode.com/posts',
-            [],
+            ['content-type' => 'application/json'],
             json_encode(['message' => 'hello world'])
         );
         $client = new ClientExternal();
-        $response = $client->setTimeout(5)->setVerify(true)->call($request);
+        $response = $client->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512);
         $this->assertEquals('hello world', $contents_arr['message']);
@@ -40,11 +41,11 @@ class ClientExternalTest extends TestCase
         $request = new Request(
             'POST',
             'https://jsonplaceholder.typicode.com/posts',
-            ['Content-Type' => 'multipart/form-data'],
+            [],
             new MultipartStream([
                 [
                     'name' => 'file',
-                    'contents' => fopen('public/docs/hello.txt', 'r')
+                    'contents' => Utils::tryFopen('public/docs/hello.txt', 'r')
                 ]
             ])
         );
@@ -52,7 +53,6 @@ class ClientExternalTest extends TestCase
         $resp = $client
             ->injectRequestHeader(['X-Unit-Test' => ['clover']])
             ->injectResponseHeader(['X-Unit-Test-Response' => ['clover-response']])
-            ->setVerify(true)
             ->call($request);
         $r = json_decode($resp->getBody()->getContents());
         $this->assertEquals('101', $r->id);
@@ -68,7 +68,7 @@ class ClientExternalTest extends TestCase
         $request = new Request(
             'POST',
             'https://jsonplaceholder.typicode.com/posts',
-            [],
+            ['content-type' => 'application/json'],
             new MultipartStream([
                 [
                     'name' => 'file',
@@ -77,10 +77,6 @@ class ClientExternalTest extends TestCase
             ])
         );
         $client = new ClientExternal();
-        $resp = $client
-            ->setVerify(true)
-            ->call($request);
-        $r = json_decode($resp->getBody()->getContents());
-        // $this->assertEquals('101', $r->id);
+        $client->call($request);
     }
 }
