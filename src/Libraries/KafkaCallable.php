@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * PHP version 8
@@ -32,39 +32,91 @@ use RdKafka\KafkaConsumer;
  */
 class KafkaCallable extends KafkaLibrary
 {
-    public static function deliveryReportCallback(Producer $producer, Message $message) {
+    /**
+     * Summary of deliveryReportCallback
+     *
+     * @param \RdKafka\Producer $producer producer instance
+     * @param \RdKafka\Message  $message  message to produce
+     *
+     * @return void
+     */
+    public static function deliveryReportCallback(Producer $producer, Message $message)
+    {
         if ($message->err == RD_KAFKA_RESP_ERR_NO_ERROR) {
+            // phpcs:ignore
             Log::channel('runtime')->info("deliveryReportCallback triggered. Message delivered successfully to Topic: {$message->topic_name}. Partition: {$message->partition}. Offset: {$message->offset}. Key: {$message->key}. Timestamp: {$message->timestamp}");
         } else {
+            // phpcs:ignore
             Log::channel('runtime')->error("deliveryReportCallback triggered. Message delivery failed: " . $message->errstr() . ". Topic: {$message->topic_name}. Partition: {$message->partition}. Offset: {$message->offset}. Key: {$message->key}. Timestamp: {$message->timestamp}");
         }
     }
 
-    public static function errorProduceCallback(Producer $producer, int $err, string $reason) {
+    /**
+     * Summary of errorProduceCallback
+     *
+     * @param \RdKafka\Producer $producer producer instance
+     * @param int               $err      error code
+     * @param string            $reason   error message
+     *
+     * @return void
+     */
+    public static function errorProduceCallback(Producer $producer, int $err, string $reason)
+    {
         Log::channel('runtime')->error("errorProduceCallback triggered. Kafka producer error: " . rd_kafka_err2str($err) . ". Reason: {$reason}");
     }
 
-    public static function errorConsumeCallback(KafkaConsumer $consumer, int $err, string $reason) {
-        Log::channel('runtime')->error("errorConsumeCallback triggered. Kafka producer error: " . rd_kafka_err2str($err) . ". Reason: {$reason}" . " [Client ID: " . env('APP_NAME').'-'.gethostname() . "]");
+    /**
+     * Summary of errorConsumeCallback
+     *
+     * @param \RdKafka\KafkaConsumer $consumer consumer instance
+     * @param int                    $err      error code
+     * @param string                 $reason   error message
+     *
+     * @return void
+     */
+    public static function errorConsumeCallback(KafkaConsumer $consumer, int $err, string $reason)
+    {
+            // phpcs:ignore
+        Log::channel('runtime')->error("errorConsumeCallback triggered. Kafka producer error: " . rd_kafka_err2str($err) . ". Reason: {$reason}" . " [Client ID: " . env('APP_NAME') . '-' . gethostname() . "]");
     }
 
-    public static function rebalanceCallback(KafkaConsumer $consumer, int $err, array $partitions) {
+    /**
+     * Summary of rebalanceCallback
+     *
+     * @param \RdKafka\KafkaConsumer $consumer   consumer instance
+     * @param int                    $err        error code
+     * @param array                  $partitions list of partitions
+     *
+     * @return void
+     */
+    public static function rebalanceCallback(KafkaConsumer $consumer, int $err, array $partitions)
+    {
         if ($err == RD_KAFKA_RESP_ERR__ASSIGN_PARTITIONS) {
             foreach ($partitions as $partition) {
+                // phpcs:ignore
                 Log::channel('runtime')->info("rebalanceCallback triggered. Status: Assigned partition. Topic: {$partition->getTopic()}. Partition: {$partition->getPartition()}. Offset: {$partition->getOffset()}");
             }
             $consumer->assign($partitions);
         } elseif ($err == RD_KAFKA_RESP_ERR__REVOKE_PARTITIONS) {
             foreach ($partitions as $partition) {
+                // phpcs:ignore
                 Log::channel('runtime')->info("rebalanceCallback triggered. Status: Revoked partition. Topic: {$partition->getTopic()}. Partition: {$partition->getPartition()}. Offset: {$partition->getOffset()}");
             }
-            $consumer->assign(NULL);
+            $consumer->assign(null);
         } else {
             Log::channel('runtime')->error("rebalanceCallback triggered. Rebalance error: " . rd_kafka_err2str($err));
         }
     }
 
-    public static function consumeCallback($message) {
+    /**
+     * Summary of consumeCallback
+     *
+     * @param mixed $message callback message
+     *
+     * @return void
+     */
+    public static function consumeCallback($message)
+    {
         $topic_name = $message->getTopicName() ?? null;
         $partition = $message->getPartition() ?? null;
         $offset = $message->getOffset() ?? null;
@@ -73,7 +125,18 @@ class KafkaCallable extends KafkaLibrary
         Log::channel('runtime')->info("consumeCallback triggered. Topic: {$topic_name}. Partition: {$partition}. Offset: {$offset}. Key: {$key}. Timestamp: {$timestamp}");
     }
 
-    public static function logCallback($kafka, $level, $facility, $message) {
+    /**
+     * Summary of logCallback
+     *
+     * @param mixed $kafka    kafka instance
+     * @param mixed $level    log level
+     * @param mixed $facility kafka facility
+     * @param mixed $message  log message usually in JSON format
+     *
+     * @return void
+     */
+    public static function logCallback($kafka, $level, $facility, $message)
+    {
         if ($level == LOG_DEBUG || $level == LOG_INFO || $level == LOG_NOTICE) {
             Log::channel('runtime')->info("logCallback triggered. Kafka log [{$facility}]: {$message}");
         } elseif ($level == LOG_WARNING || $level == LOG_ALERT) {
@@ -85,19 +148,31 @@ class KafkaCallable extends KafkaLibrary
         }
     }
 
-    public static function offsetCommitCallback($consumer, $err, $partitions) {
+    /**
+     * Summary of offsetCommitCallback
+     *
+     * @param mixed $consumer   consumer instance
+     * @param mixed $err        error code
+     * @param mixed $partitions list of partitions
+     *
+     * @return void
+     */
+    public static function offsetCommitCallback($consumer, $err, $partitions)
+    {
         if ($err) {
-            Log::channel('runtime')->error("offsetCommitCallback triggered. Offset commit failed: " . rd_kafka_err2str($err) . " [Client ID: " . env('APP_NAME').'-'.gethostname() . "]");
+            Log::channel('runtime')->error("offsetCommitCallback triggered. Offset commit failed: " . rd_kafka_err2str($err) . " [Client ID: " . env('APP_NAME') . '-' . gethostname() . "]");
         } else {
-            $partitionDetails = array_map(function($partition) {
-                return [
+            $partitionDetails = array_map(
+                function ($partition) {
+                    return [
                     'topic' => $partition->getTopic(),
                     'partition' => $partition->getPartition(),
                     'offset' => $partition->getOffset()
-                ];
-            }, $partitions);
-            Log::channel('runtime')->info("offsetCommitCallback triggered. Offset commit succeeded: " . json_encode($partitionDetails) . " [Client ID: " . env('APP_NAME').'-'.gethostname() . "]");
+                    ];
+                },
+                $partitions
+            );
+            Log::channel('runtime')->info("offsetCommitCallback triggered. Offset commit succeeded: " . json_encode($partitionDetails) . " [Client ID: " . env('APP_NAME') . '-' . gethostname() . "]");
         }
     }
-
 }

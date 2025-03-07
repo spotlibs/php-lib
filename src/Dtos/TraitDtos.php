@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Dtos;
 
+use Exception;
 use ReflectionClass;
 
 /**
@@ -44,15 +45,23 @@ trait TraitDtos
             $this->aliases = [];
         }
         $reflector = new ReflectionClass(static::class);
-        foreach ($data as $key => $value) {
-            $temp_key = array_search($key, $this->aliases, true);
-            $key = is_string($temp_key) ? $temp_key : $key;
-            if (property_exists($this, $key)) {
-                if (is_array($value)) {
-                    $this->convertArray($reflector, $key, $value);
+        try {
+            foreach ($data as $key => $value) {
+                $temp_key = array_search($key, $this->aliases, true);
+                $key = is_string($temp_key) ? $temp_key : $key;
+                if (property_exists($this, $key)) {
+                    if (is_array($value)) {
+                        $this->convertArray($reflector, $key, $value);
+                    }
+                    $this->{$key} = $value;
                 }
-                $this->{$key} = $value;
             }
+        } catch (\Throwable $th) {
+            if (substr($th->getMessage(), 0, 30) == "property_exists(): Argument #2") {
+                $jsonEncoded = json_encode($data);
+                throw new Exception($th->getMessage() . '. Error constructing this array to DTO: ' . $jsonEncoded);
+            }
+            throw $th;
         }
     }
 
