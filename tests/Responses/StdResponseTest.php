@@ -17,7 +17,7 @@ namespace Tests\Responses;
 
 use Spotlibs\PhpLib\Responses\StdResponse;
 use Spotlibs\PhpLib\Exceptions\StdException;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
 
 final class StdResponseTest extends TestCase
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Logs;
 
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
 use Spotlibs\PhpLib\Logs\Log;
 use Spotlibs\PhpLib\Services\Context;
 use Spotlibs\PhpLib\Services\Metadata;
@@ -34,7 +34,7 @@ class LogTest extends TestCase
     public function testCreateRuntimeErrorLog()
     {
         $this->setContext();
-        $mockData = ['test' => 'let me know'];
+        $mockData = ['test' => 'let me know', 'traceID' => '123123', 'identifier' => 'spotlibs-unittest'];
         Log::runtime()->error($mockData);
         $file = file("./storage/logs/runtime.log");
         $last_line = end($file);
@@ -48,7 +48,7 @@ class LogTest extends TestCase
     public function testCreateRuntimeInfoLog()
     {
         $this->setContext2();
-        $mockData = ['test' => 'let me know'];
+        $mockData = ['test' => 'let me know', 'traceID' => '123123', 'identifier' => 'spotlibs-unittest'];
         Log::runtime()->info($mockData);
         $file = file("./storage/logs/runtime.log");
         $last_line = end($file);
@@ -62,7 +62,7 @@ class LogTest extends TestCase
     public function testCreateRuntimeWarningLog()
     {
         $this->setContext();
-        $mockData = ['test' => 'let me know'];
+        $mockData = ['test' => 'let me know', 'traceID' => '123123', 'identifier' => 'spotlibs-unittest'];
         Log::runtime()->warning($mockData);
         $file = file("./storage/logs/runtime.log");
         $last_line = end($file);
@@ -76,7 +76,7 @@ class LogTest extends TestCase
     public function testCreateActivityInfoLog()
     {
         $this->setContext();
-        $mockData = ['test' => 'let me know'];
+        $mockData = ['test' => 'let me know', 'traceID' => '123123', 'identifier' => 'spotlibs-unittest'];
         Log::activity()->info($mockData);
         $file = file("./storage/logs/activity.log");
         $last_line = end($file);
@@ -90,7 +90,7 @@ class LogTest extends TestCase
     public function testCreateWorkerInfoLog()
     {
         $this->setContext();
-        $mockData = ['test' => 'let me know'];
+        $mockData = ['test' => 'let me know', 'traceID' => '123123', 'identifier' => 'spotlibs-unittest'];
         Log::worker()->info($mockData);
         $file = file("./storage/logs/worker.log");
         $last_line = end($file);

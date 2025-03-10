@@ -5,17 +5,11 @@ declare(strict_types=1);
 namespace Tests\Dtos;
 
 use Carbon\Carbon;
-use Exception;
-use Laravel\Lumen\Testing\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
 use TypeError;
 
 class DtosTest extends TestCase
 {
-    public function createApplication()
-    {
-        return require __DIR__.'/../../bootstrap/app.php';
-    }
-
     /** @test */
     /** @runInSeparateProcess */
     public function testConstructDto()

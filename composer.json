@@ -5,10 +5,11 @@
     "license": "MIT",
     "type": "library",
     "require": {
-        "php": "^7.3|^8.0",
-        "laravel/lumen-framework": "^8.0",
-        "jobcloud/php-kafka-lib": "^1.7",
-        "flix-tech/avro-serde-php": "^1.7"
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "laravel/tinker": "^2.10.1",
+        "jobcloud/php-kafka-lib": "^2.0",
+        "flix-tech/avro-serde-php": "^3.0"
     },
     "autoload": {
         "psr-4": {

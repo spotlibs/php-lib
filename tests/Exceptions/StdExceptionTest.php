@@ -25,7 +25,7 @@ use Spotlibs\PhpLib\Exceptions\ThirdPartyServiceException;
 use Spotlibs\PhpLib\Exceptions\UnsupportedException;
 use Spotlibs\PhpLib\Exceptions\WaitingException;
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
 use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 
 final class StdExceptionTest extends TestCase

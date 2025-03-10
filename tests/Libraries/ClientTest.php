@@ -6,16 +6,11 @@ namespace Tests\Libraries;
 
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
-use Laravel\Lumen\Testing\TestCase;
+use Illuminate\Foundation\Testing\TestCase;
 use Spotlibs\PhpLib\Libraries\Client;
 
 class ClientTest extends TestCase
 {
-    public function createApplication()
-    {
-        return require __DIR__.'/../../bootstrap/app.php';
-    }
-
     public function testCallY(): void
     {
         
