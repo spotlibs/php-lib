@@ -16,19 +16,18 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Exceptions;
 
 use Exception;
-use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
-use Spotlibs\PhpLib\Logs\Log;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
+use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use Spotlibs\PhpLib\Exceptions\DataNotFoundException;
+use Spotlibs\PhpLib\Logs\Log;
+use Spotlibs\PhpLib\Responses\StdResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Spotlibs\PhpLib\Exceptions\DataNotFoundException;
-use Spotlibs\PhpLib\Responses\StdResponse;
 use Throwable;
-use TypeError;
 
 /**
  * Class Handler
@@ -46,7 +45,7 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-    protected $dontReport = [
+    protected array $dontReport = [
         AuthorizationException::class,
         HttpException::class,
         ValidationException::class
@@ -63,7 +62,7 @@ class Handler extends ExceptionHandler
      *
      * @throws \Exception
      */
-    public function report(Throwable $exception)
+    public function report(Throwable $exception): void
     {
         if ((!$exception instanceof ExceptionInterface && !$exception instanceof NotFoundHttpException && !$exception instanceof ValidationException) || $exception instanceof RuntimeException) {
             Log::runtime()->error(
@@ -86,7 +85,7 @@ class Handler extends ExceptionHandler
      *
      * @throws \Throwable
      */
-    public function render($request, Throwable $exception): Response
+    public function render(mixed $request, Throwable $exception): Response
     {
         if ($exception instanceof NotFoundHttpException || $exception instanceof HttpException) {
             $exception = new UnsupportedException("Route --" . $request->getPathInfo() . "-- not found in " . ENV('APP_NAME') . "!");

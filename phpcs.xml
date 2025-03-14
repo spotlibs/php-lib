@@ -25,4 +25,27 @@
   <exclude-pattern>database/</exclude-pattern>
   <exclude-pattern>storage/</exclude-pattern>
   <exclude-pattern>bootstrap/</exclude-pattern>
+  <exclude-pattern>src/HelloWorld.php</exclude-pattern>
+  <exclude-pattern>src/Commands/</exclude-pattern>
+  <exclude-pattern>src/Providers/</exclude-pattern>
+  <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
+    <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation" />
+    <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification" />
+  </rule>
+  <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+    <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification" />
+  </rule>
+  <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+    <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.UselessAnnotation" />
+    <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification" />
+  </rule>
+  <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing" />
+  <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing" />
+  <rule ref="SlevomatCodingStandard.Variables.UnusedVariable">
+    <properties>
+      <property name="ignoreUnusedValuesWhenOnlyKeysAreUsedInForeach" value="true" />
+    </properties>
+  </rule>
+  <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses" />
+  <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses" />
 </ruleset>

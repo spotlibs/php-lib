@@ -82,7 +82,7 @@ trait TraitConvertibleDtos
      *
      * @return bool|string
      */
-    public function toJson()
+    public function toJson(): bool|string
     {
         $data = $this->toArray();
         return json_encode($data);

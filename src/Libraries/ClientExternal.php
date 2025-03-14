@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries;
 
 use GuzzleHttp\Client as BaseClient;
-use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Logs\Log;
@@ -82,32 +81,6 @@ class ClientExternal extends BaseClient
     }
 
     /**
-     * Set the timeout for Http Client
-     *
-     * @param float $timeout number of desired timeout
-     *
-     * @return self
-     */
-    public function setTimeout(float $timeout): self
-    {
-        $this->timeout = $timeout;
-        return $this;
-    }
-
-    /**
-     * Set verify
-     *
-     * @param bool $verify number of desired timeout
-     *
-     * @return self
-     */
-    public function setVerify(bool $verify): self
-    {
-        $this->verify = $verify;
-        return $this;
-    }
-
-    /**
      * Set request headers in associative array
      *
      * @param array<string[]> $headers example: ['Content-Type' => ['application/json']]
@@ -134,21 +107,24 @@ class ClientExternal extends BaseClient
     }
 
     /**
-     * Set the timeout for Http Client
+     * Execute the HTTP request through GuzzleHttp Client
      *
      * @param Request $request HTTP Request instance
+     * @param array   $options Guzzle HTTP client options. See more at https://docs.guzzlephp.org/en/stable/request-options.html
      *
      * @return ResponseInterface
      */
-    public function call(Request $request): ResponseInterface
+    public function call(Request $request, array $options = []): ResponseInterface
     {
         $startime = microtime(true);
-        $options = ['timeout' => $this->timeout, 'verify' => $this->verify];
+        if (!isset($options['timeout'])) {
+            $options['timeout'] = 10;
+        }
+        if (!isset($options['verify'])) {
+            $options['verify'] = false;
+        }
         foreach ($this->requestHeaders as $key => $header) {
             $request = $request->withHeader($key, $header);
-        }
-        if (!$request->hasHeader('Content-Type')) {
-            $request = $request->withHeader('Content-Type', 'application/json');
         }
         $response = $this->send($request, $options);
         foreach ($this->responseHeaders as $key => $header) {
@@ -157,10 +133,12 @@ class ClientExternal extends BaseClient
         $elapsed = microtime(true) - $startime;
         if (env('APP_DEBUG', false)) {
             $request->getBody()->rewind();
-            if (strlen($reqbody = $request->getBody()->getContents()) > 5000) {
+            $reqbody = $request->getBody()->getContents();
+            $respbody = $response->getBody()->getContents();
+            if (strlen($reqbody) > 5000) {
                 $reqbody = "more than 5000 characters";
             }
-            if (strlen($respbody = $response->getBody()->getContents()) > 5000) {
+            if (strlen($respbody) > 5000) {
                 $respbody = "more than 5000 characters";
             }
             $logData = [

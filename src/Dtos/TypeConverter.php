@@ -15,10 +15,10 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Dtos;
 
-use ReflectionClass;
-use ReflectionProperty;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * TypeConverter

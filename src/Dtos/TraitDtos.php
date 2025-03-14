@@ -74,7 +74,7 @@ trait TraitDtos
      *
      * @return void
      */
-    private function convertArray(ReflectionClass &$reflector, string $key, array &$value)
+    private function convertArray(ReflectionClass &$reflector, string $key, array &$value): void
     {
         $prop = $reflector->getProperty($key);
         $type = $prop->getType()->getName();

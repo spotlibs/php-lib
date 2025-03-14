@@ -51,16 +51,6 @@ class DtoMakeCommand extends GeneratorCommand
     protected $type = 'DTO';
 
     /**
-     * Execute the console command.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        parent::handle();
-    }
-
-    /**
      * Get the stub file for the generator.
      *
      * @return string

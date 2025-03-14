@@ -18,6 +18,7 @@ namespace Spotlibs\PhpLib\Libraries;
 use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * ClientTimeoutUnit
@@ -32,18 +33,6 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Client extends BaseClient
 {
-    /**
-     * Timeout in seconds, default is 10 seconds
-     *
-     * @var float $timeout
-     */
-    public float $timeout = 10;
-    /**
-     * Set to true to enable SSL certificate verification and use the default CA bundle provided by operating system
-     *
-     * @var bool $verify
-     */
-    public bool $verify = false;
     /**
      * Request body, set according to the request
      *
@@ -80,32 +69,6 @@ class Client extends BaseClient
     }
 
     /**
-     * Set the timeout for Http Client
-     *
-     * @param float $timeout number of desired timeout
-     *
-     * @return self
-     */
-    public function setTimeout(float $timeout): self
-    {
-        $this->timeout = $timeout;
-        return $this;
-    }
-
-    /**
-     * Set verify
-     *
-     * @param bool $verify number of desired timeout
-     *
-     * @return self
-     */
-    public function setVerify(bool $verify): self
-    {
-        $this->verify = $verify;
-        return $this;
-    }
-
-    /**
      * Set request headers in associative array
      *
      * @param array<string[]> $headers example: ['Content-Type' => ['application/json']]
@@ -132,19 +95,37 @@ class Client extends BaseClient
     }
 
     /**
-     * Set the timeout for Http Client
+     * Execute the HTTP request through GuzzleHttp Client
      *
      * @param Request $request HTTP Request instance
+     * @param array   $options Guzzle HTTP client options. See more at https://docs.guzzlephp.org/en/stable/request-options.html
      *
      * @return ResponseInterface
      */
-    public function call(Request $request): ResponseInterface
+    public function call(Request $request, array $options = []): ResponseInterface
     {
-        $options = ['timeout' => $this->timeout, 'verify' => $this->verify];
+        if (!isset($options['timeout'])) {
+            $options['timeout'] = 10;
+        }
+        if (!isset($options['verify'])) {
+            $options['verify'] = false;
+        }
         foreach ($this->requestHeaders as $key => $header) {
             $request = $request->withHeader($key, $header);
         }
         $response = $this->send($request, $options);
+        if ($response->getStatusCode() === 200) {
+            $decoded = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            if (isset($decoded['responseCode']) && $decoded['responseCode'] <> '00') {
+                throw StdException::create(
+                    $decoded['responseCode'],
+                    $decoded['responseDesc'],
+                    $decoded['responseData'] ?? null,
+                    $decoded['validationErrors'] ?? [],
+                );
+            }
+            $response->getBody()->rewind();
+        }
         foreach ($this->responseHeaders as $key => $header) {
             $response = $response->withHeader($key, $header);
         }
