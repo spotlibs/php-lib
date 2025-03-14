@@ -17,7 +17,6 @@ namespace Spotlibs\PhpLib\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
-use Illuminate\Support\Str;
 
 /**
  * ControllerMakeCommand
