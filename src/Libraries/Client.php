@@ -18,6 +18,7 @@ namespace Spotlibs\PhpLib\Libraries;
 use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use Spotlibs\PhpLib\Exceptions\StdException;
 
 /**
  * ClientTimeoutUnit
@@ -113,6 +114,18 @@ class Client extends BaseClient
             $request = $request->withHeader($key, $header);
         }
         $response = $this->send($request, $options);
+        if ($response->getStatusCode() === 200) {
+            $decoded = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            if (isset($decoded['responseCode']) && $decoded['responseCode'] <> '00') {
+                throw StdException::create(
+                    $decoded['responseCode'],
+                    $decoded['responseDesc'],
+                    $decoded['responseData'] ?? null,
+                    $decoded['validationErrors'] ?? [],
+                );
+            }
+            $response->getBody()->rewind();
+        }
         foreach ($this->responseHeaders as $key => $header) {
             $response = $response->withHeader($key, $header);
         }

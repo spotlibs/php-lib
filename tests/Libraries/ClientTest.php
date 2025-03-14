@@ -24,8 +24,7 @@ class ClientTest extends TestCase
             'https://dummyjson.com/test',
         );
         $client = new Client();
-        $response = $client
-            ->call($request);
+        $response = $client->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512);
         $this->assertEquals('ok', $contents_arr['status']);
