@@ -43,7 +43,13 @@ class DummyClassCommand extends Command
 
     public function handle(): void
     {
+        /**
+         * Adding traceID and identifier for logger context.
+         * Deleting this may cause the logger can not log the traceID and identifier.
+         * Consider to keep this line below.
+         */
         parent::setContext(); //adding traceID and identifier for logger context
+
         Log::worker()->info(['message' => 'DummyClass process begin']);
     }
 }

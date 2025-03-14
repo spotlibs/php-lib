@@ -45,6 +45,11 @@ abstract class Command extends BaseCommand
         parent::__construct();
     }
 
+    /**
+     * Setting context required for logger.
+     * 
+     * @return void
+     */
     public function setContext(): void
     {
         $this->taskID = uniqid() . '00000';
