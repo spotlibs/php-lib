@@ -81,7 +81,7 @@ class CommandMakeCommand extends GeneratorCommand
     {
         $stub = parent::replaceClass($stub, $name);
         $temp = explode("/", $this->argument('name'));
-        $signature = 'signature:' . $temp[count($temp) - 1];
+        $signature = 'signature:' . strtolower($temp[count($temp) - 1]);
         $stub = str_replace('DummySignature', $signature, $stub);
         return $stub;
     }
