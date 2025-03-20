@@ -43,6 +43,15 @@ abstract class Command extends BaseCommand
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * Setting context required for logger.
+     * 
+     * @return void
+     */
+    public function setContext(): void
+    {
         $this->taskID = uniqid() . '00000';
         $context = app(Context::class);
         $meta = new Metadata();

@@ -125,6 +125,9 @@ trait TraitDtos
     {
         $result = [];
         foreach ($x as $key => $value) {
+            if ($key == 'arrayOfObjectMap' || $key == 'aliases') {
+                continue;
+            }
             if (is_array($value)) {
                 $result[$key] = $this->recursiveToArray($value);
             } elseif (is_object($value)) {
