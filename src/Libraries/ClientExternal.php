@@ -17,8 +17,10 @@ namespace Spotlibs\PhpLib\Libraries;
 
 use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Logs\Log;
+use Throwable;
 
 /**
  * ClientTimeoutUnit
@@ -117,6 +119,22 @@ class ClientExternal extends BaseClient
     public function call(Request $request, array $options = []): ResponseInterface
     {
         $startime = microtime(true);
+        $uri = $request->getUri()->getPath();
+        try {
+            $maproute = $this->checkMock($uri);
+            if (!empty((array) $maproute) && $maproute->flag) {
+                $request_temp = new Request(
+                    $request->getMethod(),
+                    $maproute->mock,
+                    $request->getHeaders(),
+                    $request->getBody(),
+                    $request->getProtocolVersion()
+                );
+                $request = $request_temp;
+                unset($request_temp);
+            }
+        } catch (Throwable $th) {
+        }
         if (!isset($options['timeout'])) {
             $options['timeout'] = 10;
         }
@@ -159,5 +177,23 @@ class ClientExternal extends BaseClient
             Log::activity()->info($logData);
         }
         return $response;
+    }
+
+    /**
+     * Check if url shall mock
+     *
+     * @param string $url full url of the request
+     *
+     * @return array
+     */
+    private function checkMock(string $url): MapRoute
+    {
+        if (env('APP_ENV') == 'production') {
+            return [];
+        }
+        $redis = new Redis();
+        $maproute = $redis->get('maproute:' . $url);
+        $maproute = json_decode($maproute, true, 512, JSON_THROW_ON_ERROR);
+        return new MapRoute($maproute);
     }
 }
