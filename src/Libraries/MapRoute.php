@@ -41,8 +41,8 @@ class MapRoute
     public function __construct(array $data)
     {
         $this->id = $data['id'];
-        $this->target_url = $data['target'];
-        $this->mock_url = $data['mock'];
+        $this->target_url = $data['target_url'];
+        $this->mock_url = $data['mock_url'];
         $this->flag = $data['flag'];
     }
 }
