@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Utils;
+use Illuminate\Support\Facades\Redis;
 use Laravel\Lumen\Testing\TestCase;
 use Spotlibs\PhpLib\Libraries\ClientExternal;
 
@@ -20,6 +21,7 @@ class ClientExternalTest extends TestCase
 
     public function testCallEksternal1(): void
     {
+        putenv('APP_ENV=production');
         $request = new Request(
             'POST',
             'https://jsonplaceholder.typicode.com/posts',
@@ -31,10 +33,17 @@ class ClientExternalTest extends TestCase
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512);
         $this->assertEquals('hello world', $contents_arr['message']);
+        putenv('APP_ENV=local');
     }
 
     public function testCallExternalMultipartSuccess(): void
     {
+        Redis::shouldReceive('get')->andReturn(json_encode([
+            'id' => 1,
+            'target_url' => 'https://jsonplaceholder.typicode.com/posts',
+            'mock_url' => 'https://jsonplaceholder.typicode.com/posts',
+            'flag' => true,
+        ]));
         $f = fopen('public/docs/hello.txt', 'w');
         fwrite($f, 'hello world');
         fclose($f);

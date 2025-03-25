@@ -13,6 +13,7 @@ class LogTest extends TestCase
 {
     private function setContext(): void
     {
+        putenv('APP_ENV=local');
         $meta = new Metadata();
         $meta->req_id = '123123';
         $meta->identifier = 'spotlibs-unittest';
@@ -22,6 +23,7 @@ class LogTest extends TestCase
 
     private function setContext2(): void
     {
+        putenv('APP_ENV=local');
         $meta = new Metadata();
         $meta->task_id = '123123';
         $meta->identifier = 'spotlibs-unittest';
