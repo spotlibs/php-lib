@@ -197,8 +197,7 @@ class ClientExternal extends BaseClient
         if (env('APP_ENV') == 'production') {
             throw new InvalidRuleException('Cannot use mock in production environment');
         }
-        $redis = new Redis();
-        $maproute = $redis->get('mst_url_mappings:' . $url);
+        $maproute = Redis::get('mst_url_mappings:' . $url);
         $maproute = json_decode($maproute, true, 512, JSON_THROW_ON_ERROR);
         return new MapRoute($maproute);
     }
