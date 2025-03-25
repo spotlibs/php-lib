@@ -29,8 +29,8 @@ namespace Spotlibs\PhpLib\Libraries;
 class MapRoute
 {
     public int $id;
-    public string $target;
-    public string $mock;
+    public string $target_url;
+    public string $mock_url;
     public bool $flag;
 
     /**
@@ -41,8 +41,8 @@ class MapRoute
     public function __construct(array $data)
     {
         $this->id = $data['id'];
-        $this->target = $data['target'];
-        $this->mock = $data['mock'];
+        $this->target_url = $data['target'];
+        $this->mock_url = $data['mock'];
         $this->flag = $data['flag'];
     }
 }

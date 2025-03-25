@@ -19,6 +19,8 @@ use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\ResponseInterface;
+use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
+use Spotlibs\PhpLib\Libraries\MapRoute;
 use Spotlibs\PhpLib\Logs\Log;
 use Throwable;
 
@@ -125,7 +127,7 @@ class ClientExternal extends BaseClient
             if (!empty((array) $maproute) && $maproute->flag) {
                 $request_temp = new Request(
                     $request->getMethod(),
-                    $maproute->mock,
+                    $maproute->mock_url,
                     $request->getHeaders(),
                     $request->getBody(),
                     $request->getProtocolVersion()
@@ -134,6 +136,7 @@ class ClientExternal extends BaseClient
                 unset($request_temp);
             }
         } catch (Throwable $th) {
+            //do nothing
         }
         if (!isset($options['timeout'])) {
             $options['timeout'] = 10;
@@ -189,10 +192,10 @@ class ClientExternal extends BaseClient
     private function checkMock(string $url): MapRoute
     {
         if (env('APP_ENV') == 'production') {
-            return [];
+            throw new InvalidRuleException('Cannot use mock in production environment');
         }
         $redis = new Redis();
-        $maproute = $redis->get('maproute:' . $url);
+        $maproute = $redis->get('mst_url_mappings:' . $url);
         $maproute = json_decode($maproute, true, 512, JSON_THROW_ON_ERROR);
         return new MapRoute($maproute);
     }
