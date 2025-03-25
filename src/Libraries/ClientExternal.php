@@ -121,9 +121,12 @@ class ClientExternal extends BaseClient
     public function call(Request $request, array $options = []): ResponseInterface
     {
         $startime = microtime(true);
-        $uri = $request->getUri()->getPath();
+        $uri = $request->getUri();
+        $url = $uri->getScheme() . "://" . $uri->getHost();
+        $url .= $uri->getPort() ?? ':' . $uri->getPort();
+        $url .= $uri->getPath();
         try {
-            $maproute = $this->checkMock($uri);
+            $maproute = $this->checkMock($url);
             if (!empty((array) $maproute) && $maproute->flag) {
                 $request_temp = new Request(
                     $request->getMethod(),
