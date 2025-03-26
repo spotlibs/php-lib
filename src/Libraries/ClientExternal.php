@@ -123,7 +123,7 @@ class ClientExternal extends BaseClient
         $startime = microtime(true);
         $uri = $request->getUri();
         $url = $uri->getScheme() . "://" . $uri->getHost();
-        $url .= $uri->getPort() ?? ':' . $uri->getPort();
+        $url .= is_null($uri->getPort()) ? "" : ":" . $uri->getPort();
         $url .= $uri->getPath();
         try {
             $maproute = $this->checkMock($url);
@@ -136,6 +136,7 @@ class ClientExternal extends BaseClient
                     $request->getProtocolVersion()
                 );
                 $request = $request_temp;
+                $request->withHeader('Host', parse_url($maproute->mock_url, PHP_URL_HOST));
                 unset($request_temp);
             }
         } catch (Throwable $th) {
@@ -197,7 +198,7 @@ class ClientExternal extends BaseClient
         if (env('APP_ENV') == 'production') {
             throw new InvalidRuleException('Cannot use mock in production environment');
         }
-        $maproute = Redis::get('mst_url_mappings:' . $url);
+        $maproute = Redis::get('eksternal_mock_url_mapping:' . $url);
         $maproute = json_decode($maproute, true, 512, JSON_THROW_ON_ERROR);
         return new MapRoute($maproute);
     }
