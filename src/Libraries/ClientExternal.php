@@ -136,7 +136,7 @@ class ClientExternal extends BaseClient
                     $request->getProtocolVersion()
                 );
                 $request = $request_temp;
-                $request->withHeader('Host', parse_url($maproute->mock_url, PHP_URL_HOST));
+                $request = $request->withHeader('Host', parse_url($maproute->mock_url, PHP_URL_HOST));
                 unset($request_temp);
             }
         } catch (Throwable $th) {
