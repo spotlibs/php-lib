@@ -17,8 +17,12 @@ namespace Spotlibs\PhpLib\Libraries;
 
 use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\ResponseInterface;
+use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
+use Spotlibs\PhpLib\Libraries\MapRoute;
 use Spotlibs\PhpLib\Logs\Log;
+use Throwable;
 
 /**
  * ClientTimeoutUnit
@@ -117,6 +121,27 @@ class ClientExternal extends BaseClient
     public function call(Request $request, array $options = []): ResponseInterface
     {
         $startime = microtime(true);
+        $uri = $request->getUri();
+        $url = $uri->getScheme() . "://" . $uri->getHost();
+        $url .= is_null($uri->getPort()) ? "" : ":" . $uri->getPort();
+        $url .= $uri->getPath();
+        try {
+            $maproute = $this->checkMock($url);
+            if (!empty((array) $maproute) && $maproute->flag) {
+                $request_temp = new Request(
+                    $request->getMethod(),
+                    $maproute->mock_url,
+                    $request->getHeaders(),
+                    $request->getBody(),
+                    $request->getProtocolVersion()
+                );
+                $request = $request_temp;
+                $request = $request->withHeader('Host', parse_url($maproute->mock_url, PHP_URL_HOST));
+                unset($request_temp);
+            }
+        } catch (Throwable $th) {
+            //do nothing
+        }
         if (!isset($options['timeout'])) {
             $options['timeout'] = 10;
         }
@@ -145,6 +170,7 @@ class ClientExternal extends BaseClient
                 'host' => $request->getUri()->getHost(),
                 'url' => $request->getUri()->getPath(),
                 'request' => [
+                    'method' => $request->getMethod(),
                     'headers' => $request->getHeaders(),
                     'body' => json_decode($reqbody, true)
                 ],
@@ -159,5 +185,22 @@ class ClientExternal extends BaseClient
             Log::activity()->info($logData);
         }
         return $response;
+    }
+
+    /**
+     * Check if url shall mock
+     *
+     * @param string $url full url of the request
+     *
+     * @return array
+     */
+    private function checkMock(string $url): MapRoute
+    {
+        if (env('APP_ENV') == 'production') {
+            throw new InvalidRuleException('Cannot use mock in production environment');
+        }
+        $maproute = Redis::get('eksternal_mock_url_mapping:' . $url);
+        $maproute = json_decode($maproute, true, 512, JSON_THROW_ON_ERROR);
+        return new MapRoute($maproute);
     }
 }

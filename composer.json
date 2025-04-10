@@ -26,7 +26,8 @@
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "9.6.20",
         "rregeer/phpunit-coverage-check": "^0.3.1",
-        "slevomat/coding-standard": "^8.15"
+        "slevomat/coding-standard": "^8.15",
+        "mockery/mockery": "^1.6"
     },
     "scripts": {
         "lint": "./vendor/bin/phpcs -p",

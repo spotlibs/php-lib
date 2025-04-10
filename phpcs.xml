@@ -28,6 +28,7 @@
   <exclude-pattern>src/HelloWorld.php</exclude-pattern>
   <exclude-pattern>src/Commands/</exclude-pattern>
   <exclude-pattern>src/Providers/</exclude-pattern>
+  <exclude-pattern>src/Libraries/KafkaCallable.php</exclude-pattern>
   <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
     <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation" />
     <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification" />
