@@ -170,6 +170,7 @@ class ClientExternal extends BaseClient
                 'host' => $request->getUri()->getHost(),
                 'url' => $request->getUri()->getPath(),
                 'request' => [
+                    'method' => $request->getMethod(),
                     'headers' => $request->getHeaders(),
                     'body' => json_decode($reqbody, true)
                 ],
