@@ -169,15 +169,23 @@ class ClientExternal extends BaseClient
                 'request' => [
                     'method' => $request->getMethod(),
                     'headers' => $request->getHeaders(),
-                    'body' => json_decode($reqbody, true)
                 ],
                 'response' => [
                     'headers' => $response->getHeaders(),
-                    'body' => json_decode($respbody, true)
                 ],
                 'responseTime' => round($elapsed * 1000),
                 'memoryUsage' => memory_get_usage()
             ];
+            if ($request->getHeader('Content-Type') == 'application/json') {
+                $logData['request']['body'] = json_decode($reqbody, true);
+            } else {
+                $logData['request']['body'] = $reqbody;
+            }
+            if ($response->getHeader('Content-Type') == 'application/json') {
+                $logData['response']['body'] = json_decode($respbody, true);
+            } else {
+                $logData['response']['body'] = $respbody;
+            }
             $response->getBody()->rewind();
             Log::activity()->info($logData);
         }
