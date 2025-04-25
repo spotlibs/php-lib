@@ -143,10 +143,7 @@ class ClientExternal extends BaseClient
             //do nothing
         }
         if (!isset($options['timeout'])) {
-            $options['timeout'] = 10;
-        }
-        if (!isset($options['verify'])) {
-            $options['verify'] = false;
+            $options['timeout'] = 60;
         }
         foreach ($this->requestHeaders as $key => $header) {
             $request = $request->withHeader($key, $header);
