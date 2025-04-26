@@ -79,9 +79,9 @@ class ClientExternal extends BaseClient
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($config = [])
     {
-        parent::__construct();
+        parent::__construct($config);
     }
 
     /**
@@ -178,6 +178,16 @@ class ClientExternal extends BaseClient
                 'responseTime' => round($elapsed * 1000),
                 'memoryUsage' => memory_get_usage()
             ];
+            if ($request->getHeader('Content-Type') == ['application/json']) {
+                $logData['request']['body'] = json_decode($reqbody, true);
+            } else {
+                $logData['request']['body'] = $reqbody;
+            }
+            if ($response->getHeader('Content-Type') == ['application/json']) {
+                $logData['response']['body'] = json_decode($respbody, true);
+            } else {
+                $logData['response']['body'] = $respbody;
+            }
             $response->getBody()->rewind();
             Log::activity()->info($logData);
         }
