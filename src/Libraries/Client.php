@@ -61,9 +61,11 @@ class Client extends BaseClient
     /**
      * Create a new Client instance.
      *
+     * @param array<mixed> $config config of GuzzleHttp Client
+     *
      * @return void
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         parent::__construct($config);
     }
