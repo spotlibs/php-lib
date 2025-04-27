@@ -1,0 +1,55 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Commands
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://github.com/
+ */
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use Spotlibs\PhpLib\Commands\Command;
+use Spotlibs\PhpLib\Logs\Log;
+
+/**
+ * DummyClassCommand
+ *
+ * Doing some tasks through CLI input
+ *
+ * @category Commands
+ * @package  Commands
+ * @author   
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/
+ */
+class DummyClassCommand extends Command
+{
+    // phpcs:ignore
+    protected $signature = 'DummySignature';
+    // phpcs:ignore
+    protected $description = 'brief description of what this command for...';
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function handle(): void
+    {
+        /**
+         * Adding traceID and identifier for logger context.
+         * Deleting this may cause the logger can not log the traceID and identifier.
+         * Consider to keep this line below.
+         */
+        parent::setContext(); //adding traceID and identifier for logger context
+
+        Log::worker()->info(['message' => 'DummyClass process begin']);
+    }
+}
