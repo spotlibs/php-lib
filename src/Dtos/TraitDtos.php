@@ -74,7 +74,7 @@ trait TraitDtos
      *
      * @return void
      */
-    private function convertArray(ReflectionClass &$reflector, string $key, array &$value)
+    private function convertArray(ReflectionClass &$reflector, string $key, array &$value): void
     {
         $prop = $reflector->getProperty($key);
         $type = $prop->getType()->getName();
@@ -125,6 +125,9 @@ trait TraitDtos
     {
         $result = [];
         foreach ($x as $key => $value) {
+            if ($key == 'arrayOfObjectMap' || $key == 'aliases') {
+                continue;
+            }
             if (is_array($value)) {
                 $result[$key] = $this->recursiveToArray($value);
             } elseif (is_object($value)) {

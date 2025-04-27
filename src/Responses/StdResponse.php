@@ -15,8 +15,8 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Responses;
 
-use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Illuminate\Http\Response;
+use Spotlibs\PhpLib\Exceptions\ExceptionInterface;
 use Spotlibs\PhpLib\Exceptions\ParameterException;
 
 /**
@@ -47,6 +47,7 @@ class StdResponse
         if ($responseData !== null) {
             $result['responseData'] = $responseData;
         }
+
         return new Response($result, 200);
     }
 

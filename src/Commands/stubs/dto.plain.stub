@@ -24,7 +24,7 @@ use Spotlibs\PhpLib\Dtos\TraitDtos;
  *
  * @category DataClass
  * @package  Dtos
- * @author   
+ * @author   Your Name <youremail@>
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/
  */
@@ -35,7 +35,7 @@ class DummyClass
     /**
      * Define which properties as array of Dtos
      *
-     * @var array
+     * @property array $arrayOfObjectMap
      */
     protected array $arrayOfObjectMap = [];
 
@@ -43,7 +43,7 @@ class DummyClass
      * Define which array keys to be recognized as property in Dtos.
      * This will override the default property assignment in Dtos that no longer lookup by match property to array key insted match alias to array key
      *
-     * @var array
+     * @property array $aliases
      */
     protected array $aliases = [];
 }

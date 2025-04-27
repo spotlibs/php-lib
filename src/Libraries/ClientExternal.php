@@ -16,10 +16,13 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries;
 
 use GuzzleHttp\Client as BaseClient;
-use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\ResponseInterface;
+use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
+use Spotlibs\PhpLib\Libraries\MapRoute;
 use Spotlibs\PhpLib\Logs\Log;
+use Throwable;
 
 /**
  * ClientTimeoutUnit
@@ -82,32 +85,6 @@ class ClientExternal extends BaseClient
     }
 
     /**
-     * Set the timeout for Http Client
-     *
-     * @param float $timeout number of desired timeout
-     *
-     * @return self
-     */
-    public function setTimeout(float $timeout): self
-    {
-        $this->timeout = $timeout;
-        return $this;
-    }
-
-    /**
-     * Set verify
-     *
-     * @param bool $verify number of desired timeout
-     *
-     * @return self
-     */
-    public function setVerify(bool $verify): self
-    {
-        $this->verify = $verify;
-        return $this;
-    }
-
-    /**
      * Set request headers in associative array
      *
      * @param array<string[]> $headers example: ['Content-Type' => ['application/json']]
@@ -134,21 +111,42 @@ class ClientExternal extends BaseClient
     }
 
     /**
-     * Set the timeout for Http Client
+     * Execute the HTTP request through GuzzleHttp Client
      *
      * @param Request $request HTTP Request instance
+     * @param array   $options Guzzle HTTP client options. See more at https://docs.guzzlephp.org/en/stable/request-options.html
      *
      * @return ResponseInterface
      */
-    public function call(Request $request): ResponseInterface
+    public function call(Request $request, array $options = []): ResponseInterface
     {
         $startime = microtime(true);
-        $options = ['timeout' => $this->timeout, 'verify' => $this->verify];
+        $uri = $request->getUri();
+        $url = $uri->getScheme() . "://" . $uri->getHost();
+        $url .= is_null($uri->getPort()) ? "" : ":" . $uri->getPort();
+        $url .= $uri->getPath();
+        try {
+            $maproute = $this->checkMock($url);
+            if (!empty((array) $maproute) && $maproute->flag) {
+                $request_temp = new Request(
+                    $request->getMethod(),
+                    $maproute->mock_url,
+                    $request->getHeaders(),
+                    $request->getBody(),
+                    $request->getProtocolVersion()
+                );
+                $request = $request_temp;
+                $request = $request->withHeader('Host', parse_url($maproute->mock_url, PHP_URL_HOST));
+                unset($request_temp);
+            }
+        } catch (Throwable $th) {
+            //do nothing
+        }
+        if (!isset($options['timeout'])) {
+            $options['timeout'] = 60;
+        }
         foreach ($this->requestHeaders as $key => $header) {
             $request = $request->withHeader($key, $header);
-        }
-        if (!$request->hasHeader('Content-Type')) {
-            $request = $request->withHeader('Content-Type', 'application/json');
         }
         $response = $this->send($request, $options);
         foreach ($this->responseHeaders as $key => $header) {
@@ -157,16 +155,19 @@ class ClientExternal extends BaseClient
         $elapsed = microtime(true) - $startime;
         if (env('APP_DEBUG', false)) {
             $request->getBody()->rewind();
-            if (strlen($reqbody = $request->getBody()->getContents()) > 5000) {
+            $reqbody = $request->getBody()->getContents();
+            $respbody = $response->getBody()->getContents();
+            if (strlen($reqbody) > 5000) {
                 $reqbody = "more than 5000 characters";
             }
-            if (strlen($respbody = $response->getBody()->getContents()) > 5000) {
+            if (strlen($respbody) > 5000) {
                 $respbody = "more than 5000 characters";
             }
             $logData = [
                 'host' => $request->getUri()->getHost(),
                 'url' => $request->getUri()->getPath(),
                 'request' => [
+                    'method' => $request->getMethod(),
                     'headers' => $request->getHeaders(),
                     'body' => json_decode($reqbody, true)
                 ],
@@ -181,5 +182,22 @@ class ClientExternal extends BaseClient
             Log::activity()->info($logData);
         }
         return $response;
+    }
+
+    /**
+     * Check if url shall mock
+     *
+     * @param string $url full url of the request
+     *
+     * @return array
+     */
+    private function checkMock(string $url): MapRoute
+    {
+        if (env('APP_ENV') == 'production') {
+            throw new InvalidRuleException('Cannot use mock in production environment');
+        }
+        $maproute = Redis::get('eksternal_mock_url_mapping:' . $url);
+        $maproute = json_decode($maproute, true, 512, JSON_THROW_ON_ERROR);
+        return new MapRoute($maproute);
     }
 }
