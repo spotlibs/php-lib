@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Libraries;
 
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Laravel\Lumen\Testing\TestCase;
+use Spotlibs\PhpLib\Exceptions\DataNotFoundException;
 use Spotlibs\PhpLib\Libraries\Client;
 
 class ClientTest extends TestCase
@@ -148,5 +152,31 @@ class ClientTest extends TestCase
         $resp = $client->call($request);
         $r = json_decode($resp->getBody()->getContents());
         $this->assertEquals('101', $r->id);
+    }
+
+    public function testCallZA(): void
+    {
+        $this->expectException(DataNotFoundException::class);
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['responseCode' => '02', 'responseDesc' => 'Not found']))
+        ]);
+        $handlerStack = new HandlerStack($mock);
+        $request = new Request(
+            'POST',
+            '/123',
+            [
+                'Content-Type' => 'application/json',
+                'Strict-Transport-Security' => ['max-age=31536000', 'includeSubDomains', 'preload']
+            ],
+            json_encode([
+                "status" => "ok",
+                "message" => "welcome"
+            ])
+        );
+        $client = new Client(['handler' => $handlerStack]);
+        $client
+            ->injectRequestHeader(['X-Powered-By' => ['Money']])
+            ->injectResponseHeader(['X-Server' => ['tinyurl'], 'X-Overhead' => ['true', 'allowed']])
+            ->call($request);
     }
 }
