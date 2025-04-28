@@ -22,6 +22,8 @@ use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
 use Spotlibs\PhpLib\Libraries\MapRoute;
 use Spotlibs\PhpLib\Logs\Log;
+use Spotlibs\PhpLib\Services\Context;
+use Spotlibs\PhpLib\Services\Metadata;
 use Throwable;
 
 /**
@@ -120,6 +122,8 @@ class ClientExternal extends BaseClient
      */
     public function call(Request $request, array $options = []): ResponseInterface
     {
+        $context = app(Context::class);
+        $metadata = $context->get(Metadata::class);
         $startime = microtime(true);
         $uri = $request->getUri();
         $url = $uri->getScheme() . "://" . $uri->getHost();
@@ -164,6 +168,8 @@ class ClientExternal extends BaseClient
                 $respbody = "more than 5000 characters";
             }
             $logData = [
+                'app_name' => env('APP_NAME'),
+                'path' => is_null($metadata) ? null : $metadata->identifier,
                 'host' => $request->getUri()->getHost(),
                 'url' => $request->getUri()->getPath(),
                 'request' => [
@@ -172,6 +178,7 @@ class ClientExternal extends BaseClient
                     'body' => json_decode($reqbody, true)
                 ],
                 'response' => [
+                    'httpCode' => $response->getStatusCode(),
                     'headers' => $response->getHeaders(),
                     'body' => json_decode($respbody, true)
                 ],
