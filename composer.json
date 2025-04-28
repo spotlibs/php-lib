@@ -8,7 +8,7 @@
         "php": "^8.3",
         "laravel/lumen-framework": "11.2.0",
         "jobcloud/php-kafka-lib": "2.0.0",
-        "flix-tech/avro-serde-php": "2.1"
+        "flix-tech/avro-serde-php": "2.1.0"
     },
     "autoload": {
         "psr-4": {
