@@ -19,6 +19,8 @@ use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Exceptions\StdException;
+use Spotlibs\PhpLib\Services\Context;
+use Spotlibs\PhpLib\Services\Metadata;
 
 /**
  * ClientTimeoutUnit
@@ -67,6 +69,11 @@ class Client extends BaseClient
      */
     public function __construct(array $config = [])
     {
+        $context = app(Context::class);
+        $metadata = $context->get(Metadata::class);
+        foreach ((array) $metadata as $key => $value) {
+            $this->requestHeaders[$key] = $value;
+        }
         parent::__construct($config);
     }
 
