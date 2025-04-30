@@ -69,12 +69,14 @@ class Client extends BaseClient
      */
     public function __construct(array $config = [])
     {
+        parent::__construct($config);
         $context = app(Context::class);
         $metadata = $context->get(Metadata::class);
-        foreach ((array) $metadata as $key => $value) {
-            $this->requestHeaders[$key] = $value;
+        if (!is_null($metadata)) {
+            foreach ((array) $metadata as $key => $value) {
+                $this->requestHeaders[$key] = $value;
+            }
         }
-        parent::__construct($config);
     }
 
     /**

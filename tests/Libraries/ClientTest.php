@@ -22,12 +22,15 @@ class ClientTest extends TestCase
 
     public function testCallY(): void
     {
-        
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['status' => 'ok', 'message' => 'well done'])),
+        ]);
+        $handlerStack = new HandlerStack($mock);
         $request = new Request(
             'GET',
             'https://dummyjson.com/test',
         );
-        $client = new Client();
+        $client = new Client(['handler' => $handlerStack]);
         $response = $client->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512);
@@ -36,11 +39,15 @@ class ClientTest extends TestCase
 
     public function testCallX(): void
     {
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['status' => 'ok', 'message' => 'well done'])),
+        ]);
+        $handlerStack = new HandlerStack($mock);
         $request = new Request(
             'GET',
             'https://dummyjson.com/test',
         );
-        $client = new Client();
+        $client = new Client(['handler' => $handlerStack]);
         $response = $client->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512);
@@ -75,11 +82,15 @@ class ClientTest extends TestCase
 
     public function testCallEksternal(): void
     {
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['status' => 'ok', 'message' => 'well done'])),
+        ]);
+        $handlerStack = new HandlerStack($mock);
         $request = new Request(
             'GET',
             'https://dummyjson.com/test',
         );
-        $client = new Client();
+        $client = new Client(['handler' => $handlerStack]);
         $response = $client
             ->call($request);
         $contents = $response->getBody()->getContents();
@@ -114,6 +125,10 @@ class ClientTest extends TestCase
 
     public function testCallMultipartSuccess2(): void
     {
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['id' => '101', 'status' => 'OK', 'message' => 'well done'])),
+        ]);
+        $handlerStack = new HandlerStack($mock);
         $f = fopen('public/docs/hello.txt', 'w');
         fwrite($f, 'hello world');
         fclose($f);
@@ -128,7 +143,7 @@ class ClientTest extends TestCase
                 ]
             ])
         );
-        $client = new Client();
+        $client = new Client(['handler' => $handlerStack]);
         $resp = $client
             ->call($request);
         $r = json_decode($resp->getBody()->getContents());
