@@ -15,11 +15,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Dtos\DummyClass;
+use App\Models\Dtos\DummyClassResponse;
 use App\Library\RestClient;
 use Spotlibs\PhpLib\Exceptions\StdException;
 use Spotlibs\PhpLib\Exceptions\ThirdPartyServiceException;
-use App\Models\Dtos\DummyClassResponse;
-use App\Models\Dtos\DummyClass;
 
 /**
  * DummyClassService
