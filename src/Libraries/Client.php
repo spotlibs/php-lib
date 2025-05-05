@@ -71,10 +71,67 @@ class Client extends BaseClient
     {
         parent::__construct($config);
         $context = app(Context::class);
-        $metadata = $context->get(Metadata::class);
-        if (!is_null($metadata)) {
-            foreach ((array) $metadata as $key => $value) {
-                $this->requestHeaders[$key] = $value;
+        $meta = $context->get(Metadata::class);
+        if (!is_null($meta)) {
+            if (isset($meta->user_agent) && $meta->user_agent !== null) {
+                $this->requestHeaders['User-Agent'] = $meta->user_agent;
+            }
+            if (isset($meta->cache_control) && $meta->cache_control !== null) {
+                $this->requestHeaders['Cache-Control'] = $meta->cache_control;
+            }
+            if (isset($meta->forwarded_for) && $meta->forwarded_for !== null) {
+                $this->requestHeaders['X-Forwarded-For'] = $meta->forwarded_for;
+            }
+            if (isset($meta->request_from) && $meta->request_from !== null) {
+                $this->requestHeaders['X-Request-From'] = $meta->request_from;
+            }
+            if (isset($meta->device_id) && $meta->device_id !== null) {
+                $this->requestHeaders['X-Device-ID'] = $meta->device_id;
+            }
+            if (isset($meta->app) && $meta->app !== null) {
+                $this->requestHeaders['X-App'] = $meta->app;
+            }
+            if (isset($meta->version_app) && $meta->version_app !== null) {
+                $this->requestHeaders['X-Version-App'] = $meta->version_app;
+            }
+            if (isset($meta->req_id) && $meta->req_id !== null) {
+                $this->requestHeaders['X-Request-ID'] = $meta->req_id;
+            }
+            if (isset($meta->req_user) && $meta->req_user !== null) {
+                $this->requestHeaders['X-Request-User'] = $meta->req_user;
+            }
+            if (isset($meta->req_nama) && $meta->req_nama !== null) {
+                $this->requestHeaders['X-Request-Nama'] = $meta->req_nama;
+            }
+            if (isset($meta->req_kode_jabatan) && $meta->req_kode_jabatan !== null) {
+                $this->requestHeaders['X-Request-Kode-Jabatan'] = $meta->req_kode_jabatan;
+            }
+            if (isset($meta->req_nama_jabatan) && $meta->req_nama_jabatan !== null) {
+                $this->requestHeaders['X-Request-Nama-Jabatan'] = $meta->req_nama_jabatan;
+            }
+            if (isset($meta->req_kode_uker) && $meta->req_kode_uker !== null) {
+                $this->requestHeaders['X-Request-Kode-Uker'] = $meta->req_kode_uker;
+            }
+            if (isset($meta->req_nama_uker) && $meta->req_nama_uker !== null) {
+                $this->requestHeaders['X-Request-Nama-Uker'] = $meta->req_nama_uker;
+            }
+            if (isset($meta->req_jenis_uker) && $meta->req_jenis_uker !== null) {
+                $this->requestHeaders['X-Request-Jenis-Uker'] = $meta->req_jenis_uker;
+            }
+            if (isset($meta->req_kode_main_uker) && $meta->req_kode_main_uker !== null) {
+                $this->requestHeaders['X-Request-Kode-MainUker'] = $meta->req_kode_main_uker;
+            }
+            if (isset($meta->req_kode_region) && $meta->req_kode_region !== null) {
+                $this->requestHeaders['X-Request-Kode-Region'] = $meta->req_kode_region;
+            }
+            if (isset($meta->path_gateway) && $meta->path_gateway !== null) {
+                $this->requestHeaders['X-Path-Gateway'] = $meta->path_gateway;
+            }
+            if (isset($meta->authorization) && $meta->authorization !== null) {
+                $this->requestHeaders['Authorization'] = $meta->authorization;
+            }
+            if (isset($meta->api_key) && $meta->api_key !== null) {
+                $this->requestHeaders['X-Api-Key'] = $meta->api_key;
             }
         }
     }

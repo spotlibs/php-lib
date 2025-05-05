@@ -10,8 +10,11 @@ use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Laravel\Lumen\Testing\TestCase;
+use Mockery;
 use Spotlibs\PhpLib\Exceptions\DataNotFoundException;
 use Spotlibs\PhpLib\Libraries\Client;
+use Spotlibs\PhpLib\Services\Context;
+use Spotlibs\PhpLib\Services\Metadata;
 
 class ClientTest extends TestCase
 {
@@ -25,6 +28,36 @@ class ClientTest extends TestCase
         $mock = new MockHandler([
             new Response(200, ['Content-Type' => 'application/json'], json_encode(['status' => 'ok', 'message' => 'well done'])),
         ]);
+        $meta = new Metadata();
+        $meta->authorization = 'Bearer 123';
+        $meta->user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3';
+        $meta->cache_control = 'no-cache';
+        $meta->api_key = '1234567890abcdef';
+        $meta->forwarded_for = '';
+        $meta->request_from = '';
+        $meta->device_id = '1234567890abcdef';
+        $meta->app = 'test_app';
+        $meta->version_app = '1.0.0';
+        $meta->req_id = '1234567890abcdef';
+        $meta->task_id = '1234567890abcdef';
+        $meta->req_tags = 'test_tag';
+        $meta->req_user = 'test_user';
+        $meta->req_nama = 'test_name';
+        $meta->req_kode_jabatan = 'test_code';
+        $meta->req_nama_jabatan = 'test_name';
+        $meta->req_kode_main_uker = 'test_code';
+        $meta->req_kode_region = 'test_code';
+        $meta->req_jenis_uker = 'test_type';
+        $meta->req_kode_uker = 'test_code';
+        $meta->req_nama_uker = 'test_name';
+        $meta->path_gateway = 'test_path';
+        $meta->identifier = 'test_identifier';
+        /**
+         * @var \Mockery\MockInterface $context
+         */
+        $context = Mockery::mock(Context::class);
+        $context->shouldReceive('get')->with(Metadata::class)->andReturn($meta);
+        $this->app->instance(Context::class, $context);
         $handlerStack = new HandlerStack($mock);
         $request = new Request(
             'GET',
