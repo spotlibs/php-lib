@@ -34,7 +34,7 @@ class DummyClassCollection extends Collection
     public function __construct(mixed $array)
     {
         $newarray = [];
-        foreach($array as $row) {
+        foreach ($array as $row) {
             $newarray[] = $row instanceof DummyClass ? $row : new DummyClass((array) $row);
         }
         parent::__construct($newarray);
