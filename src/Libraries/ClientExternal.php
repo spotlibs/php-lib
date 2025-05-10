@@ -22,6 +22,8 @@ use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
 use Spotlibs\PhpLib\Libraries\MapRoute;
 use Spotlibs\PhpLib\Logs\Log;
+use Spotlibs\PhpLib\Services\Context;
+use Spotlibs\PhpLib\Services\Metadata;
 use Throwable;
 
 /**
@@ -77,11 +79,13 @@ class ClientExternal extends BaseClient
     /**
      * Create a new Client instance.
      *
+     * @param array<mixed> $config config of GuzzleHttp Client
+     *
      * @return void
      */
-    public function __construct()
+    public function __construct(array $config = [])
     {
-        parent::__construct();
+        parent::__construct($config);
     }
 
     /**
@@ -120,6 +124,8 @@ class ClientExternal extends BaseClient
      */
     public function call(Request $request, array $options = []): ResponseInterface
     {
+        $context = app(Context::class);
+        $metadata = $context->get(Metadata::class);
         $startime = microtime(true);
         $uri = $request->getUri();
         $url = $uri->getScheme() . "://" . $uri->getHost();
@@ -164,6 +170,8 @@ class ClientExternal extends BaseClient
                 $respbody = "more than 5000 characters";
             }
             $logData = [
+                'app_name' => env('APP_NAME'),
+                'path' => is_null($metadata) ? null : $metadata->identifier,
                 'host' => $request->getUri()->getHost(),
                 'url' => $request->getUri()->getPath(),
                 'request' => [
@@ -171,17 +179,18 @@ class ClientExternal extends BaseClient
                     'headers' => $request->getHeaders(),
                 ],
                 'response' => [
+                    'httpCode' => $response->getStatusCode(),
                     'headers' => $response->getHeaders(),
                 ],
                 'responseTime' => round($elapsed * 1000),
                 'memoryUsage' => memory_get_usage()
             ];
-            if ($request->getHeader('Content-Type') == 'application/json') {
+            if ($request->getHeader('Content-Type') == ['application/json']) {
                 $logData['request']['body'] = json_decode($reqbody, true);
             } else {
                 $logData['request']['body'] = $reqbody;
             }
-            if ($response->getHeader('Content-Type') == 'application/json') {
+            if ($response->getHeader('Content-Type') == ['application/json']) {
                 $logData['response']['body'] = json_decode($respbody, true);
             } else {
                 $logData['response']['body'] = $respbody;

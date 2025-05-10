@@ -35,15 +35,11 @@ use App\Usecases\DummyUsecase;
  */
 class DummyClassController extends Controller
 {
-    private $dummyUsecase;
-    private $output;
+    private DummyUsecase $dummyUsecase;
     
     public function __construct(DummyUsecase $dummyUsecase)
     {
         parent::__construct();
         $this->dummyUsecase = $dummyUsecase;
-        $this->output = new stdClass();
-        $this->output->responseCode = '';
-        $this->output->responseDesc = '';
     }
 }

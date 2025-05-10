@@ -45,11 +45,13 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-    protected array $dontReport = [
+    // @phpcs:disable
+    protected $dontReport = [
         AuthorizationException::class,
         HttpException::class,
         ValidationException::class
     ];
+    // @phpcs:enable
 
     /**
      * Report or log an exception.
