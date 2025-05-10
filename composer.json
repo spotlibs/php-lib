@@ -1,4 +1,5 @@
 {
+    "version": "1.2.0",
     "name": "spotlibs/php-lib",
     "description": "PHP library for support spotlibs microservice development",
     "keywords": ["spotlibs", "microservice", "php-lib"],
