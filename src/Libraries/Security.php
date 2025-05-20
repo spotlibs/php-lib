@@ -32,11 +32,11 @@ class Security
     {
         $plaintext = hex2bin($plaintext);
         if (!$plaintext) {
-            throw new Exception("failed to convert plaintext into bin");
+            throw new \Exception("failed to convert plaintext into bin");
         }
-        $ecrypted = openssl_encrypt($plaintext, "AES-128-CBC", "xxx", OPENSSL_ZERO_PADDING, "ivx");
+        $ecrypted = openssl_encrypt($plaintext, "AES-128-CBC", env('SECURITY_KEY'), OPENSSL_ZERO_PADDING, env('SECURITY_IV_KEY'));
         if (!$ecrypted) {
-            throw new Exception("failed to encrypt string");
+            throw new \Exception("failed to encrypt string");
         }
         return $ecrypted;
     }
