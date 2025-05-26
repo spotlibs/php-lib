@@ -28,6 +28,14 @@ namespace Spotlibs\PhpLib\Libraries;
  */
 class Security
 {
+    /**
+     * Encrypting sensitive string data
+     *
+     * @param string $plaintext string to encrypt
+     *
+     * @throws \Exception
+     * @return bool|string
+     */
     public static function encrypt(string $plaintext): string
     {
         $plaintext = hex2bin($plaintext);
@@ -38,6 +46,24 @@ class Security
         if (!$ecrypted) {
             throw new \Exception("failed to encrypt string");
         }
-        return $ecrypted;
+        return bin2hex($ecrypted);
+    }
+
+    /**
+     * Decrypt encrypted string
+     *
+     * @param string $encrypted string to decrypt
+     *
+     * @throws \Exception
+     * @return bool|string
+     */
+    public static function decrypt(string $encrypted): string
+    {
+        $binpin = hex2bin($encrypted);
+        $decrypted = openssl_decrypt($binpin, "AES-128-CBC", env('SECURITY_KEY'), OPENSSL_ZERO_PADDING, env('SECURITY_IV_KEY'));
+        if (!$decrypted) {
+            throw new \Exception("failed to decrypt string");
+        }
+        return $decrypted;
     }
 }
