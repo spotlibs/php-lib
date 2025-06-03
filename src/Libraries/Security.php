@@ -38,15 +38,21 @@ class Security
      */
     public static function encrypt(string $plaintext): string
     {
-        $plaintext = hex2bin($plaintext);
-        if (!$plaintext) {
-            throw new \Exception("failed to convert plaintext into bin");
+        $charset = array_merge(
+            range('0', '9'),
+            range('a', 'z'),
+            range('A', 'Z'),
+        );
+        $ivArr = [];
+        for ($i = 0; $i < 16; $i++) {
+            $ivArr[] = $charset[random_int(0,61)];
         }
-        $ecrypted = openssl_encrypt($plaintext, "AES-128-CBC", env('SECURITY_KEY'), OPENSSL_ZERO_PADDING, env('SECURITY_IV_KEY'));
+        $iv = implode('', $ivArr);
+        $ecrypted = openssl_encrypt($plaintext, "AES-128-CBC", env('SECURITY_KEY'), OPENSSL_RAW_DATA, $iv);
         if (!$ecrypted) {
             throw new \Exception("failed to encrypt string");
         }
-        return bin2hex($ecrypted);
+        return bin2hex($iv . $ecrypted);
     }
 
     /**
@@ -59,8 +65,11 @@ class Security
      */
     public static function decrypt(string $encrypted): string
     {
-        $binpin = hex2bin($encrypted);
-        $decrypted = openssl_decrypt($binpin, "AES-128-CBC", env('SECURITY_KEY'), OPENSSL_ZERO_PADDING, env('SECURITY_IV_KEY'));
+        
+        $ivHex = substr($encrypted,0,32);
+        $iv = hex2bin($ivHex);
+        $encrypted  = substr($encrypted,32);
+        $decrypted = openssl_decrypt(hex2bin($encrypted), "AES-128-CBC", env('SECURITY_KEY'), OPENSSL_RAW_DATA, $iv);
         if (!$decrypted) {
             throw new \Exception("failed to decrypt string");
         }
