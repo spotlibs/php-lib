@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Libraries;
 
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\MultipartStream;
@@ -31,7 +32,11 @@ class ClientExternalTest extends TestCase
             ['content-type' => 'application/json'],
             json_encode(['message' => 'hello world'])
         );
-        $client = new ClientExternal();
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['status' => 'ok', 'message' => 'hello world'])),
+        ]);
+        $handlerStack = new HandlerStack($mock);
+        $client = new ClientExternal(['handler' => $handlerStack]);
         $response = $client->call($request);
         $contents = $response->getBody()->getContents();
         $contents_arr = json_decode($contents, true, 512);
@@ -50,6 +55,11 @@ class ClientExternalTest extends TestCase
         $f = fopen('public/docs/hello.txt', 'w');
         fwrite($f, 'hello world');
         fclose($f);
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['id' => '101', 'status' => 'ok', 'message' => 'well done'])),
+        ]);
+        $handlerStack = new HandlerStack($mock);
+        $client = new ClientExternal(['handler' => $handlerStack]);
         $request = new Request(
             'POST',
             'https://jsonplaceholder.typicode.com/posts',
@@ -61,7 +71,6 @@ class ClientExternalTest extends TestCase
                 ]
             ])
         );
-        $client = new ClientExternal();
         $resp = $client
             ->injectRequestHeader(['X-Unit-Test' => ['clover']])
             ->injectResponseHeader(['X-Unit-Test-Response' => ['clover-response']])
@@ -88,7 +97,11 @@ class ClientExternalTest extends TestCase
                 ]
             ])
         );
-        $client = new ClientExternal();
+        $mock = new MockHandler([
+            new ConnectException('simulated error', $request)
+        ]);
+        $handlerStack = new HandlerStack($mock);
+        $client = new ClientExternal(['handler' => $handlerStack]);
         $client->call($request);
     }
 
