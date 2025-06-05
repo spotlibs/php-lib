@@ -52,7 +52,8 @@ class Security
         if (!$ecrypted) {
             throw new \Exception("failed to encrypt string");
         }
-        return bin2hex($iv . $ecrypted);
+        
+        return strtoupper(bin2hex($iv . $ecrypted));
     }
 
     /**
