@@ -52,7 +52,8 @@ class Security
         if (!$ecrypted) {
             throw new \Exception("failed to encrypt string");
         }
-        return bin2hex($iv . $ecrypted);
+
+        return strtoupper(bin2hex($iv . $ecrypted));
     }
 
     /**
@@ -65,7 +66,6 @@ class Security
      */
     public static function decrypt(string $encrypted): string
     {
-
         $ivHex = substr($encrypted, 0, 32);
         $iv = hex2bin($ivHex);
         $encrypted  = substr($encrypted, 32);
