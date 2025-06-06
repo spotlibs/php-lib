@@ -58,6 +58,9 @@ class ActivityMonitor
      */
     public function handle($request, Closure $next)
     {
+        if ($request->path() == "ping") {
+            return $next($request);
+        }
         $meta = new Metadata();
         $meta->api_key = $request->header('X-Api-Key');
         $meta->app = $request->header('X-App');
@@ -107,6 +110,9 @@ class ActivityMonitor
      */
     public function terminate($request, $response)
     {
+        if ($request->path() == "ping") {
+            return;
+        }
         $fileData = (array) $this->contextService->get('fileData');
         $log = new StdClass();
         $log->app_name = getenv('APP_NAME');

@@ -66,7 +66,6 @@ class Security
      */
     public static function decrypt(string $encrypted): string
     {
-
         $ivHex = substr($encrypted, 0, 32);
         $iv = hex2bin($ivHex);
         $encrypted  = substr($encrypted, 32);
