@@ -5,3 +5,4 @@
 /.vscode
 report_coverage.xml
 /storage
+.idea
