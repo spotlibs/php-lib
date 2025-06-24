@@ -30,10 +30,37 @@ use Spotlibs\PhpLib\Exceptions\ParameterException;
 trait GraphQLQueryBuilder
 {
     private array $selectedFields = [];
+
+    /**
+     * Get available query fields
+     *
+     * @return array Array of available field names
+     */
     abstract protected function getQueryFields(): array;
+
+    /**
+     * Get the GraphQL query name
+     *
+     * @return string The query name
+     */
     abstract protected function getQueryName(): string;
+
+    /**
+     * Get the GraphQL operation name
+     *
+     * @return string The operation name
+     */
     abstract protected function getOperationName(): string;
 
+    /**
+     * Select specific fields for the GraphQL query
+     *
+     * @param string ...$fields The field names to select
+     *
+     * @return self Returns the current instance for method chaining
+     *
+     * @throws ParameterException When invalid fields are provided
+     */
     public function select(string ...$fields): self
     {
         $queryFields = $this->getQueryFields();
@@ -50,6 +77,11 @@ trait GraphQLQueryBuilder
         return $this;
     }
 
+    /**
+     * Convert the query to a GraphQL query string
+     *
+     * @return string The formatted GraphQL query string
+     */
     public function toGraphQLQueryString(): string
     {
         $fields = empty($this->selectedFields)
@@ -67,6 +99,11 @@ trait GraphQLQueryBuilder
         );
     }
 
+    /**
+     * Get selected properties as GraphQL fields
+     *
+     * @return array Array of field names
+     */
     private function getSelectedPropertiesAsFields(): array
     {
         return $this->getQueryFields();
