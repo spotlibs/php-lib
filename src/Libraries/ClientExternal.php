@@ -159,45 +159,44 @@ class ClientExternal extends BaseClient
             $response = $response->withHeader($key, $header);
         }
         $elapsed = microtime(true) - $startime;
-        if (env('APP_DEBUG', false)) {
-            $request->getBody()->rewind();
-            $reqbody = $request->getBody()->getContents();
-            $respbody = $response->getBody()->getContents();
-            if (strlen($reqbody) > 5000) {
-                $reqbody = "more than 5000 characters";
-            }
-            if (strlen($respbody) > 5000) {
-                $respbody = "more than 5000 characters";
-            }
-            $logData = [
-                'app_name' => env('APP_NAME'),
-                'path' => is_null($metadata) ? null : $metadata->identifier,
-                'host' => $request->getUri()->getHost(),
-                'url' => $request->getUri()->getPath(),
-                'request' => [
-                    'method' => $request->getMethod(),
-                    'headers' => $request->getHeaders(),
-                ],
-                'response' => [
-                    'httpCode' => $response->getStatusCode(),
-                    'headers' => $response->getHeaders(),
-                ],
-                'responseTime' => round($elapsed * 1000),
-                'memoryUsage' => memory_get_usage()
-            ];
-            if ($request->getHeader('Content-Type') == ['application/json']) {
-                $logData['request']['body'] = json_decode($reqbody, true);
-            } else {
-                $logData['request']['body'] = $reqbody;
-            }
-            if ($response->getHeader('Content-Type') == ['application/json']) {
-                $logData['response']['body'] = json_decode($respbody, true);
-            } else {
-                $logData['response']['body'] = $respbody;
-            }
-            $response->getBody()->rewind();
-            Log::activity()->info($logData);
+
+        $request->getBody()->rewind();
+        $reqbody = $request->getBody()->getContents();
+        $respbody = $response->getBody()->getContents();
+        if (strlen($reqbody) > 5000) {
+            $reqbody = "more than 5000 characters";
         }
+        if (strlen($respbody) > 5000) {
+            $respbody = "more than 5000 characters";
+        }
+        $logData = [
+            'app_name' => env('APP_NAME'),
+            'path' => is_null($metadata) ? null : $metadata->identifier,
+            'host' => $request->getUri()->getHost(),
+            'url' => $request->getUri()->getPath(),
+            'request' => [
+                'method' => $request->getMethod(),
+                'headers' => $request->getHeaders(),
+            ],
+            'response' => [
+                'httpCode' => $response->getStatusCode(),
+                'headers' => $response->getHeaders(),
+            ],
+            'responseTime' => round($elapsed * 1000),
+            'memoryUsage' => memory_get_usage()
+        ];
+        if ($request->getHeader('Content-Type') == ['application/json']) {
+            $logData['request']['body'] = json_decode($reqbody, true);
+        } else {
+            $logData['request']['body'] = $reqbody;
+        }
+        if ($response->getHeader('Content-Type') == ['application/json']) {
+            $logData['response']['body'] = json_decode($respbody, true);
+        } else {
+            $logData['response']['body'] = $respbody;
+        }
+        $response->getBody()->rewind();
+        Log::activity()->info($logData);
         return $response;
     }
 
