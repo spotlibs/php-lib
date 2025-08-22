@@ -70,7 +70,7 @@ class Handler extends ExceptionHandler
             Log::runtime()->error(
                 [
                     'code' => $exception->getCode(),
-                    'message' => $exception->getMessage() . 'on line ' . $exception->getLine() . ' of file ' . $exception->getFile(),
+                    'message' => $exception->getMessage() . ' on line ' . $exception->getLine() . ' of file ' . $exception->getFile(),
                     'requestID' => app()->request->header('X-Request-ID') ?? null
                 ]
             );
