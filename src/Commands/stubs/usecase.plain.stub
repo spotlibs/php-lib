@@ -21,12 +21,18 @@ namespace DummyNamespace;
  * Execute business logic due to request
  *
  * @category BusinessLogic
- * @package  Collections
+ * @package  Usecases
  * @author   
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/
  */
 class DummyClassUsecase
 {
-    
+    private DummyRepository $dummyRepository;
+    private DummyService $dummyService;
+    public function __construct(DummyRepository $dummyRepository, DummyService $dummyService)
+    {
+        $this->dummyRepository = $dummyRepository;
+        $this->dummyService = $dummyService;
+    }
 }

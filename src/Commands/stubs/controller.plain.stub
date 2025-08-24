@@ -27,8 +27,8 @@ use App\Usecases\DummyUsecase;
  *
  * Request and response handler
  *
- * @category Collections
- * @package  Collections
+ * @category Http
+ * @package  Controller
  * @author   
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/
