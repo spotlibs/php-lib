@@ -271,4 +271,59 @@ class DtosTest extends TestCase
         $this->assertEquals('Joshua', $y['partner']['dog']['name']);
         $this->assertEquals('Jacob', $x->siblings[0]->name);
     }
+    /** @test */
+    /** @runInSeparateProcess */
+    public function testDtoWithMixed(): void
+    {
+        $vehicle = new Vehicle("BMW", "matic", 2000);
+        $data = [
+            'nama' => 'Johan',
+            'employeeId' => 1234,
+            'is_active' => true,
+            'friend' => 'Yuri',
+            'relatives' => ['robert', 'lana', 'garry'],
+            'kendaraan' => $vehicle,
+            'partner' => [
+                'name' => 'Amanda',
+                'age' => 24,
+                'dob' => '2000-10-31',
+                'is_alive' => true,
+                'dog' => [
+                    'name' => 'Joshua',
+                    'age' => 3
+                ]
+            ],
+            'siblings' => [
+                [
+                    'name' => 'Johannes',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ]
+            ],
+            'Saudara' => [
+                [
+                    'name' => 'Jacob',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+                [
+                    'name' => 'Tony',
+                    'age' => 35,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+            ],
+            'tentative' => "heyyy"
+        ];
+        $x = new Dto5($data);
+        $y = $x->toArray();
+        $this->assertEquals('Johan', $x->name);
+        $this->assertEquals('Tony', $x->siblings[1]->name);
+        $this->assertIsArray($y['partner']['dog']);
+        $this->assertEquals('Joshua', $y['partner']['dog']['name']);
+        $this->assertEquals('Jacob', $x->siblings[0]->name);
+        $this->assertEquals('heyyy', $y['tentative']);
+    }
 }
