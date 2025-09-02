@@ -325,5 +325,98 @@ class DtosTest extends TestCase
         $this->assertEquals('Joshua', $y['partner']['dog']['name']);
         $this->assertEquals('Jacob', $x->siblings[0]->name);
         $this->assertEquals('heyyy', $y['tentative']);
+        $data = [
+            'nama' => 'Johan',
+            'employeeId' => 1234,
+            'is_active' => true,
+            'friend' => 'Yuri',
+            'relatives' => ['robert', 'lana', 'garry'],
+            'kendaraan' => $vehicle,
+            'partner' => [
+                'name' => 'Amanda',
+                'age' => 24,
+                'dob' => '2000-10-31',
+                'is_alive' => true,
+                'dog' => [
+                    'name' => 'Joshua',
+                    'age' => 3
+                ]
+            ],
+            'siblings' => [
+                [
+                    'name' => 'Johannes',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ]
+            ],
+            'Saudara' => [
+                [
+                    'name' => 'Jacob',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+                [
+                    'name' => 'Tony',
+                    'age' => 35,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+            ],
+            'tentative' => ['hello', 'world']
+        ];
+        $x = new Dto5($data);
+        $y = $x->toArray();
+        $this->assertEquals(['hello', 'world'], $y['tentative']);
+    }
+    /** @test */
+    /** @runInSeparateProcess */
+    public function testDtoWithException(): void
+    {
+        $this->expectException(Exception::class);
+        $vehicle = new Vehicle("BMW", "matic", 2000);
+        $data = [
+            'nama' => 'Johan',
+            'employeeId' => 1234,
+            'is_active' => true,
+            'friend' => 'Yuri',
+            'relatives' => ['robert', 'lana', 'garry'],
+            'kendaraan' => $vehicle,
+            'partner' => [
+                0 => 'abcd',
+                'name' => 'Amanda',
+                'age' => 24,
+                'dob' => '2000-10-31',
+                'is_alive' => true,
+                'dog' => [
+                    'name' => 'Joshua',
+                    'age' => 3
+                ]
+            ],
+            'siblings' => [
+                [
+                    'name' => 'Johannes',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ]
+            ],
+            'Saudara' => [
+                [
+                    'name' => 'Jacob',
+                    'age' => 16,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+                [
+                    'name' => 'Tony',
+                    'age' => 35,
+                    'dob' => '2000-10-31',
+                    'is_alive' => true
+                ],
+            ],
+        ];
+        new Dto4($data);
     }
 }
