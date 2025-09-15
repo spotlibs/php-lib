@@ -84,6 +84,7 @@ class ActivityMonitor
         $meta->user_agent = $request->header('User-Agent');
         $meta->version_app = $request->header('X-Version-App');
         $meta->identifier = $request->getPathInfo();
+        $meta->req_role = $request->header('X-Request-Role');
         $this->contextService->set(Metadata::class, $meta);
 
         $this->contextService->set('method', $request->method());

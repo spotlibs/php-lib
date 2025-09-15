@@ -51,4 +51,5 @@ class Metadata
     public ?string $req_nama_uker;
     public ?string $path_gateway;
     public ?string $identifier;
+    public ?string $req_role;
 }
