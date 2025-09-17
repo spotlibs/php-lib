@@ -71,6 +71,11 @@ class Client extends BaseClient
     {
         parent::__construct($config);
         $context = app(Context::class);
+        /**
+         * Metadata variable
+         *
+         * @var Metadata $meta
+         */
         $meta = $context->get(Metadata::class);
         if (!is_null($meta)) {
             if (isset($meta->user_agent) && $meta->user_agent !== null) {
@@ -132,6 +137,9 @@ class Client extends BaseClient
             }
             if (isset($meta->api_key) && $meta->api_key !== null) {
                 $this->requestHeaders['X-Api-Key'] = $meta->api_key;
+            }
+            if (isset($meta->req_role) && $meta->req_role !== null) {
+                $this->requestHeaders['X-Request-Role'] = $meta->req_role;
             }
         }
     }

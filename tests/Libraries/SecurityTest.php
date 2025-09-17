@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Libraries;
 
 use Laravel\Lumen\Testing\TestCase;
+use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
 use Spotlibs\PhpLib\Libraries\Security;
 
 class SecurityTest extends TestCase
@@ -38,5 +39,41 @@ class SecurityTest extends TestCase
         $x = Security::encrypt('beautiful soup');
         putenv('SECURITY_KEY=0123456789abcd321');
         Security::decrypt($x);
+    }
+
+    public function testSanitizeFilename(): void
+    {
+        $tc = [
+            //path traversal
+            "../../../etc/passwd",
+            "..\..\windows\system32\hosts",
+            "....//....//etc/shadow",
+            //null byte injection
+            "innocent.txt\0.php",
+            "image.jpg%00.exe",
+            "file.pdf\x00malicious.sh",
+            //reserved names
+            "CON.txt",
+            "PRN.pdf",
+            "AUX",
+            "NUL.jpg",
+            "COM1.exe",
+            "LPT1.doc",
+            //invalid characters
+            "file<script>.txt",
+            "name|with|pipes.pdf",
+            "file:with:colons.jpg",
+            "file\"with\"quotes.txt",
+            "file*with*asterisks.doc",
+            "file?with?questions.pdf",
+            //edge cases
+            "...",
+            ".",
+            "..",
+        ];
+        foreach ($tc as $c) {
+            $x = Security::sanitizeFilename($c);
+            $this->assertNotEquals($c, $x);
+        }
     }
 }

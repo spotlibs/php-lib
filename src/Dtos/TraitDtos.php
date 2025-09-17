@@ -78,6 +78,9 @@ trait TraitDtos
     {
         $prop = $reflector->getProperty($key);
         $type = $prop->getType()->getName();
+        if ($type == 'mixed') {
+            return;
+        }
         //construct object if type is not array
         if ($type != 'array') {
             $value = new $type($value);
