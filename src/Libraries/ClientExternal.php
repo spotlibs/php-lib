@@ -160,15 +160,23 @@ class ClientExternal extends BaseClient
         }
         $elapsed = microtime(true) - $startime;
 
+        // Parse request body
         $request->getBody()->rewind();
         $reqbody = $request->getBody()->getContents();
-        $respbody = $response->getBody()->getContents();
         if (strlen($reqbody) > 5000) {
-            $reqbody = "more than 5000 characters";
+            $parsedReqBody = "more than 5000 characters";
+        } else {
+            $parsedReqBody = $this->parseBody($reqbody, $request->getHeader('Content-Type'));
         }
+
+        // Parse response body
+        $respbody = $response->getBody()->getContents();
         if (strlen($respbody) > 5000) {
-            $respbody = "more than 5000 characters";
+            $parsedRespBody = "more than 5000 characters";
+        } else {
+            $parsedRespBody = $this->parseBody($respbody, $response->getHeader('Content-Type'));
         }
+
         $logData = [
             'app_name' => env('APP_NAME'),
             'path' => is_null($metadata) ? null : $metadata->identifier,
@@ -177,27 +185,116 @@ class ClientExternal extends BaseClient
             'request' => [
                 'method' => $request->getMethod(),
                 'headers' => $request->getHeaders(),
+                'body' => $parsedReqBody
             ],
             'response' => [
                 'httpCode' => $response->getStatusCode(),
                 'headers' => $response->getHeaders(),
+                'body' => $parsedRespBody
             ],
             'responseTime' => round($elapsed * 1000),
             'memoryUsage' => memory_get_usage()
         ];
-        if ($request->getHeader('Content-Type') == ['application/json']) {
-            $logData['request']['body'] = json_decode($reqbody, true);
-        } else {
-            $logData['request']['body'] = $reqbody;
-        }
-        if ($response->getHeader('Content-Type') == ['application/json']) {
-            $logData['response']['body'] = json_decode($respbody, true);
-        } else {
-            $logData['response']['body'] = $respbody;
-        }
+
         $response->getBody()->rewind();
         Log::activity()->info($logData);
         return $response;
+    }
+
+    /**
+     * Parse body content based on content type
+     *
+     * @param string $body        Raw body content
+     * @param array  $contentType Content-Type header
+     *
+     * @return mixed
+     */
+    private function parseBody(string $body, array $contentType): mixed
+    {
+        if (empty($body)) {
+            return null;
+        }
+
+        // Check length first
+        if (strlen($body) > 5000) {
+            return "[Content too large: " . strlen($body) . " characters]";
+        }
+
+        $contentTypeStr = $contentType[0] ?? '';
+
+        // Parse JSON
+        if (str_contains($contentTypeStr, 'application/json')) {
+            $decoded = json_decode($body, true);
+            return $decoded !== null ? $decoded : $body;
+        }
+
+        // Parse multipart/form-data
+        if (str_contains($contentTypeStr, 'multipart/form-data')) {
+            return $this->parseMultipartFormData($body, $contentTypeStr);
+        }
+
+        // Parse application/x-www-form-urlencoded
+        if (str_contains($contentTypeStr, 'application/x-www-form-urlencoded')) {
+            parse_str($body, $parsed);
+            return $parsed;
+        }
+
+        // Return raw for other types
+        return $body;
+    }
+
+    /**
+     * Parse multipart form data into readable array
+     *
+     * @param string $body        Raw body content
+     * @param string $contentType Content-Type header value
+     *
+     * @return array
+     */
+    private function parseMultipartFormData(string $body, string $contentType): array
+    {
+        $parsed = [];
+
+        // Extract boundary
+        preg_match('/boundary=(.*)$/', $contentType, $matches);
+        if (empty($matches[1])) {
+            return ['raw' => $body];
+        }
+
+        $boundary = trim($matches[1], '"');
+        $parts = explode("--$boundary", $body);
+
+        foreach ($parts as $part) {
+            if (trim($part) === '' || trim($part) === '--') {
+                continue;
+            }
+
+            // Split headers and content
+            $sections = preg_split('/\r?\n\r?\n/', $part, 2);
+            if (count($sections) < 2) {
+                continue;
+            }
+
+            $headers = $sections[0];
+            $content = trim($sections[1]);
+
+            // Extract field name
+            if (preg_match('/name="([^"]+)"/', $headers, $nameMatch)) {
+                $name = $nameMatch[1];
+
+                // Check if it's a file
+                if (preg_match('/filename="([^"]+)"/', $headers, $fileMatch)) {
+                    $parsed[$name] = [
+                        'filename' => $fileMatch[1],
+                        'contents' => "[BINARY FILE DATA - " . strlen($content) . " bytes]"
+                    ];
+                } else {
+                    $parsed[$name] = $content;
+                }
+            }
+        }
+
+        return $parsed;
     }
 
     /**
