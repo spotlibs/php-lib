@@ -202,6 +202,40 @@ class ClientExternal extends BaseClient
     }
 
     /**
+     * Detect Content Type
+     *
+     * @param string $body Raw body content
+     *
+     * @return string
+     */
+    private function detectContentType(string $body): string
+    {
+        if (empty($body)) {
+            return 'empty';
+        }
+
+        // Check for JSON - try to decode
+        if ($body[0] === '{' || $body[0] === '[') {
+            json_decode($body);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return 'application/json';
+            }
+        }
+
+        // Check for multipart - look for boundary pattern
+        if (preg_match('/^--[a-zA-Z0-9\-]+/', $body)) {
+            return 'multipart/form-data';
+        }
+
+        // Check for URL-encoded - look for key=value pattern
+        if (preg_match('/^[^=]+=/', $body) && !str_contains($body, "\n")) {
+            return 'application/x-www-form-urlencoded';
+        }
+
+        return 'text/plain';
+    }
+
+    /**
      * Parse body content based on content type
      *
      * @param string $body        Raw body content
@@ -215,26 +249,18 @@ class ClientExternal extends BaseClient
             return null;
         }
 
-        // Check length first
-        if (strlen($body) > 5000) {
-            return "[Content too large: " . strlen($body) . " characters]";
+        // Detect from body structure
+        $detectedType = $this->detectContentType($body);
+
+        if ($detectedType === 'application/json') {
+            return json_decode($body, true) ?? $body;
         }
 
-        $contentTypeStr = $contentType[0] ?? '';
-
-        // Parse JSON
-        if (str_contains($contentTypeStr, 'application/json')) {
-            $decoded = json_decode($body, true);
-            return $decoded !== null ? $decoded : $body;
+        if ($detectedType === 'multipart/form-data') {
+            return $this->parseMultipartFormData($body, 'multipart/form-data');
         }
 
-        // Parse multipart/form-data
-        if (str_contains($contentTypeStr, 'multipart/form-data')) {
-            return $this->parseMultipartFormData($body, $contentTypeStr);
-        }
-
-        // Parse application/x-www-form-urlencoded
-        if (str_contains($contentTypeStr, 'application/x-www-form-urlencoded')) {
+        if ($detectedType === 'application/x-www-form-urlencoded') {
             parse_str($body, $parsed);
             return $parsed;
         }
