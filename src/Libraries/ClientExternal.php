@@ -218,13 +218,11 @@ class ClientExternal extends BaseClient
 
         // Check for multipart - look for Content-Disposition
         if (preg_match('/Content-Disposition:\s*form-data/i', $body)) {
-            Log::runtime()->info(['detectContentType' => 'multipart']);
             return 'multipart/form-data';
         }
 
         // Check for URL-encoded - look for key=value pattern
         if (preg_match('/^[^=]+=/', $body) && !str_contains($body, "\n")) {
-            Log::runtime()->info(['detectContentType' => 'www']);
             return 'application/x-www-form-urlencoded';
         }
 
@@ -232,7 +230,6 @@ class ClientExternal extends BaseClient
         if ($body[0] === '{' || $body[0] === '[') {
             json_decode($body);
             if (json_last_error() === JSON_ERROR_NONE) {
-                Log::runtime()->info(['detectContentType' => 'json']);
                 return 'application/json';
             }
         }
