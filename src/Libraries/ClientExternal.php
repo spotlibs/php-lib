@@ -20,7 +20,6 @@ use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
-use Spotlibs\PhpLib\Libraries\MapRoute;
 use Spotlibs\PhpLib\Logs\Log;
 use Spotlibs\PhpLib\Services\Context;
 use Spotlibs\PhpLib\Services\Metadata;
@@ -162,19 +161,22 @@ class ClientExternal extends BaseClient
 
         // Parse request body
         $request->getBody()->rewind();
-        $reqbody = $request->getBody()->getContents();
-        if (strlen($reqbody) > 5000) {
+        $reqBody = $request->getBody()->getContents();
+        $detectedType = $this->detectContentType($reqBody);
+        if ($detectedType === 'multipart/form-data') {
+            $parsedReqBody = $this->parseBody($reqBody);
+        } elseif (strlen($reqBody) > 5000) {
             $parsedReqBody = "more than 5000 characters";
         } else {
-            $parsedReqBody = $this->parseBody($reqbody, $request->getHeader('Content-Type'));
+            $parsedReqBody = $this->parseBody($reqBody);
         }
 
         // Parse response body
-        $respbody = $response->getBody()->getContents();
-        if (strlen($respbody) > 5000) {
+        $respBody = $response->getBody()->getContents();
+        if (strlen($respBody) > 5000) {
             $parsedRespBody = "more than 5000 characters";
         } else {
-            $parsedRespBody = $this->parseBody($respbody, $response->getHeader('Content-Type'));
+            $parsedRespBody = $this->parseBody($respBody);
         }
 
         $logData = [
@@ -214,22 +216,25 @@ class ClientExternal extends BaseClient
             return 'empty';
         }
 
-        // Check for JSON - try to decode
-        if ($body[0] === '{' || $body[0] === '[') {
-            json_decode($body);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return 'application/json';
-            }
-        }
-
-        // Check for multipart - look for boundary pattern
-        if (preg_match('/^--[a-zA-Z0-9\-]+/', $body)) {
+        // Check for multipart - look for Content-Disposition
+        if (preg_match('/Content-Disposition:\s*form-data/i', $body)) {
+            Log::runtime()->info(['detectContentType' => 'multipart']);
             return 'multipart/form-data';
         }
 
         // Check for URL-encoded - look for key=value pattern
         if (preg_match('/^[^=]+=/', $body) && !str_contains($body, "\n")) {
+            Log::runtime()->info(['detectContentType' => 'www']);
             return 'application/x-www-form-urlencoded';
+        }
+
+        // Check for JSON - try to decode
+        if ($body[0] === '{' || $body[0] === '[') {
+            json_decode($body);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                Log::runtime()->info(['detectContentType' => 'json']);
+                return 'application/json';
+            }
         }
 
         return 'text/plain';
@@ -238,18 +243,16 @@ class ClientExternal extends BaseClient
     /**
      * Parse body content based on content type
      *
-     * @param string $body        Raw body content
-     * @param array  $contentType Content-Type header
+     * @param string $body Raw body content
      *
      * @return mixed
      */
-    private function parseBody(string $body, array $contentType): mixed
+    private function parseBody(string $body): mixed
     {
         if (empty($body)) {
             return null;
         }
 
-        // Detect from body structure
         $detectedType = $this->detectContentType($body);
 
         if ($detectedType === 'application/json') {
@@ -257,7 +260,7 @@ class ClientExternal extends BaseClient
         }
 
         if ($detectedType === 'multipart/form-data') {
-            return $this->parseMultipartFormData($body, 'multipart/form-data');
+            return $this->parseMultipartFormDataFromBody($body);
         }
 
         if ($detectedType === 'application/x-www-form-urlencoded') {
@@ -265,29 +268,27 @@ class ClientExternal extends BaseClient
             return $parsed;
         }
 
-        // Return raw for other types
         return $body;
     }
 
     /**
      * Parse multipart form data into readable array
      *
-     * @param string $body        Raw body content
-     * @param string $contentType Content-Type header value
+     * @param string $body Raw body content
      *
      * @return array
      */
-    private function parseMultipartFormData(string $body, string $contentType): array
+    private function parseMultipartFormDataFromBody(string $body): array
     {
         $parsed = [];
 
-        // Extract boundary
-        preg_match('/boundary=(.*)$/', $contentType, $matches);
-        if (empty($matches[1])) {
-            return ['raw' => $body];
+        // Extract boundary from first line
+        preg_match('/^--([^\r\n]+)/', $body, $boundaryMatch);
+        if (empty($boundaryMatch[1])) {
+            return ['raw' => 'Unable to parse multipart'];
         }
 
-        $boundary = trim($matches[1], '"');
+        $boundary = $boundaryMatch[1];
         $parts = explode("--$boundary", $body);
 
         foreach ($parts as $part) {
