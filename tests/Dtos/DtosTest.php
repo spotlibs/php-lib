@@ -270,6 +270,8 @@ class DtosTest extends TestCase
         $this->assertIsArray($y['partner']['dog']);
         $this->assertEquals('Joshua', $y['partner']['dog']['name']);
         $this->assertEquals('Jacob', $x->siblings[0]->name);
+        $this->assertArrayNotHasKey('arrayOfObjectMap', $y);
+        $this->assertArrayNotHasKey('aliases', $y);
     }
     /** @test */
     /** @runInSeparateProcess */
