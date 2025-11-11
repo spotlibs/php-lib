@@ -59,6 +59,6 @@ class DatabaseQueryLogger
 
     public function shouldLog(): bool
     {
-        return config('database.query_log_enabled', false);
+        return env('QUERY_LOG_ENABLED', false);
     }
 }
