@@ -52,4 +52,13 @@ class Metadata
     public ?string $path_gateway;
     public ?string $identifier;
     public ?string $req_role;
+    public ?array $req_uker_supervised;
+    public ?string $req_stell;
+    public ?string $req_stell_tx;
+    public ?string $req_kostl;
+    public ?string $req_kostl_tx;
+    public ?string $req_orgeh;
+    public ?string $req_orgeh_tx;
+    public ?string $req_level_uker;
+    public ?string $req_uid;
 }

@@ -77,7 +77,7 @@ class Client extends BaseClient
          * @var Metadata $meta
          */
         $meta = $context->get(Metadata::class);
-        if (!is_null($meta)) {
+        if ($meta !== null) {
             if (isset($meta->user_agent) && $meta->user_agent !== null) {
                 $this->requestHeaders['User-Agent'] = $meta->user_agent;
             }
@@ -140,6 +140,33 @@ class Client extends BaseClient
             }
             if (isset($meta->req_role) && $meta->req_role !== null) {
                 $this->requestHeaders['X-Request-Role'] = $meta->req_role;
+            }
+            if (isset($meta->req_uker_supervised) && $meta->req_uker_supervised !== null) {
+                $this->requestHeaders['X-Request-Uker-Supervised'] = json_encode($meta->req_uker_supervised);
+            }
+            if (isset($meta->req_stell) && $meta->req_stell !== null) {
+                $this->requestHeaders['X-Request-Kode-Org-Jabatan'] = $meta->req_stell;
+            }
+            if (isset($meta->req_stell_tx) && $meta->req_stell_tx !== null) {
+                $this->requestHeaders['X-Request-Nama-Org-Jabatan'] = $meta->req_stell_tx;
+            }
+            if (isset($meta->req_kostl) && $meta->req_kostl !== null) {
+                $this->requestHeaders['X-Request-Kode-Cost-Center'] = $meta->req_kostl;
+            }
+            if (isset($meta->req_kostl_tx) && $meta->req_kostl_tx !== null) {
+                $this->requestHeaders['X-Request-Nama-Cost-Center'] = $meta->req_kostl_tx;
+            }
+            if (isset($meta->req_orgeh) && $meta->req_orgeh !== null) {
+                $this->requestHeaders['X-Request-Kode-Org-Unit'] = $meta->req_orgeh;
+            }
+            if (isset($meta->req_orgeh_tx) && $meta->req_orgeh_tx !== null) {
+                $this->requestHeaders['X-Request-Nama-Org-Unit'] = $meta->req_orgeh_tx;
+            }
+            if (isset($meta->req_level_uker) && $meta->req_level_uker !== null) {
+                $this->requestHeaders['X-Request-Level-Uker'] = $meta->req_level_uker;
+            }
+            if (isset($meta->req_uid) && $meta->req_uid !== null) {
+                $this->requestHeaders['X-Request-Uid-Las'] = $meta->req_uid;
             }
         }
     }
