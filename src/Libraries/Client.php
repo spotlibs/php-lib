@@ -101,6 +101,8 @@ class Client extends BaseClient
             }
             if (isset($meta->req_id) && $meta->req_id !== null) {
                 $this->requestHeaders['X-Request-ID'] = $meta->req_id;
+            } elseif (isset($meta->task_id) && $meta->task_id !== null) {
+                $this->requestHeaders['X-Request-ID'] = $meta->task_id;
             }
             if (isset($meta->req_user) && $meta->req_user !== null) {
                 $this->requestHeaders['X-Request-User'] = $meta->req_user;

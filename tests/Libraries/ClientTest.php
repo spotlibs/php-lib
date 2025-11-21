@@ -90,6 +90,14 @@ class ClientTest extends TestCase
             'GET',
             'https://dummyjson.com/test',
         );
+        $meta = new Metadata();
+        $meta->task_id = 'abcd';
+        /**
+         * @var \Mockery\MockInterface $context
+         */
+        $context = Mockery::mock(Context::class);
+        $context->shouldReceive('get')->with(Metadata::class)->andReturn($meta);
+        $this->app->instance(Context::class, $context);
         $client = new Client(['handler' => $handlerStack]);
         $response = $client->call($request);
         $contents = $response->getBody()->getContents();
@@ -111,7 +119,11 @@ class ClientTest extends TestCase
                 "message" => "welcome"
             ])
         );
-        $client = new Client();
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['status' => 'ok', 'message' => 'well done'])),
+        ]);
+        $handlerStack = new HandlerStack($mock);
+        $client = new Client(['handler' => $handlerStack]);
         $response = $client
             ->injectRequestHeader(['X-Powered-By' => ['Money']])
             ->injectResponseHeader(['X-Server' => ['tinyurl'], 'X-Overhead' => ['true', 'allowed']])
