@@ -52,6 +52,16 @@ class ClientTest extends TestCase
         $meta->req_nama_uker = 'test_name';
         $meta->path_gateway = 'test_path';
         $meta->identifier = 'test_identifier';
+        $meta->req_uker_supervised = ['abc', 'def'];
+        $meta->req_stell = '123';
+        $meta->req_stell_tx = 'abc';
+        $meta->req_kostl = '123';
+        $meta->req_kostl_tx = 'abc';
+        $meta->req_orgeh = '123';
+        $meta->req_orgeh_tx = 'abc';
+        $meta->req_level_uker = 'X';
+        $meta->req_uid = 'abc123';
+        $meta->req_role = 'abc';
         /**
          * @var \Mockery\MockInterface $context
          */
@@ -80,6 +90,14 @@ class ClientTest extends TestCase
             'GET',
             'https://dummyjson.com/test',
         );
+        $meta = new Metadata();
+        $meta->task_id = 'abcd';
+        /**
+         * @var \Mockery\MockInterface $context
+         */
+        $context = Mockery::mock(Context::class);
+        $context->shouldReceive('get')->with(Metadata::class)->andReturn($meta);
+        $this->app->instance(Context::class, $context);
         $client = new Client(['handler' => $handlerStack]);
         $response = $client->call($request);
         $contents = $response->getBody()->getContents();
@@ -101,7 +119,11 @@ class ClientTest extends TestCase
                 "message" => "welcome"
             ])
         );
-        $client = new Client();
+        $mock = new MockHandler([
+            new Response(200, ['Content-Type' => 'application/json'], json_encode(['status' => 'ok', 'message' => 'well done'])),
+        ]);
+        $handlerStack = new HandlerStack($mock);
+        $client = new Client(['handler' => $handlerStack]);
         $response = $client
             ->injectRequestHeader(['X-Powered-By' => ['Money']])
             ->injectResponseHeader(['X-Server' => ['tinyurl'], 'X-Overhead' => ['true', 'allowed']])
