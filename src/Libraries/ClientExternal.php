@@ -20,7 +20,6 @@ use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Exceptions\InvalidRuleException;
-use Spotlibs\PhpLib\Libraries\MapRoute;
 use Spotlibs\PhpLib\Logs\Log;
 use Spotlibs\PhpLib\Services\Context;
 use Spotlibs\PhpLib\Services\Metadata;
@@ -160,15 +159,26 @@ class ClientExternal extends BaseClient
         }
         $elapsed = microtime(true) - $startime;
 
+        // Parse request body
         $request->getBody()->rewind();
-        $reqbody = $request->getBody()->getContents();
-        $respbody = $response->getBody()->getContents();
-        if (strlen($reqbody) > 5000) {
-            $reqbody = "more than 5000 characters";
+        $reqBody = $request->getBody()->getContents();
+        $detectedType = $this->detectContentType($reqBody);
+        if ($detectedType === 'multipart/form-data') {
+            $parsedReqBody = $this->parseBody($reqBody);
+        } elseif (strlen($reqBody) > 5000) {
+            $parsedReqBody = "more than 5000 characters";
+        } else {
+            $parsedReqBody = $this->parseBody($reqBody);
         }
-        if (strlen($respbody) > 5000) {
-            $respbody = "more than 5000 characters";
+
+        // Parse response body
+        $respBody = $response->getBody()->getContents();
+        if (strlen($respBody) > 5000) {
+            $parsedRespBody = "more than 5000 characters";
+        } else {
+            $parsedRespBody = $this->parseBody($respBody);
         }
+
         $logData = [
             'app_name' => env('APP_NAME'),
             'path' => is_null($metadata) ? null : $metadata->identifier,
@@ -177,27 +187,138 @@ class ClientExternal extends BaseClient
             'request' => [
                 'method' => $request->getMethod(),
                 'headers' => $request->getHeaders(),
+                'body' => $parsedReqBody
             ],
             'response' => [
                 'httpCode' => $response->getStatusCode(),
                 'headers' => $response->getHeaders(),
+                'body' => $parsedRespBody
             ],
             'responseTime' => round($elapsed * 1000),
             'memoryUsage' => memory_get_usage()
         ];
-        if ($request->getHeader('Content-Type') == ['application/json']) {
-            $logData['request']['body'] = json_decode($reqbody, true);
-        } else {
-            $logData['request']['body'] = $reqbody;
-        }
-        if ($response->getHeader('Content-Type') == ['application/json']) {
-            $logData['response']['body'] = json_decode($respbody, true);
-        } else {
-            $logData['response']['body'] = $respbody;
-        }
+
         $response->getBody()->rewind();
         Log::activity()->info($logData);
         return $response;
+    }
+
+    /**
+     * Detect Content Type
+     *
+     * @param string $body Raw body content
+     *
+     * @return string
+     */
+    private function detectContentType(string $body): string
+    {
+        if (empty($body)) {
+            return 'empty';
+        }
+
+        // Check for multipart - look for Content-Disposition
+        if (preg_match('/Content-Disposition:\s*form-data/i', $body)) {
+            return 'multipart/form-data';
+        }
+
+        // Check for URL-encoded - look for key=value pattern
+        if (preg_match('/^[^=]+=/', $body) && !str_contains($body, "\n")) {
+            return 'application/x-www-form-urlencoded';
+        }
+
+        // Check for JSON - try to decode
+        if ($body[0] === '{' || $body[0] === '[') {
+            json_decode($body);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return 'application/json';
+            }
+        }
+
+        return 'text/plain';
+    }
+
+    /**
+     * Parse body content based on content type
+     *
+     * @param string $body Raw body content
+     *
+     * @return mixed
+     */
+    private function parseBody(string $body): mixed
+    {
+        if (empty($body)) {
+            return null;
+        }
+
+        $detectedType = $this->detectContentType($body);
+
+        if ($detectedType === 'application/json') {
+            return json_decode($body, true) ?? $body;
+        }
+
+        if ($detectedType === 'multipart/form-data') {
+            return $this->parseMultipartFormDataFromBody($body);
+        }
+
+        if ($detectedType === 'application/x-www-form-urlencoded') {
+            parse_str($body, $parsed);
+            return $parsed;
+        }
+
+        return $body;
+    }
+
+    /**
+     * Parse multipart form data into readable array
+     *
+     * @param string $body Raw body content
+     *
+     * @return array
+     */
+    private function parseMultipartFormDataFromBody(string $body): array
+    {
+        $parsed = [];
+
+        // Extract boundary from first line
+        preg_match('/^--([^\r\n]+)/', $body, $boundaryMatch);
+        if (empty($boundaryMatch[1])) {
+            return ['raw' => 'Unable to parse multipart'];
+        }
+
+        $boundary = $boundaryMatch[1];
+        $parts = explode("--$boundary", $body);
+
+        foreach ($parts as $part) {
+            if (trim($part) === '' || trim($part) === '--') {
+                continue;
+            }
+
+            // Split headers and content
+            $sections = preg_split('/\r?\n\r?\n/', $part, 2);
+            if (count($sections) < 2) {
+                continue;
+            }
+
+            $headers = $sections[0];
+            $content = trim($sections[1]);
+
+            // Extract field name
+            if (preg_match('/name="([^"]+)"/', $headers, $nameMatch)) {
+                $name = $nameMatch[1];
+
+                // Check if it's a file
+                if (preg_match('/filename="([^"]+)"/', $headers, $fileMatch)) {
+                    $parsed[$name] = [
+                        'filename' => $fileMatch[1],
+                        'contents' => "[BINARY FILE DATA - " . strlen($content) . " bytes]"
+                    ];
+                } else {
+                    $parsed[$name] = $content;
+                }
+            }
+        }
+
+        return $parsed;
     }
 
     /**

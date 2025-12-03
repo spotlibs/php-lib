@@ -85,6 +85,15 @@ class ActivityMonitor
         $meta->version_app = $request->header('X-Version-App');
         $meta->identifier = $request->getPathInfo();
         $meta->req_role = $request->header('X-Request-Role');
+        $meta->req_uker_supervised = json_decode($request->header('X-Request-Uker-Supervised') ?? "");
+        $meta->req_stell = $request->header('X-Request-Kode-Org-Jabatan');
+        $meta->req_stell_tx = $request->header('X-Request-Nama-Org-Jabatan');
+        $meta->req_kostl = $request->header('X-Request-Kode-Org-Cost-Center');
+        $meta->req_kostl_tx = $request->header('X-Request-Nama-Org-Cost-Center');
+        $meta->req_orgeh = $request->header('X-Request-Kode-Org-Unit');
+        $meta->req_orgeh_tx = $request->header('X-Request-Nama-Org-Unit');
+        $meta->req_level_uker = $request->header('X-Request-Level-Uker');
+        $meta->req_uid = $request->header('X-Request-Uid-Las');
         $this->contextService->set(Metadata::class, $meta);
 
         $this->contextService->set('method', $request->method());
@@ -136,7 +145,7 @@ class ActivityMonitor
         if (isset($log->requestBody['password'])) {
             $log->requestBody['password'] = hash('sha256', $log->requestBody['password']);
         }
-        $responseObjContent = json_decode($response->getContent());
+        $responseObjContent = json_decode($response->getContent() ? $response->getContent() : "");
         if (strlen($response->getContent()) > 5000 && isset($responseObjContent->responseData)) {
             $responseObjContent->responseData = 'more than 5000 characters';
         }

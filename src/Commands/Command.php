@@ -56,7 +56,7 @@ abstract class Command extends BaseCommand
         $context = app(Context::class);
         $meta = new Metadata();
         $meta->task_id = $this->taskID;
-        $meta->identifier = $this->signature;
+        $meta->identifier = explode(" ", $this->signature)[0];
         $context->set(Metadata::class, $meta);
     }
 }
