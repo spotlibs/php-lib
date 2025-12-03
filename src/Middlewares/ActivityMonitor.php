@@ -85,7 +85,7 @@ class ActivityMonitor
         $meta->version_app = $request->header('X-Version-App');
         $meta->identifier = $request->getPathInfo();
         $meta->req_role = $request->header('X-Request-Role');
-        $meta->req_uker_supervised = json_decode($request->header('X-Request-Uker-Supervised'));
+        $meta->req_uker_supervised = json_decode($request->header('X-Request-Uker-Supervised') ?? "");
         $meta->req_stell = $request->header('X-Request-Kode-Org-Jabatan');
         $meta->req_stell_tx = $request->header('X-Request-Nama-Org-Jabatan');
         $meta->req_kostl = $request->header('X-Request-Kode-Org-Cost-Center');
@@ -145,7 +145,7 @@ class ActivityMonitor
         if (isset($log->requestBody['password'])) {
             $log->requestBody['password'] = hash('sha256', $log->requestBody['password']);
         }
-        $responseObjContent = json_decode($response->getContent());
+        $responseObjContent = json_decode($response->getContent() ? $response->getContent() : "");
         if (strlen($response->getContent()) > 5000 && isset($responseObjContent->responseData)) {
             $responseObjContent->responseData = 'more than 5000 characters';
         }
