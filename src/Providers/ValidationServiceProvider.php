@@ -19,6 +19,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
+use Illuminate\Validation\Validator;
 
 /**
  * ValidationServiceProvider
