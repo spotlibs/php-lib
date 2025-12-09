@@ -17,7 +17,6 @@ namespace Spotlibs\PhpLib\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory as ValidationFactory;
-use Illuminate\Validation\Validator;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
 
@@ -248,6 +247,14 @@ class ValidationServiceProvider extends ServiceProvider
                 return is_string($value) && str_contains($value, '@');
             },
             ':attribute format tidak valid.'
+        );
+
+        ValidatorFacade::extend(
+            'required_but_empty',
+            function ($attribute, $value, $parameters, $validator) {
+                return array_key_exists($attribute, $validator->getData());
+            },
+            ':attribute harus ada meskipun kosong.'
         );
     }
 }
