@@ -255,6 +255,6 @@ class ValidationServiceProvider extends ServiceProvider
                 return array_key_exists($attribute, $validator->getData());
             },
             ':attribute harus ada meskipun kosong.'
-        )
+        );
     }
 }
