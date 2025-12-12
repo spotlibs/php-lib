@@ -147,7 +147,7 @@ class FirebaseClient
         $this->accessToken = $responseBody['access_token'];
         $this->tokenExpiry = time() + ($responseBody['expires_in'] ?? 3600);
 
-        Log::activity()->info(
+        Log::runtime()->info(
             [
             'operation' => 'firebase_oauth',
             'url' => 'https://oauth2.googleapis.com/token',
@@ -195,7 +195,7 @@ class FirebaseClient
         $respBody = $response->getBody()->getContents();
         $response->getBody()->rewind();
 
-        Log::activity()->info(
+        Log::runtime()->info(
             [
             'operation' => 'firebase_fcm_send',
             'host' => 'fcm.googleapis.com',
