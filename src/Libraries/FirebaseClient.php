@@ -16,18 +16,20 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use Spotlibs\PhpLib\Exceptions\RuntimeException;
 use Spotlibs\PhpLib\Logs\Log;
 
 /**
  * FirebaseClient
  *
- * SDK for Firebase OAuth and FCM operations
+ * SDK for Firebase OAuth and FCM operations with singleton token support
  *
  * @category HttpClient
  * @package  Client
- * @author   Abdul Rasyid Anshori <abdul.rasyid.anshori@gmail.com>
+ * @author   Mufthi Ryanda <mufthi.ryanda@icloud.com>
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
@@ -35,20 +37,28 @@ class FirebaseClient
 {
     private GuzzleClient $httpClient;
     private array $serviceAccount;
-    private ?string $accessToken = null;
-    private ?int $tokenExpiry = null;
     private string $proxyUrl = '';
 
     /**
      * Create Firebase client
      *
-     * @param string $serviceAccountPath Path to service account JSON
-     * @param array  $config             Guzzle config options
+     * @param array $config Guzzle config options
+     *
+     * @throws RuntimeException When FIREBASE_CREDENTIALS env not set
      */
-    public function __construct(string $serviceAccountPath, array $config = [])
+    public function __construct(array $config = [])
     {
+        $serviceAccountPath = env('FIREBASE_CREDENTIALS');
+        if (empty($serviceAccountPath)) {
+            throw new RuntimeException('FIREBASE_CREDENTIALS environment variable is not set');
+        }
+        $fullPath = base_path($serviceAccountPath);
+        if (!file_exists($fullPath)) {
+            throw new RuntimeException("Firebase credentials file not found: {$fullPath}");
+        }
+
         $this->serviceAccount = json_decode(
-            file_get_contents($serviceAccountPath),
+            file_get_contents($fullPath),
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -76,31 +86,14 @@ class FirebaseClient
     }
 
     /**
-     * Set pre-generated access token (bypass OAuth)
-     *
-     * @param string $token     Access token
-     * @param int    $expiresIn Token lifetime in seconds (default 3600)
-     *
-     * @return self
-     */
-    public function setAccessToken(string $token, int $expiresIn = 3600): self
-    {
-        $this->accessToken = $token;
-        $this->tokenExpiry = time() + $expiresIn;
-        return $this;
-    }
-
-    /**
      * Generate OAuth2 access token
      *
-     * @return string Access token
+     * @return array Array with 'token' and 'expiry' keys
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException On HTTP error
      */
-    public function generateToken(): string
+    public function generateToken(): array
     {
-        if ($this->accessToken && $this->tokenExpiry > time() + 300) {
-            return $this->accessToken;
-        }
-
         $startTime = microtime(true);
         $now = time();
 
@@ -144,8 +137,9 @@ class FirebaseClient
             JSON_THROW_ON_ERROR
         );
 
-        $this->accessToken = $responseBody['access_token'];
-        $this->tokenExpiry = time() + ($responseBody['expires_in'] ?? 3600);
+        $token = $responseBody['access_token'];
+        $expiresIn = $responseBody['expires_in'] ?? 3600;
+        $expiry = time() + $expiresIn;
 
         Log::runtime()->info(
             [
@@ -156,7 +150,7 @@ class FirebaseClient
             ]
         );
 
-        return $this->accessToken;
+        return ['token' => $token, 'expiry' => $expiry];
     }
 
     /**
@@ -165,12 +159,29 @@ class FirebaseClient
      * @param array $message FCM message payload
      *
      * @return ResponseInterface
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException On HTTP error
      */
     public function sendMessage(array $message): ResponseInterface
     {
-        $token = $this->generateToken();
-        $startTime = microtime(true);
+        // Get token from singleton
+        $tokenData = app('firebase.token');
 
+        // Check if empty or expired (with 5 min buffer)
+        if (empty($tokenData['token']) || $tokenData['expiry'] <= time() + 300) {
+            Log::runtime()->info(
+                [
+                'operation' => 'firebase_token_refresh',
+                'reason' => empty($tokenData['token']) ? 'empty' : 'expired'
+                ]
+            );
+
+            // Regenerate and update singleton
+            app()->forgetInstance('firebase.token');
+            $tokenData = app('firebase.token');
+        }
+
+        $startTime = microtime(true);
         $projectId = $this->serviceAccount['project_id'];
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
@@ -178,7 +189,7 @@ class FirebaseClient
             'POST',
             $url,
             [
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer ' . $tokenData['token'],
                 'Content-Type' => 'application/json'
             ],
             json_encode(['message' => $message], JSON_THROW_ON_ERROR)
@@ -189,27 +200,57 @@ class FirebaseClient
             $options['proxy'] = $this->proxyUrl;
         }
 
-        $response = $this->httpClient->send($request, $options);
-        $elapsed = microtime(true) - $startTime;
+        try {
+            $response = $this->httpClient->send($request, $options);
+            $elapsed = microtime(true) - $startTime;
 
-        $respBody = $response->getBody()->getContents();
-        $response->getBody()->rewind();
+            $respBody = $response->getBody()->getContents();
+            $response->getBody()->rewind();
 
-        Log::runtime()->info(
-            [
-            'operation' => 'firebase_fcm_send',
-            'host' => 'fcm.googleapis.com',
-            'url' => "/v1/projects/{$projectId}/messages:send",
-            'request' => ['body' => $message],
-            'response' => [
-                'httpCode' => $response->getStatusCode(),
-                'body' => json_decode($respBody, true)
-            ],
-            'responseTime' => round($elapsed * 1000)
-            ]
-        );
+            Log::runtime()->info(
+                [
+                'operation' => 'firebase_fcm_send',
+                'host' => 'fcm.googleapis.com',
+                'url' => "/v1/projects/{$projectId}/messages:send",
+                'request' => ['body' => $message],
+                'response' => [
+                    'httpCode' => $response->getStatusCode(),
+                    'body' => json_decode($respBody, true)
+                ],
+                'responseTime' => round($elapsed * 1000)
+                ]
+            );
 
-        return $response;
+            return $response;
+        } catch (ClientException $e) {
+            // On 401, regenerate token and retry once
+            if ($e->getResponse()->getStatusCode() === 401) {
+                Log::runtime()->warning(
+                    [
+                    'operation' => 'firebase_fcm_send_401',
+                    'message' => 'Token unauthorized, regenerating and retrying'
+                    ]
+                );
+
+                // Regenerate and update singleton
+                app()->forgetInstance('firebase.token');
+                $newTokenData = app('firebase.token');
+
+                $retryRequest = new Request(
+                    'POST',
+                    $url,
+                    [
+                        'Authorization' => 'Bearer ' . $newTokenData['token'],
+                        'Content-Type' => 'application/json'
+                    ],
+                    json_encode(['message' => $message], JSON_THROW_ON_ERROR)
+                );
+
+                return $this->httpClient->send($retryRequest, $options);
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -289,7 +330,6 @@ class FirebaseClient
 
         $signature = base64_encode($signature);
 
-        // Make base64url safe
         return str_replace(['+', '/', '='], ['-', '_', ''], $header . '.' . $payload . '.' . $signature);
     }
 }
