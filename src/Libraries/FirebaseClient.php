@@ -7,7 +7,7 @@
  * @package  Libraries
  * @author   Mufthi Ryanda <mufthi.ryanda@icloud.com>
  * @license  https://mit-license.org/ MIT License
- * @version  GIT: 0.3.7
+ * @version  GIT: 0.3.8
  * @link     https://github.com/spotlibs
  */
 
@@ -25,7 +25,7 @@ use Spotlibs\PhpLib\Logs\Log;
 /**
  * FirebaseClient
  *
- * SDK for Firebase OAuth and FCM operations with singleton token support
+ * SDK for Firebase OAuth and FCM operations with file-based token persistence
  *
  * @category HttpClient
  * @package  Client
@@ -38,6 +38,7 @@ class FirebaseClient
     private GuzzleClient $httpClient;
     private array $serviceAccount;
     private string $proxyUrl = '';
+    private string $tokenFile;
 
     /**
      * Create Firebase client
@@ -64,6 +65,15 @@ class FirebaseClient
             JSON_THROW_ON_ERROR
         );
 
+        // Set token file path in storage
+        $this->tokenFile = storage_path('framework/cache/firebase_token.json');
+
+        // Ensure directory exists
+        $dir = dirname($this->tokenFile);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
         $defaultConfig = [
             'timeout' => 60,
             'verify' => false,
@@ -86,13 +96,78 @@ class FirebaseClient
     }
 
     /**
+     * Get or refresh access token from file
+     *
+     * @param bool $forceRefresh Force token regeneration
+     *
+     * @return string Access token
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException On HTTP error
+     */
+    private function getAccessToken(bool $forceRefresh = false): string
+    {
+        // Try to read existing token
+        if (!$forceRefresh && file_exists($this->tokenFile)) {
+            $handle = fopen($this->tokenFile, 'r');
+            if ($handle && flock($handle, LOCK_SH)) {
+                $content = fread($handle, filesize($this->tokenFile));
+                flock($handle, LOCK_UN);
+                fclose($handle);
+
+                $tokenData = json_decode($content, true);
+
+                // Check if token is still valid (with 5 min buffer)
+                if ($tokenData && isset($tokenData['token'], $tokenData['expiry']) && $tokenData['expiry'] > time() + 300) {
+                    return $tokenData['token'];
+                }
+            } elseif ($handle) {
+                fclose($handle);
+            }
+        }
+
+        Log::runtime()->info(
+            [
+                'operation' => 'firebase_token_refresh',
+                'reason' => $forceRefresh ? 'forced' : (!file_exists($this->tokenFile) ? 'empty' : 'expired')
+            ]
+        );
+
+        // Generate new token and save to file
+        $tokenData = $this->generateToken();
+        $this->saveTokenToFile($tokenData);
+
+        return $tokenData['token'];
+    }
+
+    /**
+     * Save token data to file with lock
+     *
+     * @param array $tokenData Token data with 'token' and 'expiry' keys
+     *
+     * @return void
+     */
+    private function saveTokenToFile(array $tokenData): void
+    {
+        $handle = fopen($this->tokenFile, 'c');
+        if ($handle && flock($handle, LOCK_EX)) {
+            ftruncate($handle, 0);
+            fwrite($handle, json_encode($tokenData, JSON_THROW_ON_ERROR));
+            fflush($handle);
+            flock($handle, LOCK_UN);
+        }
+        if ($handle) {
+            fclose($handle);
+        }
+    }
+
+    /**
      * Generate OAuth2 access token
      *
      * @return array Array with 'token' and 'expiry' keys
      *
      * @throws \GuzzleHttp\Exception\GuzzleException On HTTP error
      */
-    public function generateToken(): array
+    private function generateToken(): array
     {
         $startTime = microtime(true);
         $now = time();
@@ -110,8 +185,8 @@ class FirebaseClient
 
         $body = http_build_query(
             [
-            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion' => $jwt
+                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                'assertion' => $jwt
             ]
         );
 
@@ -143,10 +218,10 @@ class FirebaseClient
 
         Log::runtime()->info(
             [
-            'operation' => 'firebase_oauth',
-            'url' => 'https://oauth2.googleapis.com/token',
-            'responseTime' => round($elapsed * 1000),
-            'httpCode' => $response->getStatusCode()
+                'operation' => 'firebase_oauth',
+                'url' => 'https://oauth2.googleapis.com/token',
+                'responseTime' => round($elapsed * 1000),
+                'httpCode' => $response->getStatusCode()
             ]
         );
 
@@ -164,22 +239,7 @@ class FirebaseClient
      */
     public function sendMessage(array $message): ResponseInterface
     {
-        // Get token from singleton
-        $tokenData = app('firebase.token');
-
-        // Check if empty or expired (with 5 min buffer)
-        if (empty($tokenData['token']) || $tokenData['expiry'] <= time() + 300) {
-            Log::runtime()->info(
-                [
-                'operation' => 'firebase_token_refresh',
-                'reason' => empty($tokenData['token']) ? 'empty' : 'expired'
-                ]
-            );
-
-            // Regenerate and update singleton
-            app()->forgetInstance('firebase.token');
-            $tokenData = app('firebase.token');
-        }
+        $token = $this->getAccessToken();
 
         $startTime = microtime(true);
         $projectId = $this->serviceAccount['project_id'];
@@ -189,7 +249,7 @@ class FirebaseClient
             'POST',
             $url,
             [
-                'Authorization' => 'Bearer ' . $tokenData['token'],
+                'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json'
             ],
             json_encode(['message' => $message], JSON_THROW_ON_ERROR)
@@ -209,15 +269,15 @@ class FirebaseClient
 
             Log::runtime()->info(
                 [
-                'operation' => 'firebase_fcm_send',
-                'host' => 'fcm.googleapis.com',
-                'url' => "/v1/projects/{$projectId}/messages:send",
-                'request' => ['body' => $message],
-                'response' => [
-                    'httpCode' => $response->getStatusCode(),
-                    'body' => json_decode($respBody, true)
-                ],
-                'responseTime' => round($elapsed * 1000)
+                    'operation' => 'firebase_fcm_send',
+                    'host' => 'fcm.googleapis.com',
+                    'url' => "/v1/projects/{$projectId}/messages:send",
+                    'request' => ['body' => $message],
+                    'response' => [
+                        'httpCode' => $response->getStatusCode(),
+                        'body' => json_decode($respBody, true)
+                    ],
+                    'responseTime' => round($elapsed * 1000)
                 ]
             );
 
@@ -227,20 +287,18 @@ class FirebaseClient
             if ($e->getResponse()->getStatusCode() === 401) {
                 Log::runtime()->warning(
                     [
-                    'operation' => 'firebase_fcm_send_401',
-                    'message' => 'Token unauthorized, regenerating and retrying'
+                        'operation' => 'firebase_fcm_send_401',
+                        'message' => 'Token unauthorized, regenerating and retrying'
                     ]
                 );
 
-                // Regenerate and update singleton
-                app()->forgetInstance('firebase.token');
-                $newTokenData = app('firebase.token');
+                $newToken = $this->getAccessToken(true);
 
                 $retryRequest = new Request(
                     'POST',
                     $url,
                     [
-                        'Authorization' => 'Bearer ' . $newTokenData['token'],
+                        'Authorization' => 'Bearer ' . $newToken,
                         'Content-Type' => 'application/json'
                     ],
                     json_encode(['message' => $message], JSON_THROW_ON_ERROR)

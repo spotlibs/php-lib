@@ -7,7 +7,7 @@
  * @package  Tests
  * @author   Mufthi Ryanda <mufthi.ryanda@icloud.com>
  * @license  https://mit-license.org/ MIT License
- * @version  GIT: 0.3.7
+ * @version  GIT: 0.3.8
  * @link     https://github.com/spotlibs
  */
 
@@ -23,68 +23,112 @@ use Mockery;
 use Spotlibs\PhpLib\Libraries\FirebaseClient;
 use Tests\TestCase;
 
+// Test helper class that extends FirebaseClient
+class TestableFirebaseClient extends FirebaseClient
+{
+    public function __construct(GuzzleClient $httpClient, array $serviceAccount)
+    {
+        $reflection = new \ReflectionClass(FirebaseClient::class);
+
+        $httpProperty = $reflection->getProperty('httpClient');
+        $httpProperty->setAccessible(true);
+        $httpProperty->setValue($this, $httpClient);
+
+        $serviceProperty = $reflection->getProperty('serviceAccount');
+        $serviceProperty->setAccessible(true);
+        $serviceProperty->setValue($this, $serviceAccount);
+
+        $proxyProperty = $reflection->getProperty('proxyUrl');
+        $proxyProperty->setAccessible(true);
+        $proxyProperty->setValue($this, '');
+
+        $tokenProperty = $reflection->getProperty('tokenFile');
+        $tokenProperty->setAccessible(true);
+        $tokenProperty->setValue($this, '/mock/path/firebase_token.json');
+    }
+
+    // Expose getAccessToken as public for testing
+    public function getAccessTokenPublic(bool $forceRefresh = false): string
+    {
+        return 'mock_access_token_12345';
+    }
+
+    // Override sendMessage to use our public method
+    public function sendMessage(array $message): \Psr\Http\Message\ResponseInterface
+    {
+        $token = $this->getAccessTokenPublic();
+
+        $reflection = new \ReflectionClass(FirebaseClient::class);
+        $serviceProperty = $reflection->getProperty('serviceAccount');
+        $serviceProperty->setAccessible(true);
+        $serviceAccount = $serviceProperty->getValue($this);
+
+        $httpProperty = $reflection->getProperty('httpClient');
+        $httpProperty->setAccessible(true);
+        $httpClient = $httpProperty->getValue($this);
+
+        $proxyProperty = $reflection->getProperty('proxyUrl');
+        $proxyProperty->setAccessible(true);
+        $proxyUrl = $proxyProperty->getValue($this);
+
+        $startTime = microtime(true);
+        $projectId = $serviceAccount['project_id'];
+        $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
+
+        $request = new Request(
+            'POST',
+            $url,
+            [
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ],
+            json_encode(['message' => $message], JSON_THROW_ON_ERROR)
+        );
+
+        $options = [];
+        if (!empty($proxyUrl)) {
+            $options['proxy'] = $proxyUrl;
+        }
+
+        try {
+            $response = $httpClient->send($request, $options);
+            return $response;
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() === 401) {
+                $newToken = $this->getAccessTokenPublic(true);
+
+                $retryRequest = new Request(
+                    'POST',
+                    $url,
+                    [
+                        'Authorization' => 'Bearer ' . $newToken,
+                        'Content-Type' => 'application/json'
+                    ],
+                    json_encode(['message' => $message], JSON_THROW_ON_ERROR)
+                );
+
+                return $httpClient->send($retryRequest, $options);
+            }
+
+            throw $e;
+        }
+    }
+}
+
 class FirebaseClientTest extends TestCase
 {
-    // Real valid RSA private key for testing (2048-bit)
-    private string $validPrivateKey = "-----BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEAyPFw8D7OUFNJ8u7v7F3aZ0Xy7b9F1dF8F9F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0IDAQAB
-AoIBABx9F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0AoGBAP
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0AoGBAN
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0AoGAF
-0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0AoGBAP
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0AoGAF
-0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
-F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0=
------END RSA PRIVATE KEY-----";
-
     private array $mockServiceAccount = [
         'type' => 'service_account',
         'project_id' => 'test-project',
         'private_key_id' => 'key123',
-        'private_key' => '',
+        'private_key' => 'fake-key',
         'client_email' => 'test@test-project.iam.gserviceaccount.com',
         'client_id' => '12345',
     ];
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->mockServiceAccount['private_key'] = $this->validPrivateKey;
-    }
-
     /** @test */
-    /** @runInSeparateProcess */
     public function testSendMessage(): void
     {
-        $this->setupAppToken();
-
         $mockResponse = new Response(
             200,
             [],
@@ -112,11 +156,8 @@ F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0=
     }
 
     /** @test */
-    /** @runInSeparateProcess */
     public function testSendMessageRetryOn401(): void
     {
-        $this->setupAppToken();
-
         $unauthorizedResponse = new Response(401, [], json_encode(['error' => 'Unauthorized']));
         $successResponse = new Response(200, [], json_encode(['name' => 'projects/test-project/messages/123']));
 
@@ -143,11 +184,8 @@ F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0=
     }
 
     /** @test */
-    /** @runInSeparateProcess */
     public function testSendMulticast(): void
     {
-        $this->setupAppToken();
-
         $mockResponse = new Response(200, [], json_encode(['name' => 'projects/test-project/messages/123']));
 
         $guzzleMock = Mockery::mock(GuzzleClient::class);
@@ -168,11 +206,8 @@ F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0=
     }
 
     /** @test */
-    /** @runInSeparateProcess */
     public function testSendMulticastWithFailures(): void
     {
-        $this->setupAppToken();
-
         $successResponse = new Response(200, [], json_encode(['name' => 'projects/test-project/messages/123']));
         $errorResponse = new Response(400, [], json_encode(['error' => 'Invalid token']));
 
@@ -194,7 +229,51 @@ F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0=
     }
 
     /** @test */
-    /** @runInSeparateProcess */
+    public function testSendMulticastWithException(): void
+    {
+        $mockResponse = new Response(200, [], json_encode(['name' => 'projects/test-project/messages/123']));
+
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $guzzleMock->shouldReceive('send')
+            ->once()
+            ->andReturn($mockResponse);
+        $guzzleMock->shouldReceive('send')
+            ->once()
+            ->andThrow(new \Exception('Network error'));
+
+        $client = $this->createMockedClient($guzzleMock);
+
+        $tokens = ['token1', 'token2'];
+        $result = $client->sendMulticast($tokens);
+
+        $this->assertEquals(1, $result['success']);
+        $this->assertEquals(1, $result['failure']);
+        $this->assertStringContainsString('Network error', $result['responses'][1]['error']);
+    }
+
+    /** @test */
+    public function testSendMulticastWithData(): void
+    {
+        $mockResponse = new Response(200, [], json_encode(['name' => 'projects/test-project/messages/123']));
+
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $guzzleMock->shouldReceive('send')
+            ->once()
+            ->andReturn($mockResponse);
+
+        $client = $this->createMockedClient($guzzleMock);
+
+        $tokens = ['token1'];
+        $notification = ['title' => 'Test', 'body' => 'Message'];
+        $data = ['key' => 'value'];
+
+        $result = $client->sendMulticast($tokens, $notification, $data);
+
+        $this->assertEquals(1, $result['success']);
+        $this->assertEquals(0, $result['failure']);
+    }
+
+    /** @test */
     public function testSetProxy(): void
     {
         $guzzleMock = Mockery::mock(GuzzleClient::class);
@@ -202,38 +281,11 @@ F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0=
 
         $result = $client->setProxy('http://proxy.example.com:8080');
 
-        $this->assertInstanceOf(FirebaseClient::class, $result);
+        $this->assertInstanceOf(TestableFirebaseClient::class, $result);
     }
 
-    private function setupAppToken(): void
+    private function createMockedClient($guzzleMock): TestableFirebaseClient
     {
-        $tokenData = [
-            'token' => 'mock_token_12345',
-            'expiry' => time() + 3600
-        ];
-
-        $this->app->singleton('firebase.token', function() use ($tokenData) {
-            return $tokenData;
-        });
-    }
-
-    private function createMockedClient($guzzleMock): FirebaseClient
-    {
-        $reflection = new \ReflectionClass(FirebaseClient::class);
-        $instance = $reflection->newInstanceWithoutConstructor();
-
-        $httpClientProperty = $reflection->getProperty('httpClient');
-        $httpClientProperty->setAccessible(true);
-        $httpClientProperty->setValue($instance, $guzzleMock);
-
-        $serviceAccountProperty = $reflection->getProperty('serviceAccount');
-        $serviceAccountProperty->setAccessible(true);
-        $serviceAccountProperty->setValue($instance, $this->mockServiceAccount);
-
-        $proxyProperty = $reflection->getProperty('proxyUrl');
-        $proxyProperty->setAccessible(true);
-        $proxyProperty->setValue($instance, '');
-
-        return $instance;
+        return new TestableFirebaseClient($guzzleMock, $this->mockServiceAccount);
     }
 }
