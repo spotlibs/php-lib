@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Libraries;
 
+use Spotlibs\PhpLib\Dtos\AEADEncryptResult;
+
 /**
  * Security
  *
@@ -115,5 +117,55 @@ class Security
         }
 
         return $filename;
+    }
+    /**
+     * Encrypting sensitive string data with AEAD cipher mode
+     *
+     * @param string $plaintext string to encrypt
+     *
+     * @throws \Exception
+     * @return AEADEncryptResult
+     */
+    public static function encryptAEAD(string $plaintext): AEADEncryptResult
+    {
+        $charset = array_merge(
+            range('0', '9'),
+            range('a', 'z'),
+            range('A', 'Z'),
+        );
+        $ivArr = [];
+        for ($i = 0; $i < 16; $i++) {
+            $ivArr[] = $charset[random_int(0, 61)];
+        }
+        $iv = implode('', $ivArr);
+        $ecrypted = openssl_encrypt($plaintext, "AES-256-GCM", env('SECURITY_KEY'), OPENSSL_RAW_DATA, $iv, $tag);
+        if (!$ecrypted) {
+            throw new \Exception("failed to encrypt string");
+        }
+        $result = new AEADEncryptResult();
+        $result->ciphertext = strtoupper(bin2hex($iv . $ecrypted));
+        $result->tag = $tag;
+        return $result;
+    }
+
+    /**
+     * Decrypt encrypted string
+     *
+     * @param string $encrypted string to decrypt with AEAD cipher mode
+     * @param string $tag       value that came from encryption with AEAD
+     *
+     * @throws \Exception
+     * @return bool|string
+     */
+    public static function decryptAEAD(string $encrypted, string $tag): string
+    {
+        $ivHex = substr($encrypted, 0, 32);
+        $iv = hex2bin($ivHex);
+        $encrypted  = substr($encrypted, 32);
+        $decrypted = openssl_decrypt(hex2bin($encrypted), "AES-256-GCM", env('SECURITY_KEY'), OPENSSL_RAW_DATA, $iv, $tag);
+        if (!$decrypted) {
+            throw new \Exception("failed to decrypt string");
+        }
+        return $decrypted;
     }
 }

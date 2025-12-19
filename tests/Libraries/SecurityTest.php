@@ -23,6 +23,14 @@ class SecurityTest extends TestCase
         $decrypted = Security::decrypt($encrypted);
         $this->assertEquals($plain, $decrypted);
     }
+    public function testEncryptAEAD(): void
+    {
+        putenv('SECURITY_KEY=123456789ABCDefg');
+        $plain = 'beautiful soup';
+        $encrypted = Security::encryptAEAD($plain);
+        $decrypted = Security::decryptAEAD($encrypted->ciphertext, $encrypted->tag);
+        $this->assertEquals($plain, $decrypted);
+    }
 
     public function testDecrypt1(): void
     {
@@ -39,6 +47,14 @@ class SecurityTest extends TestCase
         $x = Security::encrypt('beautiful soup');
         putenv('SECURITY_KEY=0123456789abcd321');
         Security::decrypt($x);
+    }
+    public function testEncryptAEADError(): void
+    {
+        $this->expectException(\Exception::class);
+        putenv('SECURITY_KEY=123456789ABCDefg');
+        $plain = 'beautiful soup';
+        $encrypted = Security::encryptAEAD($plain);
+        Security::decryptAEAD($encrypted->ciphertext, 'whatever');
     }
 
     public function testSanitizeFilename(): void
