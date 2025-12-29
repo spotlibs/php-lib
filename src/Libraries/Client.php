@@ -16,9 +16,11 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries;
 
 use GuzzleHttp\Client as BaseClient;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
 use Spotlibs\PhpLib\Exceptions\StdException;
+use Spotlibs\PhpLib\Logs\Log;
 use Spotlibs\PhpLib\Services\Context;
 use Spotlibs\PhpLib\Services\Metadata;
 
@@ -70,6 +72,7 @@ class Client extends BaseClient
     public function __construct(array $config = [])
     {
         parent::__construct($config);
+
         $context = app(Context::class);
         /**
          * Metadata variable
@@ -209,6 +212,28 @@ class Client extends BaseClient
      */
     public function call(Request $request, array $options = []): ResponseInterface
     {
+        // Proxy Checking
+        $noProxyEnv = env('NO_PROXY');
+        if ($noProxyEnv && !isset($options['proxy'])) {
+            $host = $request->getUri()->getHost();
+            $patterns = array_map('trim', explode(',', $noProxyEnv));
+
+            foreach ($patterns as $pattern) {
+                $match = false;
+                if (str_starts_with($pattern, '*')) {
+                    $match = str_ends_with($host, substr($pattern, 1));
+                } elseif (str_ends_with($pattern, '*')) {
+                    $match = str_starts_with($host, substr($pattern, 0, -1));
+                } else {
+                    $match = ($host === $pattern);
+                }
+                if ($match) {
+                    $options['proxy'] = '';
+                    break;
+                }
+            }
+        }
+
         if (!isset($options['timeout'])) {
             $options['timeout'] = 10;
         }
