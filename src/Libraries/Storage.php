@@ -37,7 +37,7 @@ class Storage
      *
      * @param string $driver The storage driver to use.
      *
-     * @return Storage
+     * @return \Spotlibs\PhpLib\Libraries\StorageDrivers\StorageInterface
      */
     public static function disk(string $driver): StorageInterface
     {
