@@ -17,7 +17,10 @@ namespace Spotlibs\PhpLib\Libraries\StorageDrivers;
 
 use Carbon\Carbon;
 use Illuminate\Http\File;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage as FacadeStorage;
+use Illuminate\Support\Str;
+use Spotlibs\PhpLib\Exceptions\RuntimeException;
+use Spotlibs\PhpLib\Libraries\Storage;
 
 /**
  * Storage
@@ -28,8 +31,19 @@ use Illuminate\Support\Facades\Storage;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class Minio implements StorageInterface
+class Minio extends Storage implements StorageInterface
 {
+    /**
+     * Create a new NFS instance.
+     *
+     * @param string $driver driver name. example: minio_xxx
+     *
+     * @return void
+     */
+    public function __construct(string $driver)
+    {
+        parent::__construct($driver);
+    }
     /**
      * Upload file to disk
      *
@@ -42,7 +56,7 @@ class Minio implements StorageInterface
      */
     public function upload(File $file, string $dirpath): bool
     {
-        Storage::disk('minio')->put($dirpath, $file->getContent());
+        FacadeStorage::disk('minio')->put($dirpath, $file->getContent());
         return true;
     }
     /**
@@ -57,7 +71,7 @@ class Minio implements StorageInterface
      */
     public function copy(string $srcPath, string $destPath): bool
     {
-        Storage::disk('minio')->copy($srcPath, $destPath);
+        FacadeStorage::disk('minio')->copy($srcPath, $destPath);
         return true;
     }
     /**
@@ -71,7 +85,7 @@ class Minio implements StorageInterface
      */
     public function delete(string $filepath): bool
     {
-        Storage::disk('minio')->delete($filepath);
+        FacadeStorage::disk('minio')->delete($filepath);
         return true;
     }
     /**
@@ -86,24 +100,54 @@ class Minio implements StorageInterface
      */
     public function move(string $srcPath, string $destPath): bool
     {
-        Storage::disk('minio')->move($srcPath, $destPath);
+        FacadeStorage::disk('minio')->move($srcPath, $destPath);
         return true;
     }
     /**
      * Create temporary URL for file in disk
      *
+     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
      * @param string $filepath file path to create secure link
      *
      * @return string
      */
-    public function temporaryUrl(string $filepath): string
+    public function securelink(string $hostname, string $filepath): string
     {
         /**
          * Illuminate\Filesystem\FilesystemAdapter $disk file storage disk
          *
          * @var \Illuminate\Filesystem\FilesystemAdapter $disk file storage disk
         */
-        $disk = Storage::disk('minio');
-        return $disk->temporaryUrl($filepath, Carbon::now()->addSeconds(env('MINIO_EXPIRED_URL', 60)));
+        $disk = FacadeStorage::disk('minio');
+        $urlpath = $disk->temporaryUrl($filepath, Carbon::now()->addSeconds(env('MINIO_EXPIRED_URL', 60)));
+        return $hostname . "/" . $urlpath;
+    }
+    /**
+     * Create temporary URL for a folder in disk
+     *
+     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
+     * @param string $dirpath  directory path to create secure link
+     *
+     * @return array<string>
+     */
+    public function securelinkFolder(string $hostname, string $dirpath): array
+    {
+        $random = Str::random(40);
+        $linkFolder = "/var/www/html/public/securelink/$random";
+        if (!exec("mkdir $linkFolder")) {
+            throw new RuntimeException("Failed to create securelink directory: $linkFolder");
+        }
+        $allFiles = FacadeStorage::disk(parent::$driver)->allFiles($dirpath);
+        $result = [];
+        foreach ($allFiles as $file) {
+            $filename = parent::getFileName($file);
+            $fileStream = FacadeStorage::disk(parent::$driver)->readStream($file);
+            $writeStream = fopen($linkFolder . "/" . $filename, 'w');
+            stream_copy_to_stream($fileStream, $writeStream);
+            fclose($fileStream);
+            fclose($writeStream);
+            $result[] = $hostname . "/securelink/" . $linkFolder . "/" . $filename;
+        }
+        return $result;
     }
 }

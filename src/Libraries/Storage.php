@@ -31,27 +31,47 @@ use Spotlibs\PhpLib\Libraries\StorageDrivers\StorageInterface;
  */
 class Storage
 {
-    private static array $drivers = ['nfs', 'minio'];
-    private string $disk;
+    protected string $driver;
     /**
      * Create a new Storage instance for the specified driver.
      *
      * @param string $driver The storage driver to use.
      *
-     * @throws RuntimeException
-     *
      * @return Storage
      */
     public static function disk(string $driver): StorageInterface
     {
-        if (!in_array($driver, self::$drivers)) {
-            throw new RuntimeException("Invalid driver: $driver");
+        if (str_contains(strtolower($driver), "minio")) {
+            return new Minio($driver);
         }
+        return new NFS($driver);
+    }
 
-        if ($driver === 'nfs') {
-            return new NFS();
+    /**
+     * Create a new Storage instance.
+     *
+     * @param string $driver driver name. example: nfs_xxx
+     *
+     * @return void
+     */
+    public function __construct(string $driver)
+    {
+        $this->driver = $driver;
+    }
+    /**
+     * Parse file name from filepath
+     *
+     * @param string $filepath path of the file
+     *
+     * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
+     *
+     * @return string
+     */
+    protected function getFileName(string $filepath): string
+    {
+        if ($x = explode("/", $filepath)) {
+            return $x[-1];
         }
-
-        return new Minio();
+        throw new RuntimeException("failed to get filename from $filepath");
     }
 }

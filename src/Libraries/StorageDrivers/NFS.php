@@ -18,7 +18,7 @@ namespace Spotlibs\PhpLib\Libraries\StorageDrivers;
 use Illuminate\Http\File;
 use Illuminate\Support\Str;
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
-use Spotlibs\PhpLib\Logs\Log;
+use Spotlibs\PhpLib\Libraries\Storage;
 
 /**
  * Storage
@@ -29,8 +29,19 @@ use Spotlibs\PhpLib\Logs\Log;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class NFS implements StorageInterface
+class NFS extends Storage implements StorageInterface
 {
+    /**
+     * Create a new NFS instance.
+     *
+     * @param string $driver driver name. example: nfs_xxx
+     *
+     * @return void
+     */
+    public function __construct(string $driver)
+    {
+        parent::__construct($driver);
+    }
     /**
      * Upload file to disk
      *
@@ -126,29 +137,47 @@ class NFS implements StorageInterface
     /**
      * Create temporary URL for file in disk
      *
+     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
      * @param string $filepath file path to create secure link
+     *
+     * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return string
      */
-    public function temporaryUrl(string $filepath): string
+    public function securelink(string $hostname, string $filepath): string
     {
         if (!is_file($filepath)) {
-            Log::runtime()->warning(
-                [
-                    "message" => "File not found within filepath: $filepath"
-                ]
-            );
-            return "";
+            throw new RuntimeException("File not found within filepath: $filepath");
         }
         $random = Str::random(40);
         if (!exec("ln -s $filepath /var/www/html/public/securelink/$random")) {
-            Log::runtime()->warning(
-                [
-                "error" => "Failed to create secure link for file: $filepath",
-                ]
-            );
-            return "";
+            throw new RuntimeException("Failed to create secure link for file: $filepath");
         }
-        return env("APP_URL", "localhost:8080") . "/securelink/$random";
+        return $hostname . "/securelink/$random";
+    }
+    /**
+     * Create temporary URL for a folder in disk
+     *
+     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
+     * @param string $dirpath  directory path to create secure link
+     *
+     * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
+     *
+     * @return array<string>
+     */
+    public function securelinkFolder(string $hostname, string $dirpath): array
+    {
+        if (!is_dir($dirpath)) {
+            throw new RuntimeException("Directory not found within dirpath: $dirpath");
+        }
+        $random = Str::random(40);
+        if (!exec("ln -sf $dirpath /var/www/html/public/securelink/$random")) {
+            throw new RuntimeException("Failed to create secure link for file: $dirpath");
+        }
+        $result = glob("/var/www/html/public/securelink/$random/*");
+        foreach ($result as $key => $r) {
+            $result[$key] = str_replace("/var/www/html", $hostname, $r);
+        }
+        return $result;
     }
 }
