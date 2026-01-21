@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Libraries\StorageDrivers;
 
-use Illuminate\Http\File;
+use Illuminate\Http\UploadedFile;
 
 /**
  * Storage
@@ -31,14 +31,14 @@ interface StorageInterface
     /**
      * Upload file to disk
      *
-     * @param File   $file    file from http request
-     * @param string $dirpath where to put the file
+     * @param UploadedFile $file    file from http request
+     * @param string       $dirpath where to put the file
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return bool
      */
-    public function upload(File $file, string $dirpath): bool;
+    public function upload(UploadedFile $file, string $dirpath): bool;
     /**
      * Copy file in disk
      *

@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Libraries\StorageDrivers;
 
-use Illuminate\Http\File;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
 use Spotlibs\PhpLib\Libraries\Storage;
@@ -45,14 +45,14 @@ class NFS extends Storage implements StorageInterface
     /**
      * Upload file to disk
      *
-     * @param File   $file    file from http request
-     * @param string $dirpath where to put the file
+     * @param UploadedFile $file    file from http request
+     * @param string       $dirpath where to put the file
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return bool
      */
-    public function upload(File $file, string $dirpath): bool
+    public function upload(UploadedFile $file, string $dirpath): bool
     {
         if (!is_dir($dirpath)) {
             if (!mkdir($dirpath, 0664, true)) {
