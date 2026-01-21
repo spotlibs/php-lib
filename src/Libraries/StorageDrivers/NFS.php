@@ -59,7 +59,7 @@ class NFS extends Storage implements StorageInterface
                 throw new RuntimeException("Failed to create destination directory: $dirpath");
             }
         }
-        $file->move($dirpath);
+        $file->move($dirpath, $file->getClientOriginalName());
         return true;
     }
     /**
