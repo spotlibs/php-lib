@@ -74,23 +74,21 @@ interface StorageInterface
     /**
      * Create temporary URL for file in disk
      *
-     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
      * @param string $filepath file path to create secure link
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return void
      */
-    public function securelink(string $hostname, string $filepath): string;
+    public function securelink(string $filepath): string;
     /**
      * Create temporary URL for a folder in disk
      *
-     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
-     * @param string $dirpath  directory path to create secure link
+     * @param string $dirpath directory path to create secure link
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return array<string>
      */
-    public function securelinkFolder(string $hostname, string $dirpath): array;
+    public function securelinkFolder(string $dirpath): array;
 }

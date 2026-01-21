@@ -137,14 +137,13 @@ class NFS extends Storage implements StorageInterface
     /**
      * Create temporary URL for file in disk
      *
-     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
      * @param string $filepath file path to create secure link
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return string
      */
-    public function securelink(string $hostname, string $filepath): string
+    public function securelink(string $filepath): string
     {
         if (!is_file($filepath)) {
             throw new RuntimeException("File not found within filepath: $filepath");
@@ -153,19 +152,18 @@ class NFS extends Storage implements StorageInterface
         if (!exec("ln -s $filepath /var/www/html/public/securelink/$random")) {
             throw new RuntimeException("Failed to create secure link for file: $filepath");
         }
-        return $hostname . "/securelink/$random";
+        return env('APP_URL') . "/securelink/$random";
     }
     /**
      * Create temporary URL for a folder in disk
      *
-     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
-     * @param string $dirpath  directory path to create secure link
+     * @param string $dirpath directory path to create secure link
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return array<string>
      */
-    public function securelinkFolder(string $hostname, string $dirpath): array
+    public function securelinkFolder(string $dirpath): array
     {
         if (!is_dir($dirpath)) {
             throw new RuntimeException("Directory not found within dirpath: $dirpath");
@@ -176,7 +174,7 @@ class NFS extends Storage implements StorageInterface
         }
         $result = glob("/var/www/html/public/securelink/$random/*");
         foreach ($result as $key => $r) {
-            $result[$key] = str_replace("/var/www/html", $hostname, $r);
+            $result[$key] = str_replace("/var/www/html", env('APP_URL'), $r);
         }
         return $result;
     }

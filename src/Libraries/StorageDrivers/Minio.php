@@ -106,12 +106,11 @@ class Minio extends Storage implements StorageInterface
     /**
      * Create temporary URL for file in disk
      *
-     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
      * @param string $filepath file path to create secure link
      *
      * @return string
      */
-    public function securelink(string $hostname, string $filepath): string
+    public function securelink(string $filepath): string
     {
         /**
          * Illuminate\Filesystem\FilesystemAdapter $disk file storage disk
@@ -120,17 +119,16 @@ class Minio extends Storage implements StorageInterface
         */
         $disk = FacadeStorage::disk('minio');
         $urlpath = $disk->temporaryUrl($filepath, Carbon::now()->addSeconds((int) env('MINIO_EXPIRED_URL', 60)));
-        return $hostname . "/" . $urlpath;
+        return $urlpath;
     }
     /**
      * Create temporary URL for a folder in disk
      *
-     * @param string $hostname host name which client can access. example: https://my-api-gateway.com
-     * @param string $dirpath  directory path to create secure link
+     * @param string $dirpath directory path to create secure link
      *
      * @return array<string>
      */
-    public function securelinkFolder(string $hostname, string $dirpath): array
+    public function securelinkFolder(string $dirpath): array
     {
         $random = Str::random(40);
         $linkFolder = "/var/www/html/public/securelink/$random";
@@ -146,7 +144,7 @@ class Minio extends Storage implements StorageInterface
             stream_copy_to_stream($fileStream, $writeStream);
             fclose($fileStream);
             fclose($writeStream);
-            $result[] = $hostname . "/securelink/" . $linkFolder . "/" . $filename;
+            $result[] = env('APP_URL') . "/securelink/" . $linkFolder . "/" . $filename;
         }
         return $result;
     }
