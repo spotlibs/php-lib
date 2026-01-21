@@ -119,7 +119,7 @@ class Minio extends Storage implements StorageInterface
          * @var \Illuminate\Filesystem\FilesystemAdapter $disk file storage disk
         */
         $disk = FacadeStorage::disk('minio');
-        $urlpath = $disk->temporaryUrl($filepath, Carbon::now()->addSeconds(env('MINIO_EXPIRED_URL', 60)));
+        $urlpath = $disk->temporaryUrl($filepath, Carbon::now()->addSeconds((int) env('MINIO_EXPIRED_URL', 60)));
         return $hostname . "/" . $urlpath;
     }
     /**
