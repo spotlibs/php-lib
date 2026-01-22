@@ -94,4 +94,52 @@ class MinioAdapter extends Filesystem
 
         return (string) $request->getUri();
     }
+
+    /**
+     * Copy a file to a new location using S3 native copy.
+     *
+     * @param string $from source path
+     * @param string $to   destination path
+     *
+     * @return bool
+     */
+    public function copy(string $from, string $to): bool
+    {
+        try {
+            $this->client->copyObject(
+                [
+                'Bucket' => $this->bucket,
+                'Key' => $to,
+                'CopySource' => "{$this->bucket}/{$from}",
+                ]
+            );
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Move a file to a new location using S3 native copy and delete.
+     *
+     * @param string $from source path
+     * @param string $to   destination path
+     *
+     * @return bool
+     */
+    public function move(string $from, string $to): bool
+    {
+        try {
+            // Copy the file
+            if ($this->copy($from, $to)) {
+                // Delete the original
+                return $this->delete($from);
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 }
