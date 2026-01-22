@@ -9,7 +9,7 @@
         "laravel/lumen-framework": "^11.2.0",
         "jobcloud/php-kafka-lib": "~2.0.0",
         "flix-tech/avro-serde-php": "~2.1.0",
-        "league/flysystem-aws-s3-v3": "^3.30"
+        "coraxster/flysystem-aws-s3-v3-minio": "^1.0"
     },
     "autoload": {
         "psr-4": {

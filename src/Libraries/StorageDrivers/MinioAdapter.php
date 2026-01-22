@@ -16,9 +16,8 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries\StorageDrivers;
 
 use Aws\S3\S3Client;
-use Illuminate\Filesystem\FilesystemAdapter;
-use League\Flysystem\FilesystemAdapter as LeagueFsAdapter;
-use League\Flysystem\FilesystemOperator;
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
+use League\Flysystem\Filesystem;
 
 /**
  * Storage
@@ -29,7 +28,7 @@ use League\Flysystem\FilesystemOperator;
  * @license  https://mit-license.org/ MIT License
  * @link     https://github.com/spotlibs
  */
-class MinioAdapter extends FilesystemAdapter
+class MinioAdapter extends Filesystem
 {
     protected S3Client $publicClient;
     protected string $bucket;
@@ -38,16 +37,15 @@ class MinioAdapter extends FilesystemAdapter
     /**
      * Create a new Minio Filesystem Adapter instance.
      *
-     * @param FilesystemOperator                  $driver       filesystem operator
-     * @param \League\Flysystem\FilesystemAdapter $adapter      filesystem adapter
-     * @param array                               $config       driver config
-     * @param S3Client                            $publicClient client for generating presigned URL
+     * @param AwsS3Adapter $adapter      filesystem adapter
+     * @param array        $config       driver config
+     * @param S3Client     $publicClient client for generating presigned URL
      *
      * @return void
      */
-    public function __construct(FilesystemOperator $driver, LeagueFsAdapter $adapter, array $config, S3Client $publicClient = null)
+    public function __construct(AwsS3Adapter $adapter, array $config, S3Client $publicClient)
     {
-        parent::__construct($driver, $adapter, $config);
+        parent::__construct($adapter, $config);
 
         $this->bucket = $config['bucket'];
         $this->config = $config;
