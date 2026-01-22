@@ -32,7 +32,6 @@ class MinioAdapter extends Filesystem
 {
     protected S3Client $publicClient;
     protected string $bucket;
-    protected array $config;
 
     /**
      * Create a new Minio Filesystem Adapter instance.
@@ -48,7 +47,6 @@ class MinioAdapter extends Filesystem
         parent::__construct($adapter, $config);
 
         $this->bucket = $config['bucket'];
-        $this->config = $config;
 
         // Create public client for pre-signed URLs
         $this->publicClient = $publicClient ?: new S3Client(
