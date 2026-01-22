@@ -123,18 +123,18 @@ class MinioAdapter extends Filesystem
     /**
      * Move a file to a new location using S3 native copy and delete.
      *
-     * @param string $from source path
-     * @param string $to   destination path
+     * @param string $path    source path
+     * @param string $newpath destination path
      *
      * @return bool
      */
-    public function move(string $from, string $to): bool
+    public function move(string $path, string $newpath): bool
     {
         try {
             // Copy the file
-            if ($this->copy($from, $to)) {
+            if ($this->copy($path, $path)) {
                 // Delete the original
-                return $this->delete($from);
+                return $this->delete($path);
             }
 
             return false;
