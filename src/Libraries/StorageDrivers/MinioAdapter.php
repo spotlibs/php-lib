@@ -132,7 +132,7 @@ class MinioAdapter extends Filesystem
     {
         try {
             // Copy the file
-            if ($this->copy($path, $path)) {
+            if ($this->copy($path, $newpath)) {
                 // Delete the original
                 return $this->delete($path);
             }
