@@ -70,11 +70,11 @@ class MinioAdapter extends Filesystem
      * @param string       $expiration time limit of url
      * @param array $options optional
      *
-     * @return bool
+     * @return string
      */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     // phpcs:disable PEAR.Commenting.FunctionComment.Missing
-    public function temporaryUrl($path, $expiration, $options = []): string
+    public function temporaryUrl(string $path, string $expiration, array $options = []): string
     {
         $command = $this->publicClient->getCommand(
             'GetObject',
@@ -98,12 +98,12 @@ class MinioAdapter extends Filesystem
     /**
      * Copy a file to a new location using S3 native copy.
      *
-     * @param string $from source path
-     * @param string $to   destination path
+     * @param string $path    source path
+     * @param string $newpath destination path
      *
      * @return bool
      */
-    public function copy(string $from, string $to): bool
+    public function copy($path, $newpath): bool
     {
         try {
             $this->client->copyObject(
