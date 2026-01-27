@@ -74,17 +74,16 @@ class KafkaSchemaMakeCommand extends GeneratorCommand
      * @return int
      * @throws FileNotFoundException
      */
-    public function handle() : int
+    public function handle(): int
     {
         $this->schemaType = $this->option('type') ?? 'avro';
 
-        $this->info('Please paste your ' . strtoupper($this->schemaType) . ' schema (press Ctrl+D or Ctrl+Z when done):');
         if (!in_array($this->schemaType, ['avro', 'json'])) {
             $this->error('Invalid schema type. Must be either "avro" or "json".');
             return 1;
         }
 
-        $schemaInput = stream_get_contents(STDIN);
+        $schemaInput = $this->ask('Paste your ' . strtoupper($this->schemaType) . ' schema (single line)');
 
         try {
             $this->schemaData = json_decode($schemaInput, true, 512, JSON_THROW_ON_ERROR);
@@ -94,7 +93,6 @@ class KafkaSchemaMakeCommand extends GeneratorCommand
         }
 
         parent::handle();
-
         $this->createCollection();
         return 0;
     }
@@ -281,13 +279,7 @@ class KafkaSchemaMakeCommand extends GeneratorCommand
     protected function createCollection(): void
     {
         $className = class_basename($this->argument('name'));
-        $this->call(
-            'make:collection',
-            [
-                'name' => $className,
-                '--resource' => true
-            ]
-        );
+        $this->call('make:collection', ['name' => $className]);
     }
 
     /**
