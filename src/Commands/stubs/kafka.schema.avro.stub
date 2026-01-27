@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * PHP version 8.0.30
+ *
+ * @category Application
+ * @package  Models
+ * @author
+ * @license  https://mit-license.org/ MIT License
+ * @version  GIT: 0.0.1
+ * @link     https://github.com/
+ */
+
+declare(strict_types=1);
+
+namespace DummyNamespace;
+
+use Illuminate\Database\Eloquent\Model;
+use App\Collections\DummyClassCollection;
+
+/**
+ * DummyClass
+ *
+ * Kafka schema entity for AVRO
+ *
+ * @category DataClass
+ * @package  Models
+ * @author
+ * @license  https://mit-license.org/ MIT License
+ * @link     https://github.com/
+ */
+class DummyClass extends Model
+{
+    // phpcs:disable
+    public $timestamps = false;
+
+    protected $fillable = [
+DummyFillable
+    ];
+
+    protected $casts = [
+DummyCasts
+    ];
+    // phpcs:enable
+
+    /**
+     * Get schema body definition
+     *
+     * @return string
+     */
+    public static function getSchemaBody(): string
+    {
+        $definitionSchemaBody = <<<JSON
+DummySchemaBody
+            JSON;
+        return $definitionSchemaBody;
+    }
+
+    /**
+     * Get schema key definition
+     *
+     * @return string
+     */
+    public static function getSchemaKey(): string
+    {
+        $definitionSchemaKey = <<<JSON
+            {
+                "type": "string"
+            }
+            JSON;
+        return $definitionSchemaKey;
+    }
+
+    /**
+     * Create a new Eloquent Collection instance.
+     *
+     * @param array $models models array
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function newCollection(array $models = [])
+    {
+        return new DummyClassCollection($models);
+    }
+}
