@@ -31,7 +31,7 @@ class LogTest extends TestCase
         $context->set(Metadata::class, $meta);
     }
 
-    private string $expected = '{"test":"let me know","traceID":"123123","identifier":"spotlibs-unittest"}';
+    private string $expected = '{"test":"let me know","taskname":null,"hostname":"--- IGNORE ---","traceID":"123123","identifier":"spotlibs-unittest"}';
 
     public function testCreateRuntimeErrorLog()
     {
@@ -44,6 +44,7 @@ class LogTest extends TestCase
         $temp = explode(':: ', $logDetail);
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
+        $logMessage = json_encode($this->removeHostname(json_decode($logMessage, true)));
         $this->assertEquals('ERROR', $logLevel);
         $this->assertEquals($this->expected, $logMessage);
     }
@@ -54,10 +55,11 @@ class LogTest extends TestCase
         Log::runtime()->info($mockData);
         $file = file("./storage/logs/runtime.log");
         $last_line = end($file);
-        $logDetail = explode('SPOTLIBS_MICROSERVICE.local.', $last_line)[1];
+        $logDetail = explode('SPOTLIBS_MICROSERVICE..', $last_line)[1];
         $temp = explode(':: ', $logDetail);
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
+        $logMessage = json_encode($this->removeHostname(json_decode($logMessage, true)));
         $this->assertEquals('INFO', $logLevel);
         $this->assertEquals($this->expected, $logMessage);
     }
@@ -72,6 +74,7 @@ class LogTest extends TestCase
         $temp = explode(':: ', $logDetail);
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
+        $logMessage = json_encode($this->removeHostname(json_decode($logMessage, true)));
         $this->assertEquals('WARNING', $logLevel);
         $this->assertEquals($this->expected, $logMessage);
     }
@@ -86,6 +89,7 @@ class LogTest extends TestCase
         $temp = explode(':: ', $logDetail);
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
+        $logMessage = json_encode($this->removeHostname(json_decode($logMessage, true)));
         $this->assertEquals('INFO', $logLevel);
         $this->assertEquals($this->expected, $logMessage);
     }
@@ -100,7 +104,13 @@ class LogTest extends TestCase
         $temp = explode(':: ', $logDetail);
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
+        $logMessage = json_encode($this->removeHostname(json_decode($logMessage, true)));
         $this->assertEquals('INFO', $logLevel);
         $this->assertEquals($this->expected, $logMessage);
+    }
+    private function removeHostname(array $logData): array
+    {
+        $logData['hostname'] = '--- IGNORE ---';
+        return $logData;
     }
 }
