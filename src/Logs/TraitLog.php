@@ -63,6 +63,8 @@ trait TraitLog
      */
     private function getEmbeddedInfo(array &$data): void
     {
+        $data['taskname'] = env('TASK_NAME');
+        $data['hostname'] = gethostname();
         if ($meta = $this->context->get(Metadata::class)) {
             if ($meta instanceof Metadata) {
                 if (isset($meta->req_id)) {
