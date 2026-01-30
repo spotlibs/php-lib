@@ -47,16 +47,18 @@ class Minio extends Storage implements StorageInterface
     /**
      * Upload file to disk
      *
-     * @param UploadedFile $file    file from http request
-     * @param string       $dirpath where to put the file
+     * @param UploadedFile $file     file from http request
+     * @param string       $dirpath  where to put the file
+     * @param string       $filename optionally overide file name
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return bool
      */
-    public function upload(UploadedFile $file, string $dirpath): bool
+    public function upload(UploadedFile $file, string $dirpath, string $filename = ""): bool
     {
-        FacadeStorage::disk('minio')->put($dirpath . "/" . $file->getClientOriginalName(), $file->getContent());
+        $uploadPath = $dirpath . "/" . $filename == "" ? $file->getClientOriginalName() : $filename;
+        FacadeStorage::disk($this->driver)->put($uploadPath, $file->getContent());
         return true;
     }
     /**
@@ -71,7 +73,7 @@ class Minio extends Storage implements StorageInterface
      */
     public function copy(string $srcPath, string $destPath): bool
     {
-        FacadeStorage::disk('minio')->copy($srcPath, $destPath);
+        FacadeStorage::disk($this->driver)->copy($srcPath, $destPath);
         return true;
     }
     /**
@@ -85,7 +87,7 @@ class Minio extends Storage implements StorageInterface
      */
     public function delete(string $filepath): bool
     {
-        FacadeStorage::disk('minio')->delete($filepath);
+        FacadeStorage::disk($this->driver)->delete($filepath);
         return true;
     }
     /**
@@ -100,7 +102,7 @@ class Minio extends Storage implements StorageInterface
      */
     public function move(string $srcPath, string $destPath): bool
     {
-        FacadeStorage::disk('minio')->move($srcPath, $destPath);
+        FacadeStorage::disk($this->driver)->move($srcPath, $destPath);
         return true;
     }
     /**
@@ -117,7 +119,7 @@ class Minio extends Storage implements StorageInterface
          *
          * @var \Illuminate\Filesystem\FilesystemAdapter $disk file storage disk
         */
-        $disk = FacadeStorage::disk('minio');
+        $disk = FacadeStorage::disk($this->driver);
         $urlpath = $disk->temporaryUrl($filepath, Carbon::now()->addSeconds((int) env('MINIO_EXPIRED_URL', 60)));
         return $urlpath;
     }
@@ -135,11 +137,11 @@ class Minio extends Storage implements StorageInterface
         if (!exec("mkdir $linkFolder")) {
             throw new RuntimeException("Failed to create securelink directory: $linkFolder");
         }
-        $allFiles = FacadeStorage::disk(parent::$driver)->allFiles($dirpath);
+        $allFiles = FacadeStorage::disk($this->driver)->allFiles($dirpath);
         $result = [];
         foreach ($allFiles as $file) {
             $filename = parent::getFileName($file);
-            $fileStream = FacadeStorage::disk(parent::$driver)->readStream($file);
+            $fileStream = FacadeStorage::disk($this->driver)->readStream($file);
             $writeStream = fopen($linkFolder . "/" . $filename, 'w');
             stream_copy_to_stream($fileStream, $writeStream);
             fclose($fileStream);

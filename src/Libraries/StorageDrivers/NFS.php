@@ -45,21 +45,22 @@ class NFS extends Storage implements StorageInterface
     /**
      * Upload file to disk
      *
-     * @param UploadedFile $file    file from http request
-     * @param string       $dirpath where to put the file
+     * @param UploadedFile $file     file from http request
+     * @param string       $dirpath  where to put the file
+     * @param string       $filename optionally overide file name
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return bool
      */
-    public function upload(UploadedFile $file, string $dirpath): bool
+    public function upload(UploadedFile $file, string $dirpath, string $filename = ''): bool
     {
         if (!is_dir($dirpath)) {
             if (!mkdir($dirpath, 0664, true)) {
                 throw new RuntimeException("Failed to create destination directory: $dirpath");
             }
         }
-        $file->move($dirpath, $file->getClientOriginalName());
+        $file->move($dirpath, $filename == '' ? $file->getClientOriginalName() : $filename);
         return true;
     }
     /**

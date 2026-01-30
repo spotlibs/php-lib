@@ -31,14 +31,15 @@ interface StorageInterface
     /**
      * Upload file to disk
      *
-     * @param UploadedFile $file    file from http request
-     * @param string       $dirpath where to put the file
+     * @param UploadedFile $file     file from http request
+     * @param string       $dirpath  where to put the file
+     * @param string       $filename optionally overide file name
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
      * @return bool
      */
-    public function upload(UploadedFile $file, string $dirpath): bool;
+    public function upload(UploadedFile $file, string $dirpath, string $filename = ''): bool;
     /**
      * Copy file in disk
      *
