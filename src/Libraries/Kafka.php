@@ -15,24 +15,27 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Libraries;
 
-use AvroIOException;
 use AvroSchema;
-use AvroSchemaParseException;
+use FlixTech\AvroSerializer\Objects\RecordSerializer;
+use FlixTech\SchemaRegistryApi\Registry\BlockingRegistry;
+use FlixTech\SchemaRegistryApi\Registry\Cache\AvroObjectCacheAdapter;
+use FlixTech\SchemaRegistryApi\Registry\CachedRegistry;
+use FlixTech\SchemaRegistryApi\Registry\PromisingRegistry;
 use GuzzleHttp\Client as GuzzleClient;
-use Jobcloud\Kafka\Exception\KafkaProducerException;
-use Jobcloud\Kafka\Producer\KafkaProducer;
-use Jobcloud\Kafka\Producer\KafkaProducerBuilder;
-use Jobcloud\Kafka\Message\KafkaProducerMessage;
+use Jobcloud\Kafka\Consumer\KafkaConsumerBuilder;
+use Jobcloud\Kafka\Consumer\KafkaConsumerBuilderInterface;
+use Jobcloud\Kafka\Consumer\KafkaConsumerInterface;
+use Jobcloud\Kafka\Message\Decoder\AvroDecoder;
+use Jobcloud\Kafka\Message\Decoder\JsonDecoder;
 use Jobcloud\Kafka\Message\Encoder\AvroEncoder;
 use Jobcloud\Kafka\Message\Encoder\JsonEncoder;
 use Jobcloud\Kafka\Message\KafkaAvroSchema;
 use Jobcloud\Kafka\Message\KafkaAvroSchemaInterface;
+use Jobcloud\Kafka\Message\KafkaConsumerMessageInterface;
+use Jobcloud\Kafka\Message\KafkaProducerMessage;
 use Jobcloud\Kafka\Message\Registry\AvroSchemaRegistry;
-use FlixTech\AvroSerializer\Objects\RecordSerializer;
-use FlixTech\SchemaRegistryApi\Registry\CachedRegistry;
-use FlixTech\SchemaRegistryApi\Registry\BlockingRegistry;
-use FlixTech\SchemaRegistryApi\Registry\PromisingRegistry;
-use FlixTech\SchemaRegistryApi\Registry\Cache\AvroObjectCacheAdapter;
+use Jobcloud\Kafka\Producer\KafkaProducer;
+use Jobcloud\Kafka\Producer\KafkaProducerBuilder;
 use Spotlibs\PhpLib\Exceptions\ParameterException;
 use Spotlibs\PhpLib\Logs\Log;
 
@@ -72,6 +75,13 @@ class Kafka
     private static ?KafkaProducer $producer = null;
 
     /**
+     * Current consumer instance
+     *
+     * @var KafkaConsumerInterface|null
+     */
+    private static ?KafkaConsumerInterface $consumer = null;
+
+    /**
      * Current topic name
      *
      * @var string|null
@@ -81,17 +91,13 @@ class Kafka
     /**
      * Setup and return Kafka producer
      *
-     * @param string $topic Topic name
-     * @param int $schemaType Schema type constant
-     * @param string|null $schemaBody Schema definition for message body
-     * @param string|null $schemaKey Schema definition for message key
-     * @param array $additionalConfig Additional Kafka configuration
+     * @param string      $topic            Topic name
+     * @param int         $schemaType       Schema type constant
+     * @param string|null $schemaBody       Schema definition for message body
+     * @param string|null $schemaKey        Schema definition for message key
+     * @param array       $additionalConfig Additional Kafka configuration
      *
      * @return KafkaProducer
-     * @throws AvroIOException
-     * @throws AvroSchemaParseException
-     * @throws KafkaProducerException
-     * @throws ParameterException
      */
     public static function publishOn(
         string $topic,
@@ -151,6 +157,36 @@ class Kafka
     }
 
     /**
+     * Produce a message with custom headers
+     *
+     * @param mixed       $body      Message body
+     * @param array       $headers   Message headers (key-value pairs)
+     * @param string|null $key       Message key for partitioning
+     * @param int         $partition Partition number (default 0)
+     *
+     * @return void
+     * @throws ParameterException
+     */
+    public static function produceWithHeaders(
+        mixed $body,
+        array $headers,
+        ?string $key = null,
+        int $partition = 0
+    ): void {
+        self::ensureProducerInitialized();
+
+        $message = KafkaProducerMessage::create(self::$currentTopic, $partition)
+            ->withBody($body)
+            ->withHeaders($headers);
+
+        if ($key !== null) {
+            $message = $message->withKey($key);
+        }
+
+        self::$producer->produce($message);
+    }
+
+    /**
      * Produce multiple messages in batch
      *
      * @param array $messages Array of messages with format: ['body' => mixed, 'key' => ?string, 'partition' => int]
@@ -201,21 +237,40 @@ class Kafka
     }
 
     /**
-     * Convenience method: publish single message immediately
+     * Close producer and cleanup resources
      *
-     * @param string $topic Topic name
-     * @param mixed $body Message body
-     * @param int $schemaType Schema type constant (default SCHEMALESS)
-     * @param string|null $schemaBody Schema definition for body
-     * @param string|null $schemaKey Schema definition for key
-     * @param string|null $key Message key
-     * @param int $partition Partition number (default 0)
-     * @param int $flushTimeoutMs Flush timeout in milliseconds (default 10000)
+     * @param int $timeoutMs Timeout in milliseconds to flush remaining messages (default 10000)
      *
      * @return void
-     * @throws AvroIOException
-     * @throws AvroSchemaParseException
-     * @throws KafkaProducerException
+     */
+    public static function close(int $timeoutMs = 10000): void
+    {
+        if (self::$producer !== null) {
+            self::flush($timeoutMs);
+            self::$producer = null;
+            self::$currentTopic = null;
+
+            Log::runtime()->info(
+                [
+                    'operation' => 'kafka_producer_closed'
+                ]
+            );
+        }
+    }
+
+    /**
+     * Convenience method: publish single message immediately
+     *
+     * @param string      $topic          Topic name
+     * @param mixed       $body           Message body
+     * @param int         $schemaType     Schema type constant (default SCHEMALESS)
+     * @param string|null $schemaBody     Schema definition for body
+     * @param string|null $schemaKey      Schema definition for key
+     * @param string|null $key            Message key
+     * @param int         $partition      Partition number (default 0)
+     * @param int         $flushTimeoutMs Flush timeout in milliseconds (default 10000)
+     *
+     * @return void
      * @throws ParameterException
      */
     public static function publish(
@@ -286,13 +341,12 @@ class Kafka
     /**
      * Create Avro encoder with schema registry
      *
-     * @param string $topic Topic name
+     * @param string      $topic      Topic name
      * @param string|null $schemaBody Body schema definition
-     * @param string|null $schemaKey Key schema definition
+     * @param string|null $schemaKey  Key schema definition
      *
      * @return AvroEncoder
      * @throws ParameterException
-     * @throws AvroIOException|AvroSchemaParseException
      */
     private static function createAvroEncoder(
         string $topic,
@@ -428,5 +482,242 @@ class Kafka
                 ]
             );
         }
+    }
+
+    /**
+     * Setup and return Kafka consumer
+     *
+     * @param string      $topic            Topic name
+     * @param int         $schemaType       Schema type constant
+     * @param string|null $consumerGroup    Consumer group name
+     * @param array       $additionalConfig Additional Kafka configuration
+     *
+     * @return KafkaConsumerInterface
+     * @throws ParameterException
+     * @throws \AvroIOException
+     */
+    public static function consumeOn(
+        string $topic,
+        int $schemaType,
+        ?string $consumerGroup = null,
+        array $additionalConfig = []
+    ): KafkaConsumerInterface {
+        self::validateConsumerEnvironment();
+        self::$currentTopic = $topic;
+
+        $consumerBuilder = self::createConsumerBuilder($topic, $consumerGroup, $additionalConfig);
+
+        if ($schemaType === self::AVRO_SCHEMA) {
+            $decoder = self::createAvroDecoder($topic);
+            $consumerBuilder->withDecoder($decoder);
+        } elseif ($schemaType === self::JSON_SCHEMA) {
+            $decoder = new JsonDecoder();
+            $consumerBuilder->withDecoder($decoder);
+        }
+
+        self::$consumer = $consumerBuilder->build();
+        self::$consumer->subscribe();
+
+        Log::runtime()->info(
+            [
+                'operation' => 'kafka_consumer_initialized',
+                'topic' => $topic,
+                'consumerGroup' => $consumerGroup,
+                'schemaType' => $schemaType
+            ]
+        );
+
+        return self::$consumer;
+    }
+
+    /**
+     * Consume single message
+     *
+     * @param int $timeoutMs Timeout in milliseconds
+     *
+     * @return KafkaConsumerMessageInterface
+     * @throws ParameterException
+     */
+    public static function consume(int $timeoutMs = 10000): KafkaConsumerMessageInterface
+    {
+        if (self::$consumer === null) {
+            throw new ParameterException('Consumer not initialized. Call consumeOn() first.');
+        }
+
+        return self::$consumer->consume($timeoutMs);
+    }
+
+    /**
+     * Commit message offset
+     *
+     * @param mixed $message Message to commit
+     *
+     * @return void
+     * @throws ParameterException
+     */
+    public static function commit(mixed $message): void
+    {
+        if (self::$consumer === null) {
+            throw new ParameterException('Consumer not initialized. Call consumeOn() first.');
+        }
+
+        self::$consumer->commit($message);
+    }
+
+    /**
+     * Validate required consumer environment variables
+     *
+     * @return void
+     * @throws ParameterException
+     */
+    private static function validateConsumerEnvironment(): void
+    {
+        $required = [
+            'KAFKA_BROKERS_URL' => 'Kafka brokers URL',
+            'KAFKA_USER_CONSUME' => 'Kafka consumer username',
+            'KAFKA_PASS_CONSUME' => 'Kafka consumer password'
+        ];
+
+        foreach ($required as $env => $description) {
+            if (empty(env($env))) {
+                throw new ParameterException("Environment variable {$env} ({$description}) is not set");
+            }
+        }
+    }
+
+    /**
+     * Subscribe to topics
+     *
+     * @return void
+     * @throws ParameterException
+     */
+    public static function subscribe(): void
+    {
+        if (self::$consumer === null) {
+            throw new ParameterException('Consumer not initialized. Call consumeOn() first.');
+        }
+
+        self::$consumer->subscribe();
+
+        Log::runtime()->info(
+            [
+                'operation' => 'kafka_consumer_subscribed',
+                'topic' => self::$currentTopic
+            ]
+        );
+    }
+
+    /**
+     * Close consumer and cleanup resources
+     *
+     * @return void
+     */
+    public static function closeConsumer(): void
+    {
+        if (self::$consumer !== null) {
+            self::$consumer->unsubscribe();
+            self::$consumer = null;
+            self::$currentTopic = null;
+
+            Log::runtime()->info(
+                [
+                    'operation' => 'kafka_consumer_closed'
+                ]
+            );
+        }
+    }
+
+    /**
+     * Create consumer builder with default configuration
+     *
+     * @param string      $topic            Topic name
+     * @param string|null $consumerGroup    Consumer group
+     * @param array       $additionalConfig Additional configuration
+     *
+     * @return KafkaConsumerBuilderInterface
+     */
+    private static function createConsumerBuilder(
+        string $topic,
+        ?string $consumerGroup,
+        array $additionalConfig
+    ): KafkaConsumerBuilderInterface {
+        $groupName = $consumerGroup ?? $topic . '_consumer_group';
+
+        $defaultConfig = [
+            'client.id' => env('APP_NAME') . '-' . gethostname(),
+            'compression.codec' => 'lz4',
+            'sasl.username' => env('KAFKA_USER_CONSUME'),
+            'sasl.password' => env('KAFKA_PASS_CONSUME'),
+            'sasl.mechanism' => 'PLAIN',
+            'security.protocol' => 'SASL_SSL',
+            'enable.auto.commit' => false,
+            'message.timeout.ms' => '10000',
+            'socket.timeout.ms' => '10000',
+            'request.timeout.ms' => '60000'
+        ];
+
+        $config = array_merge($defaultConfig, $additionalConfig);
+
+        return KafkaConsumerBuilder::create()
+            ->withAdditionalConfig($config)
+            ->withAdditionalBroker((string) env('KAFKA_BROKERS_URL'))
+            ->withConsumerGroup($groupName)
+            ->withAdditionalSubscription($topic, [], KafkaConsumerBuilderInterface::OFFSET_STORED)
+            ->withErrorCallback([self::class, 'errorCallback'])
+            ->withRebalanceCallback([self::class, 'rebalanceCallback'])
+            ->withConsumeCallback([self::class, 'consumeCallback'])
+            ->withLogCallback([self::class, 'logCallback'])
+            ->withOffsetCommitCallback([self::class, 'offsetCommitCallback']);
+    }
+
+    /**
+     * Create Avro decoder with schema registry
+     *
+     * @param string $topic Topic name
+     *
+     * @return AvroDecoder
+     * @throws ParameterException
+     * @throws \AvroIOException
+     */
+    private static function createAvroDecoder(string $topic): AvroDecoder
+    {
+        if (empty(env('KAFKA_SCHEMA_REGISTRY_URL'))) {
+            throw new ParameterException('Environment variable KAFKA_SCHEMA_REGISTRY_URL is not set');
+        }
+
+        $cachedRegistry = new CachedRegistry(
+            new BlockingRegistry(
+                new PromisingRegistry(
+                    new GuzzleClient(
+                        [
+                            'base_uri' => env('KAFKA_SCHEMA_REGISTRY_URL'),
+                            'auth' => [env('KAFKA_USER_CONSUME'), env('KAFKA_PASS_CONSUME')]
+                        ]
+                    )
+                )
+            ),
+            new AvroObjectCacheAdapter()
+        );
+
+        $registry = new AvroSchemaRegistry($cachedRegistry);
+        $recordSerializer = new RecordSerializer($cachedRegistry);
+
+        // Fetch schemas from registry automatically
+        $registry->addBodySchemaMappingForTopic(
+            $topic,
+            new KafkaAvroSchema(
+                $topic . '-value',
+                KafkaAvroSchemaInterface::LATEST_VERSION
+            )
+        );
+        $registry->addKeySchemaMappingForTopic(
+            $topic,
+            new KafkaAvroSchema(
+                $topic . '-key',
+                KafkaAvroSchemaInterface::LATEST_VERSION
+            )
+        );
+
+        return new AvroDecoder($registry, $recordSerializer);
     }
 }
