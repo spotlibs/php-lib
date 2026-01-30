@@ -57,8 +57,8 @@ class Minio extends Storage implements StorageInterface
      */
     public function upload(UploadedFile $file, string $dirpath, string $filename = ""): bool
     {
-        $uploadPath = $dirpath . "/" . $filename == "" ? $file->getClientOriginalName() : $filename;
-        FacadeStorage::disk($this->driver)->put($uploadPath, $file->getContent());
+        $fileName = $filename == "" ? $file->getClientOriginalName() : $filename;
+        FacadeStorage::disk($this->driver)->put($dirpath . "/" . $fileName, $file->getContent());
         return true;
     }
     /**
