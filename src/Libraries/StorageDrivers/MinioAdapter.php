@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries\StorageDrivers;
 
 use Aws\S3\S3Client;
+use Carbon\Carbon;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 
@@ -67,14 +68,14 @@ class MinioAdapter extends Filesystem
      * Temporary URL facade
      *
      * @param string $path file path
-     * @param string       $expiration time limit of url
+     * @param int|string|Carbon $expiration time limit of url
      * @param array $options optional
      *
      * @return string
      */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     // phpcs:disable PEAR.Commenting.FunctionComment.Missing
-    public function temporaryUrl(string $path, string $expiration, array $options = []): string
+    public function temporaryUrl(string $path, int|string|Carbon $expiration, array $options = []): string
     {
         $command = $this->publicClient->getCommand(
             'GetObject',
