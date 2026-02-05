@@ -80,16 +80,18 @@ class NFS extends Storage implements StorageInterface
         }
         $tmp = explode("/", $destPath);
         $destDir = implode("/", array_slice($tmp, 0, -1));
-        if (!is_dir($destDir)) {
-            if (!mkdir($destDir, 0755, true)) {
-                throw new RuntimeException("Failed to create destination directory: $destDir");
+        try {
+            if (!is_dir($destDir)) {
+                if (!mkdir($destDir, 0755, true)) {
+                    throw new RuntimeException("Failed to create destination directory: $destDir");
+                }
             }
+            exec("cp $srcPath $destPath");
+            exec("chown -R 33:33 $destDir");
+        } catch (\Throwable $th) {
+            throw new RuntimeException("Failed to copy from $srcPath to $destPath. " . $th->getMessage());
         }
-        if (!exec("cp $srcPath $destPath")) {
-            throw new RuntimeException("Failed to copy from $srcPath to $destPath");
-        }
-
-        return (bool) exec("chown -R 33:33 $destDir");
+        return true;
     }
     /**
      * Delete file in disk
@@ -124,16 +126,18 @@ class NFS extends Storage implements StorageInterface
     {
         $tmp = explode("/", $destPath);
         $destDir = implode("/", array_slice($tmp, 0, -1));
-        if (!is_dir($destDir)) {
-            if (!mkdir($destDir, 0755, true)) {
-                throw new RuntimeException("Failed to create destination directory: $destDir");
+        try {
+            if (!is_dir($destDir)) {
+                if (!mkdir($destDir, 0755, true)) {
+                    throw new RuntimeException("Failed to create destination directory: $destDir");
+                }
             }
+            exec("mv $srcPath $destPath");
+            exec("chown -R 33:33 $destDir");
+        } catch (\Throwable $th) {
+            throw new RuntimeException("Failed to move from $srcPath to $destPath. " . $th->getMessage());
         }
-        if (!exec("mv $srcPath $destPath")) {
-            throw new RuntimeException("Failed to move from $srcPath to $destPath");
-        }
-
-        return (bool) exec("chown -R 33:33 $destDir");
+        return true;
     }
     /**
      * Create temporary URL for file in disk
