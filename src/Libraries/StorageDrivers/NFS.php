@@ -85,8 +85,8 @@ class NFS extends Storage implements StorageInterface
                 throw new RuntimeException("Failed to create destination directory: $destDir");
             }
         }
-        if (!exec("mv $srcPath $destPath")) {
-            throw new RuntimeException("Failed to move from $srcPath to $destPath");
+        if (!exec("cp $srcPath $destPath")) {
+            throw new RuntimeException("Failed to copy from $srcPath to $destPath");
         }
 
         return (bool) exec("chown -R 33:33 $destDir");
