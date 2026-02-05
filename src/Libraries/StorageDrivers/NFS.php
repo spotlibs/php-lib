@@ -56,7 +56,7 @@ class NFS extends Storage implements StorageInterface
     public function upload(UploadedFile $file, string $dirpath, string $filename = ''): bool
     {
         if (!is_dir($dirpath)) {
-            if (!mkdir($dirpath, 0664, true)) {
+            if (!mkdir($dirpath, 0755, true)) {
                 throw new RuntimeException("Failed to create destination directory: $dirpath");
             }
         }
@@ -81,7 +81,7 @@ class NFS extends Storage implements StorageInterface
         $tmp = explode("/", $destPath);
         $destDir = implode("/", array_slice($tmp, 0, -1));
         if (!is_dir($destDir)) {
-            if (!mkdir($destDir, 0664, true)) {
+            if (!mkdir($destDir, 0755, true)) {
                 throw new RuntimeException("Failed to create destination directory: $destDir");
             }
         }
@@ -125,7 +125,7 @@ class NFS extends Storage implements StorageInterface
         $tmp = explode("/", $destPath);
         $destDir = implode("/", array_slice($tmp, 0, -1));
         if (!is_dir($destDir)) {
-            if (!mkdir($destDir, 0664, true)) {
+            if (!mkdir($destDir, 0755, true)) {
                 throw new RuntimeException("Failed to create destination directory: $destDir");
             }
         }
