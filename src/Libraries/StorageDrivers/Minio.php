@@ -36,13 +36,24 @@ class Minio extends Storage implements StorageInterface
     /**
      * Create a new NFS instance.
      *
-     * @param string $driver driver name. example: minio_xxx
-     *
      * @return void
      */
-    public function __construct(string $driver)
+    public function __construct()
     {
-        parent::__construct($driver);
+        $this->driver = "minio";
+    }
+
+    /**
+     * Set disk driver for different minio config setup in config/filesystem.php
+     *
+     * @param string $driver driver name according to config setup in config/filesystem.php
+     *
+     * @return Minio
+     */
+    public function disk(string $driver): self
+    {
+        $this->driver = $driver;
+        return $this;
     }
     /**
      * Upload file to disk

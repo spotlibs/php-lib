@@ -32,17 +32,6 @@ use Spotlibs\PhpLib\Libraries\Storage;
 class NFS extends Storage implements StorageInterface
 {
     /**
-     * Create a new NFS instance.
-     *
-     * @param string $driver driver name. example: nfs_xxx
-     *
-     * @return void
-     */
-    public function __construct(string $driver)
-    {
-        parent::__construct($driver);
-    }
-    /**
      * Upload file to disk
      *
      * @param UploadedFile $file     file from http request
@@ -81,13 +70,8 @@ class NFS extends Storage implements StorageInterface
         $tmp = explode("/", $destPath);
         $destDir = implode("/", array_slice($tmp, 0, -1));
         try {
-            if (!is_dir($destDir)) {
-                if (!mkdir($destDir, 0755, true)) {
-                    throw new RuntimeException("Failed to create destination directory: $destDir");
-                }
-            }
+            $this->createDirectory($destDir);
             exec("cp $srcPath $destPath");
-            exec("chown -R 33:33 $destDir");
         } catch (\Throwable $th) {
             throw new RuntimeException("Failed to copy from $srcPath to $destPath. " . $th->getMessage());
         }
@@ -116,7 +100,7 @@ class NFS extends Storage implements StorageInterface
      * Move file in disk
      *
      * @param string $srcPath  source file path
-     * @param string $destPath destination file path
+     * @param string $destPath destination file path, include filename if you want to change its name
      *
      * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
      *
@@ -127,13 +111,8 @@ class NFS extends Storage implements StorageInterface
         $tmp = explode("/", $destPath);
         $destDir = implode("/", array_slice($tmp, 0, -1));
         try {
-            if (!is_dir($destDir)) {
-                if (!mkdir($destDir, 0755, true)) {
-                    throw new RuntimeException("Failed to create destination directory: $destDir");
-                }
-            }
+            $this->createDirectory($destDir);
             exec("mv $srcPath $destPath");
-            exec("chown -R 33:33 $destDir");
         } catch (\Throwable $th) {
             throw new RuntimeException("Failed to move from $srcPath to $destPath. " . $th->getMessage());
         }
@@ -182,5 +161,27 @@ class NFS extends Storage implements StorageInterface
             $result[$key] = str_replace("/var/www/html", env('APP_URL'), $r);
         }
         return $result;
+    }
+    /**
+     * Create new directory in NFS
+     *
+     * @param string $dirpath path of new directory
+     *
+     * @throws RuntimeException
+     *
+     * @return void
+     */
+    private function createDirectory(string $dirpath): void
+    {
+        try {
+            if (!is_dir($dirpath)) {
+                if (!mkdir($dirpath, 0755, true)) {
+                    throw new RuntimeException("Failed to create destination directory: $dirpath");
+                }
+            }
+            exec("chown -R 33:33 $dirpath");
+        } catch (\Throwable $th) {
+            throw new RuntimeException("Failed to create new directory" . $th->getMessage());
+        }
     }
 }

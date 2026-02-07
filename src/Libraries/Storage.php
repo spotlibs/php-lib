@@ -16,9 +16,6 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries;
 
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
-use Spotlibs\PhpLib\Libraries\StorageDrivers\Minio;
-use Spotlibs\PhpLib\Libraries\StorageDrivers\NFS;
-use Spotlibs\PhpLib\Libraries\StorageDrivers\StorageInterface;
 
 /**
  * Storage
@@ -32,32 +29,7 @@ use Spotlibs\PhpLib\Libraries\StorageDrivers\StorageInterface;
 class Storage
 {
     protected string $driver;
-    /**
-     * Create a new Storage instance for the specified driver.
-     *
-     * @param string $driver The storage driver to use.
-     *
-     * @return \Spotlibs\PhpLib\Libraries\StorageDrivers\StorageInterface
-     */
-    public static function disk(string $driver): StorageInterface
-    {
-        if (str_contains(strtolower($driver), "minio")) {
-            return new Minio($driver);
-        }
-        return new NFS($driver);
-    }
 
-    /**
-     * Create a new Storage instance.
-     *
-     * @param string $driver driver name. example: nfs_xxx
-     *
-     * @return void
-     */
-    public function __construct(string $driver)
-    {
-        $this->driver = $driver;
-    }
     /**
      * Parse file name from filepath
      *
