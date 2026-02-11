@@ -55,7 +55,7 @@ class LogTest extends TestCase
         Log::runtime()->info($mockData);
         $file = file("./storage/logs/runtime.log");
         $last_line = end($file);
-        $logDetail = explode('SPOTLIBS_MICROSERVICE..', $last_line)[1];
+        $logDetail = explode('SPOTLIBS_MICROSERVICE.local.', $last_line)[1];
         $temp = explode(':: ', $logDetail);
         $logLevel = $temp[0];
         $logMessage = trim($temp[1]);
