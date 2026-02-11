@@ -21,6 +21,10 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: 8.0
+      
+    - name: Set up dummy env for unit tests
+      run: |
+        touch .env && echo "APP_ENV=local" >> .env
 
     - name: Install librdkafka and rdkafka extension
       run: |
