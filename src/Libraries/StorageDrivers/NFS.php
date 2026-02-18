@@ -135,7 +135,8 @@ class NFS extends Storage implements StorageInterface
         $extension = $this->getExtension($filepath);
         $random = Str::random(40);
         $random = $extension !== "" ? "$random.$extension" : $random;
-        if (!exec("ln -s \"$filepath\" /var/www/html/public/securelink/$random")) {
+        exec("ln -s \"$filepath\" /var/www/html/public/securelink/$random", $output, $exit_code);
+        if ($exit_code !== 0) {
             throw new RuntimeException("Failed to create secure link for file: $filepath");
         }
         return env('APP_URL') . "/securelink/$random";
