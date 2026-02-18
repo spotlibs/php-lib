@@ -156,12 +156,13 @@ class NFS extends Storage implements StorageInterface
             throw new RuntimeException("Directory not found within dirpath: $dirpath");
         }
         $random = Str::random(40);
-        if (!exec("ln -sf $dirpath /var/www/html/public/securelink/$random")) {
+        exec("ln -sf $dirpath /var/www/html/public/securelink/$random", $output, $exit_code);
+        if ($exit_code !== 0) {
             throw new RuntimeException("Failed to create secure link for file: $dirpath");
         }
         $result = glob("/var/www/html/public/securelink/$random/*");
         foreach ($result as $key => $r) {
-            $result[$key] = str_replace("/var/www/html", env('APP_URL'), $r);
+            $result[$key] = str_replace("/var/www/html/public", env('APP_URL'), $r);
         }
         return $result;
     }
@@ -197,8 +198,7 @@ class NFS extends Storage implements StorageInterface
      */
     private function getExtension(string $filepath): string
     {
-        $temp = explode("/", $filepath);
-        $temp = explode(".", $temp[\count($temp) - 1]);
+        $temp = explode(".", basename($filepath));
         if (\count($temp) > 0) {
             return $temp[1];
         }

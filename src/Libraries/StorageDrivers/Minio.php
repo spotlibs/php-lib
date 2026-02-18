@@ -145,20 +145,21 @@ class Minio extends Storage implements StorageInterface
     {
         $random = Str::random(40);
         $linkFolder = "/var/www/html/public/securelink/$random";
-        if (!exec("mkdir $linkFolder")) {
+        if (!mkdir($linkFolder, 0755, true)) {
             throw new RuntimeException("Failed to create securelink directory: $linkFolder");
         }
         $allFiles = FacadeStorage::disk($this->driver)->allFiles($dirpath);
         $result = [];
         foreach ($allFiles as $file) {
-            $filename = parent::getFileName($file);
-            $fileStream = FacadeStorage::disk($this->driver)->readStream($file);
+            $filename = parent::getFileName($file["path"]);
+            $fileStream = FacadeStorage::disk($this->driver)->readStream($file["path"]);
             $writeStream = fopen($linkFolder . "/" . $filename, 'w');
             stream_copy_to_stream($fileStream, $writeStream);
             fclose($fileStream);
             fclose($writeStream);
-            $result[] = env('APP_URL') . "/securelink/" . $linkFolder . "/" . $filename;
+            $result[] = env('APP_URL') . "/securelink/" . $random . "/" . $filename;
         }
+
         return $result;
     }
 }

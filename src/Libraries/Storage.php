@@ -15,8 +15,6 @@ declare(strict_types=1);
 
 namespace Spotlibs\PhpLib\Libraries;
 
-use Spotlibs\PhpLib\Exceptions\RuntimeException;
-
 /**
  * Storage
  *
@@ -35,15 +33,10 @@ class Storage
      *
      * @param string $filepath path of the file
      *
-     * @throws \Spotlibs\PhpLib\Exceptions\RuntimeException
-     *
      * @return string
      */
     protected function getFileName(string $filepath): string
     {
-        if ($x = explode("/", $filepath)) {
-            return $x[-1];
-        }
-        throw new RuntimeException("failed to get filename from $filepath");
+        return basename($filepath);
     }
 }

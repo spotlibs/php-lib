@@ -97,31 +97,6 @@ class MinioAdapter extends Filesystem
     }
 
     /**
-     * Copy a file to a new location using S3 native copy.
-     *
-     * @param string $path    source path
-     * @param string $newpath destination path
-     *
-     * @return bool
-     */
-    public function copy($path, $newpath): bool
-    {
-        try {
-            $this->client->copyObject(
-                [
-                'Bucket' => $this->bucket,
-                'Key' => $to,
-                'CopySource' => "{$this->bucket}/{$from}",
-                ]
-            );
-
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    /**
      * Move a file to a new location using S3 native copy and delete.
      *
      * @param string $path    source path
@@ -141,6 +116,23 @@ class MinioAdapter extends Filesystem
             return false;
         } catch (\Exception $e) {
             return false;
+        }
+    }
+
+    /**
+     * Get all files in a directory
+     *
+     * @param string $dirpath path of the directory
+     *
+     * @return bool
+     */
+    public function allFiles(string $dirpath): array
+    {
+        try {
+            $paths = $this->listContents($dirpath);
+            return $paths;
+        } catch (\Throwable $th) {
+            throw $th;
         }
     }
 }
