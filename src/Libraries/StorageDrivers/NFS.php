@@ -132,8 +132,10 @@ class NFS extends Storage implements StorageInterface
         if (!is_file($filepath)) {
             throw new RuntimeException("File not found within filepath: $filepath");
         }
+        $extension = $this->getExtension($filepath);
         $random = Str::random(40);
-        if (!exec("ln -s $filepath /var/www/html/public/securelink/$random")) {
+        $random = $extension !== "" ? "$random.$extension" : $random;
+        if (!exec("ln -s \"$filepath\" /var/www/html/public/securelink/$random")) {
             throw new RuntimeException("Failed to create secure link for file: $filepath");
         }
         return env('APP_URL') . "/securelink/$random";
@@ -183,5 +185,22 @@ class NFS extends Storage implements StorageInterface
         } catch (\Throwable $th) {
             throw new RuntimeException("Failed to create new directory" . $th->getMessage());
         }
+    }
+
+    /**
+     * Extract file's extension
+     *
+     * @param string $filepath path of the file
+     *
+     * @return string
+     */
+    private function getExtension(string $filepath): string
+    {
+        $temp = explode("/", $filepath);
+        $temp = explode(".", $temp[\count($temp) - 1]);
+        if (\count($temp) > 0) {
+            return $temp[1];
+        }
+        return "";
     }
 }
