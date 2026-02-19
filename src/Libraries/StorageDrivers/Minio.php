@@ -151,8 +151,8 @@ class Minio extends Storage implements StorageInterface
         $allFiles = FacadeStorage::disk($this->driver)->allFiles($dirpath);
         $result = [];
         foreach ($allFiles as $file) {
-            $filename = parent::getFileName($file["path"]);
-            $fileStream = FacadeStorage::disk($this->driver)->readStream($file["path"]);
+            $filename = parent::getFileName($file);
+            $fileStream = FacadeStorage::disk($this->driver)->readStream($file);
             $writeStream = fopen($linkFolder . "/" . $filename, 'w');
             stream_copy_to_stream($fileStream, $writeStream);
             fclose($fileStream);
