@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace Spotlibs\PhpLib\Providers;
 
 use Aws\S3\S3Client;
 use Illuminate\Support\ServiceProvider;
