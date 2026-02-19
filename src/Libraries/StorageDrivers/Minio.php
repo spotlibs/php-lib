@@ -128,9 +128,9 @@ class Minio extends Storage implements StorageInterface
         /**
          * Illuminate\Filesystem\FilesystemAdapter $disk file storage disk
          *
-         * @var \Illuminate\Filesystem\FilesystemAdapter $disk file storage disk
+         * @var \Spotlibs\PhpLib\Libraries\StorageDrivers\MinioAdapter $disk file storage disk
         */
-        $disk = FacadeStorage::disk($this->driver);
+        $disk = FacadeStorage::disk($this->driver)->getDriver();
         $urlpath = $disk->temporaryUrl($filepath, Carbon::now()->addSeconds((int) env('MINIO_EXPIRED_URL', 60)));
         return $urlpath;
     }
