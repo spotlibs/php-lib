@@ -354,8 +354,8 @@ class Kafka
         ?string $schemaBody,
         ?string $schemaKey
     ): AvroEncoder {
-        if (empty(env('KAFKA_SCHEMA_REGISTRY_URL'))) {
-            throw new ParameterException('Environment variable KAFKA_SCHEMA_REGISTRY_URL is not set');
+        if (empty(env('KAFKA_SCHEME_REGISTRY_URL'))) {
+            throw new ParameterException('Environment variable KAFKA_SCHEME_REGISTRY_URL is not set');
         }
 
         $cachedRegistry = new CachedRegistry(
@@ -363,7 +363,7 @@ class Kafka
                 new PromisingRegistry(
                     new GuzzleClient(
                         [
-                            'base_uri' => env('KAFKA_SCHEMA_REGISTRY_URL'),
+                            'base_uri' => env('KAFKA_SCHEME_REGISTRY_URL'),
                             'auth' => [env('KAFKA_USER_PRODUCE'), env('KAFKA_PASS_PRODUCE')]
                         ]
                     )
@@ -682,8 +682,8 @@ class Kafka
      */
     private function createAvroDecoder(string $topic): AvroDecoder
     {
-        if (empty(env('KAFKA_SCHEMA_REGISTRY_URL'))) {
-            throw new ParameterException('Environment variable KAFKA_SCHEMA_REGISTRY_URL is not set');
+        if (empty(env('KAFKA_SCHEME_REGISTRY_URL'))) {
+            throw new ParameterException('Environment variable KAFKA_SCHEME_REGISTRY_URL is not set');
         }
 
         $cachedRegistry = new CachedRegistry(
@@ -691,7 +691,7 @@ class Kafka
                 new PromisingRegistry(
                     new GuzzleClient(
                         [
-                            'base_uri' => env('KAFKA_SCHEMA_REGISTRY_URL'),
+                            'base_uri' => env('KAFKA_SCHEME_REGISTRY_URL'),
                             'auth' => [env('KAFKA_USER_CONSUME'), env('KAFKA_PASS_CONSUME')]
                         ]
                     )
