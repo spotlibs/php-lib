@@ -42,7 +42,8 @@ use Spotlibs\PhpLib\Logs\Log;
 /**
  * Kafka
  *
- * Kafka producer client for publishing messages with schema support
+ * Kafka producer/consumer client for publishing and consuming messages with
+ * schema support. Use the Kafka() helper to retrieve an instance.
  *
  * @category Library
  * @package  Libraries
@@ -72,21 +73,21 @@ class Kafka
      *
      * @var KafkaProducer|null
      */
-    private static ?KafkaProducer $producer = null;
+    private ?KafkaProducer $producer = null;
 
     /**
      * Current consumer instance
      *
      * @var KafkaConsumerInterface|null
      */
-    private static ?KafkaConsumerInterface $consumer = null;
+    private ?KafkaConsumerInterface $consumer = null;
 
     /**
      * Current topic name
      *
      * @var string|null
      */
-    private static ?string $currentTopic = null;
+    private ?string $currentTopic = null;
 
     /**
      * Setup and return Kafka producer
@@ -99,27 +100,27 @@ class Kafka
      *
      * @return KafkaProducer
      */
-    public static function publishOn(
+    public function publishOn(
         string $topic,
         int $schemaType,
         ?string $schemaBody = null,
         ?string $schemaKey = null,
         array $additionalConfig = []
     ): KafkaProducer {
-        self::validateEnvironment();
-        self::$currentTopic = $topic;
+        $this->validateEnvironment();
+        $this->currentTopic = $topic;
 
-        $producerBuilder = self::createProducerBuilder($additionalConfig);
+        $producerBuilder = $this->createProducerBuilder($additionalConfig);
 
         if ($schemaType === self::AVRO_SCHEMA) {
-            $encoder = self::createAvroEncoder($topic, $schemaBody, $schemaKey);
+            $encoder = $this->createAvroEncoder($topic, $schemaBody, $schemaKey);
             $producerBuilder->withEncoder($encoder);
         } elseif ($schemaType === self::JSON_SCHEMA) {
             $encoder = new JsonEncoder();
             $producerBuilder->withEncoder($encoder);
         }
 
-        self::$producer = $producerBuilder->build();
+        $this->producer = $producerBuilder->build();
 
         Log::runtime()->info(
             [
@@ -129,7 +130,7 @@ class Kafka
             ]
         );
 
-        return self::$producer;
+        return $this->producer;
     }
 
     /**
@@ -142,18 +143,18 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    public static function produce(mixed $body, ?string $key = null, int $partition = 0): void
+    public function produce(mixed $body, ?string $key = null, int $partition = 0): void
     {
-        self::ensureProducerInitialized();
+        $this->ensureProducerInitialized();
 
-        $message = KafkaProducerMessage::create(self::$currentTopic, $partition)
+        $message = KafkaProducerMessage::create($this->currentTopic, $partition)
             ->withBody($body);
 
         if ($key !== null) {
             $message = $message->withKey($key);
         }
 
-        self::$producer->produce($message);
+        $this->producer->produce($message);
     }
 
     /**
@@ -167,15 +168,15 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    public static function produceWithHeaders(
+    public function produceWithHeaders(
         mixed $body,
         array $headers,
         ?string $key = null,
         int $partition = 0
     ): void {
-        self::ensureProducerInitialized();
+        $this->ensureProducerInitialized();
 
-        $message = KafkaProducerMessage::create(self::$currentTopic, $partition)
+        $message = KafkaProducerMessage::create($this->currentTopic, $partition)
             ->withBody($body)
             ->withHeaders($headers);
 
@@ -183,7 +184,7 @@ class Kafka
             $message = $message->withKey($key);
         }
 
-        self::$producer->produce($message);
+        $this->producer->produce($message);
     }
 
     /**
@@ -194,9 +195,9 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    public static function produceBatch(array $messages): void
+    public function produceBatch(array $messages): void
     {
-        self::ensureProducerInitialized();
+        $this->ensureProducerInitialized();
 
         foreach ($messages as $msg) {
             $body = $msg['body'] ?? null;
@@ -207,7 +208,7 @@ class Kafka
                 continue;
             }
 
-            self::produce($body, $key, $partition);
+            $this->produce($body, $key, $partition);
         }
     }
 
@@ -219,18 +220,18 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    public static function flush(int $timeoutMs = 10000): void
+    public function flush(int $timeoutMs = 10000): void
     {
-        self::ensureProducerInitialized();
+        $this->ensureProducerInitialized();
 
         $startTime = microtime(true);
-        self::$producer->flush($timeoutMs);
+        $this->producer->flush($timeoutMs);
         $elapsed = microtime(true) - $startTime;
 
         Log::runtime()->info(
             [
                 'operation' => 'kafka_flush',
-                'topic' => self::$currentTopic,
+                'topic' => $this->currentTopic,
                 'responseTime' => round($elapsed * 1000)
             ]
         );
@@ -243,12 +244,12 @@ class Kafka
      *
      * @return void
      */
-    public static function close(int $timeoutMs = 10000): void
+    public function close(int $timeoutMs = 10000): void
     {
-        if (self::$producer !== null) {
-            self::flush($timeoutMs);
-            self::$producer = null;
-            self::$currentTopic = null;
+        if ($this->producer !== null) {
+            $this->flush($timeoutMs);
+            $this->producer = null;
+            $this->currentTopic = null;
 
             Log::runtime()->info(
                 [
@@ -273,7 +274,7 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    public static function publish(
+    public function publish(
         string $topic,
         mixed $body,
         int $schemaType = self::SCHEMALESS,
@@ -283,9 +284,9 @@ class Kafka
         int $partition = 0,
         int $flushTimeoutMs = 10000
     ): void {
-        self::publishOn($topic, $schemaType, $schemaBody, $schemaKey);
-        self::produce($body, $key, $partition);
-        self::flush($flushTimeoutMs);
+        $this->publishOn($topic, $schemaType, $schemaBody, $schemaKey);
+        $this->produce($body, $key, $partition);
+        $this->flush($flushTimeoutMs);
     }
 
     /**
@@ -294,7 +295,7 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    private static function validateEnvironment(): void
+    private function validateEnvironment(): void
     {
         $required = [
             'KAFKA_BROKERS_URL' => 'Kafka brokers URL',
@@ -316,7 +317,7 @@ class Kafka
      *
      * @return KafkaProducerBuilder
      */
-    private static function createProducerBuilder(array $additionalConfig): KafkaProducerBuilder
+    private function createProducerBuilder(array $additionalConfig): KafkaProducerBuilder
     {
         $defaultConfig = [
             'compression.codec' => 'lz4',
@@ -333,9 +334,9 @@ class Kafka
         return KafkaProducerBuilder::create()
             ->withAdditionalConfig($config)
             ->withAdditionalBroker(env('KAFKA_BROKERS_URL'))
-            ->withDeliveryReportCallback([self::class, 'deliveryReportCallback'])
-            ->withErrorCallback([self::class, 'errorCallback'])
-            ->withLogCallback([self::class, 'logCallback']);
+            ->withDeliveryReportCallback([$this, 'deliveryReportCallback'])
+            ->withErrorCallback([$this, 'errorCallback'])
+            ->withLogCallback([$this, 'logCallback']);
     }
 
     /**
@@ -348,7 +349,7 @@ class Kafka
      * @return AvroEncoder
      * @throws ParameterException
      */
-    private static function createAvroEncoder(
+    private function createAvroEncoder(
         string $topic,
         ?string $schemaBody,
         ?string $schemaKey
@@ -411,9 +412,9 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    private static function ensureProducerInitialized(): void
+    private function ensureProducerInitialized(): void
     {
-        if (self::$producer === null) {
+        if ($this->producer === null) {
             throw new ParameterException('Producer not initialized. Call publishOn() first.');
         }
     }
@@ -426,7 +427,7 @@ class Kafka
      *
      * @return void
      */
-    public static function deliveryReportCallback(mixed $kafka, mixed $message): void
+    public function deliveryReportCallback(mixed $kafka, mixed $message): void
     {
         if ($message->err !== 0) {
             Log::runtime()->error(
@@ -449,7 +450,7 @@ class Kafka
      *
      * @return void
      */
-    public static function errorCallback(mixed $kafka, int $err, string $reason): void
+    public function errorCallback(mixed $kafka, int $err, string $reason): void
     {
         Log::runtime()->error(
             [
@@ -470,7 +471,7 @@ class Kafka
      *
      * @return void
      */
-    public static function logCallback(mixed $kafka, int $level, string $facility, string $message): void
+    public function logCallback(mixed $kafka, int $level, string $facility, string $message): void
     {
         if ($level <= 3) {
             Log::runtime()->warning(
@@ -496,27 +497,27 @@ class Kafka
      * @throws ParameterException
      * @throws \AvroIOException
      */
-    public static function consumeOn(
+    public function consumeOn(
         string $topic,
         int $schemaType,
         ?string $consumerGroup = null,
         array $additionalConfig = []
     ): KafkaConsumerInterface {
-        self::validateConsumerEnvironment();
-        self::$currentTopic = $topic;
+        $this->validateConsumerEnvironment();
+        $this->currentTopic = $topic;
 
-        $consumerBuilder = self::createConsumerBuilder($topic, $consumerGroup, $additionalConfig);
+        $consumerBuilder = $this->createConsumerBuilder($topic, $consumerGroup, $additionalConfig);
 
         if ($schemaType === self::AVRO_SCHEMA) {
-            $decoder = self::createAvroDecoder($topic);
+            $decoder = $this->createAvroDecoder($topic);
             $consumerBuilder->withDecoder($decoder);
         } elseif ($schemaType === self::JSON_SCHEMA) {
             $decoder = new JsonDecoder();
             $consumerBuilder->withDecoder($decoder);
         }
 
-        self::$consumer = $consumerBuilder->build();
-        self::$consumer->subscribe();
+        $this->consumer = $consumerBuilder->build();
+        $this->consumer->subscribe();
 
         Log::runtime()->info(
             [
@@ -527,7 +528,7 @@ class Kafka
             ]
         );
 
-        return self::$consumer;
+        return $this->consumer;
     }
 
     /**
@@ -538,13 +539,13 @@ class Kafka
      * @return KafkaConsumerMessageInterface
      * @throws ParameterException
      */
-    public static function consume(int $timeoutMs = 10000): KafkaConsumerMessageInterface
+    public function consume(int $timeoutMs = 10000): KafkaConsumerMessageInterface
     {
-        if (self::$consumer === null) {
+        if ($this->consumer === null) {
             throw new ParameterException('Consumer not initialized. Call consumeOn() first.');
         }
 
-        return self::$consumer->consume($timeoutMs);
+        return $this->consumer->consume($timeoutMs);
     }
 
     /**
@@ -555,13 +556,13 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    public static function commit(mixed $message): void
+    public function commit(mixed $message): void
     {
-        if (self::$consumer === null) {
+        if ($this->consumer === null) {
             throw new ParameterException('Consumer not initialized. Call consumeOn() first.');
         }
 
-        self::$consumer->commit($message);
+        $this->consumer->commit($message);
     }
 
     /**
@@ -570,7 +571,7 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    private static function validateConsumerEnvironment(): void
+    private function validateConsumerEnvironment(): void
     {
         $required = [
             'KAFKA_BROKERS_URL' => 'Kafka brokers URL',
@@ -591,18 +592,18 @@ class Kafka
      * @return void
      * @throws ParameterException
      */
-    public static function subscribe(): void
+    public function subscribe(): void
     {
-        if (self::$consumer === null) {
+        if ($this->consumer === null) {
             throw new ParameterException('Consumer not initialized. Call consumeOn() first.');
         }
 
-        self::$consumer->subscribe();
+        $this->consumer->subscribe();
 
         Log::runtime()->info(
             [
                 'operation' => 'kafka_consumer_subscribed',
-                'topic' => self::$currentTopic
+                'topic' => $this->currentTopic
             ]
         );
     }
@@ -612,12 +613,12 @@ class Kafka
      *
      * @return void
      */
-    public static function closeConsumer(): void
+    public function closeConsumer(): void
     {
-        if (self::$consumer !== null) {
-            self::$consumer->unsubscribe();
-            self::$consumer = null;
-            self::$currentTopic = null;
+        if ($this->consumer !== null) {
+            $this->consumer->unsubscribe();
+            $this->consumer = null;
+            $this->currentTopic = null;
 
             Log::runtime()->info(
                 [
@@ -636,7 +637,7 @@ class Kafka
      *
      * @return KafkaConsumerBuilderInterface
      */
-    private static function createConsumerBuilder(
+    private function createConsumerBuilder(
         string $topic,
         ?string $consumerGroup,
         array $additionalConfig
@@ -663,11 +664,11 @@ class Kafka
             ->withAdditionalBroker((string) env('KAFKA_BROKERS_URL'))
             ->withConsumerGroup($groupName)
             ->withAdditionalSubscription($topic, [], KafkaConsumerBuilderInterface::OFFSET_STORED)
-            ->withErrorCallback([self::class, 'errorCallback'])
-            ->withRebalanceCallback([self::class, 'rebalanceCallback'])
-            ->withConsumeCallback([self::class, 'consumeCallback'])
-            ->withLogCallback([self::class, 'logCallback'])
-            ->withOffsetCommitCallback([self::class, 'offsetCommitCallback']);
+            ->withErrorCallback([$this, 'errorCallback'])
+            ->withRebalanceCallback([$this, 'rebalanceCallback'])
+            ->withConsumeCallback([$this, 'consumeCallback'])
+            ->withLogCallback([$this, 'logCallback'])
+            ->withOffsetCommitCallback([$this, 'offsetCommitCallback']);
     }
 
     /**
@@ -679,7 +680,7 @@ class Kafka
      * @throws ParameterException
      * @throws \AvroIOException
      */
-    private static function createAvroDecoder(string $topic): AvroDecoder
+    private function createAvroDecoder(string $topic): AvroDecoder
     {
         if (empty(env('KAFKA_SCHEMA_REGISTRY_URL'))) {
             throw new ParameterException('Environment variable KAFKA_SCHEMA_REGISTRY_URL is not set');
