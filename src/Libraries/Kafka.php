@@ -69,6 +69,12 @@ class Kafka
     public const AVRO_SCHEMA = 3;
 
     /**
+     * Schema type: Auto-detect -> Avro if magic byte (\x00) present, else raw
+     */
+    public const AUTO_SCHEMA = 4;
+
+
+    /**
      * Current producer instance
      *
      * @var KafkaProducer|null
@@ -114,10 +120,10 @@ class Kafka
 
         if ($schemaType === self::AVRO_SCHEMA) {
             $encoder = $this->createAvroEncoder($topic, $schemaBody, $schemaKey);
-            $producerBuilder->withEncoder($encoder);
+            $producerBuilder = $producerBuilder->withEncoder($encoder);
         } elseif ($schemaType === self::JSON_SCHEMA) {
             $encoder = new JsonEncoder();
-            $producerBuilder->withEncoder($encoder);
+            $producerBuilder = $producerBuilder->withEncoder($encoder);
         }
 
         $this->producer = $producerBuilder->build();
@@ -510,10 +516,12 @@ class Kafka
 
         if ($schemaType === self::AVRO_SCHEMA) {
             $decoder = $this->createAvroDecoder($topic);
-            $consumerBuilder->withDecoder($decoder);
+            $consumerBuilder = $consumerBuilder->withDecoder($decoder);
         } elseif ($schemaType === self::JSON_SCHEMA) {
-            $decoder = new JsonDecoder();
-            $consumerBuilder->withDecoder($decoder);
+            $consumerBuilder = $consumerBuilder->withDecoder(new JsonDecoder());
+        } elseif ($schemaType === self::AUTO_SCHEMA) {
+            $avroDecoder = $this->createAvroDecoder($topic);
+            $consumerBuilder = $consumerBuilder->withDecoder(new KafkaAutoDecoder($avroDecoder));
         }
 
         $this->consumer = $consumerBuilder->build();
@@ -534,15 +542,19 @@ class Kafka
     /**
      * Consume single message
      *
-     * @param int $timeoutMs Timeout in milliseconds
+     * @param int     $timeoutMs Timeout in milliseconds
+     * @param ?string $topic     Topic
      *
      * @return KafkaConsumerMessageInterface
-     * @throws ParameterException
      */
-    public function consume(int $timeoutMs = 10000): KafkaConsumerMessageInterface
+    public function consume(int $timeoutMs = 10000, ?string $topic = null): KafkaConsumerMessageInterface
     {
         if ($this->consumer === null) {
-            throw new ParameterException('Consumer not initialized. Call consumeOn() first.');
+            if ($topic === null) {
+                throw new ParameterException('Consumer not initialized. Call consumeOn() first or provide a topic.');
+            }
+            // auto-bind with AUTO_SCHEMA
+            $this->consumeOn($topic, self::AUTO_SCHEMA);
         }
 
         return $this->consumer->consume($timeoutMs);
@@ -720,5 +732,61 @@ class Kafka
         );
 
         return new AvroDecoder($registry, $recordSerializer);
+    }
+
+    /**
+     * Rebalance callback
+     *
+     * @param mixed $kafka      Kafka instance
+     * @param int   $err        Error code
+     * @param array $partitions Partitions
+     *
+     * @return void
+     */
+    public function rebalanceCallback(mixed $kafka, int $err, array $partitions): void
+    {
+        $assignPartitions = defined('RD_KAFKA_RESP_ERR__ASSIGN_PARTITIONS')
+            ? RD_KAFKA_RESP_ERR__ASSIGN_PARTITIONS // Defined on C-level constant, comes from the `ext-rdkafka`
+            : -175;
+
+        if ($err === $assignPartitions) {
+            $kafka->assign($partitions);
+        } else {
+            $kafka->assign(null);
+        }
+    }
+
+    /**
+     * Consume callback
+     *
+     * @param mixed $message Message
+     * @param mixed $ctx     Context
+     *
+     * @return void
+     */
+    public function consumeCallback(mixed $message, mixed $ctx): void
+    {
+        // no-op: messages are handled by the caller via consume()
+    }
+
+    /**
+     * Offset commit callback
+     *
+     * @param mixed $kafka           Kafka instance
+     * @param int   $err             Error code
+     * @param array $topicPartitions Topic partitions
+     *
+     * @return void
+     */
+    public function offsetCommitCallback(mixed $kafka, int $err, array $topicPartitions): void
+    {
+        if ($err !== 0) {
+            Log::runtime()->error(
+                [
+                    'operation' => 'kafka_offset_commit_failed',
+                    'errorCode' => $err
+                ]
+            );
+        }
     }
 }
