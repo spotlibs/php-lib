@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Spotlibs\PhpLib\Libraries;
+namespace Spotlibs\PhpLib\Libraries\Kafka;
 
 use Jobcloud\Kafka\Message\Decoder\AvroDecoder;
 use Jobcloud\Kafka\Message\Decoder\DecoderInterface;
@@ -57,11 +57,23 @@ class KafkaAutoDecoder implements DecoderInterface
     {
         $body = $consumerMessage->getBody();
 
-        if (is_string($body) && strlen($body) > 5 && ord($body[0]) === 0) {
-            try {
-                return $this->avroDecoder->decode($consumerMessage);
-            } catch (\Throwable) {
-                // fallback to raw schemaless
+        if (is_string($body) && strlen($body) > 5) {
+            // Avro: magic byte 0x00
+            if (ord($body[0]) === 0) {
+                try {
+                    return $this->avroDecoder->decode($consumerMessage);
+                } catch (\Throwable) {
+                    // fallback to raw
+                }
+            }
+
+            // JSON: starts with { or [
+            $firstChar = ltrim($body)[0] ?? '';
+            if ($firstChar === '{' || $firstChar === '[') {
+                $decoded = json_decode($body, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return new KafkaDecodedMessage($consumerMessage, $decoded);
+                }
             }
         }
 

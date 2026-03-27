@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Spotlibs\PhpLib\Libraries;
+namespace Spotlibs\PhpLib\Libraries\Kafka;
 
 use AvroSchema;
 use FlixTech\AvroSerializer\Objects\RecordSerializer;
