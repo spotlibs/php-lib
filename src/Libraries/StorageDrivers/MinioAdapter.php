@@ -122,14 +122,15 @@ class MinioAdapter extends Filesystem
     /**
      * Get all files in a directory
      *
-     * @param string $dirpath path of the directory
+     * @param string $dirpath   path of the directory
+     * @param bool   $recursive whether to get files recursively or not
      *
      * @return bool
      */
-    public function allFiles(string $dirpath): array
+    public function allFiles(string $dirpath, bool $recursive = false): array
     {
         try {
-            $paths = $this->listContents($dirpath);
+            $paths = $this->listContents($dirpath, $recursive);
             return $paths;
         } catch (\Throwable $th) {
             throw $th;
