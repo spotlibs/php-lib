@@ -175,7 +175,7 @@ class NFS extends Storage implements StorageInterface
      *
      * @return void
      */
-    private function createDirectory(string $dirpath): void
+    public function createDirectory(string $dirpath): void
     {
         try {
             if (!is_dir($dirpath)) {
