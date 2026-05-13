@@ -91,7 +91,8 @@ class NFS extends Storage implements StorageInterface
         if (!is_file($filepath)) {
             return true;
         }
-        if (!exec("rm $filepath")) {
+        exec("rm $filepath", $output, $exit_code);
+        if ($exit_code != 0) {
             throw new RuntimeException("Failed to delete $filepath");
         }
         return true;
