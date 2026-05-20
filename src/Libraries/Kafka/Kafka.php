@@ -26,9 +26,7 @@ use Jobcloud\Kafka\Consumer\KafkaConsumerBuilder;
 use Jobcloud\Kafka\Consumer\KafkaConsumerBuilderInterface;
 use Jobcloud\Kafka\Consumer\KafkaConsumerInterface;
 use Jobcloud\Kafka\Message\Decoder\AvroDecoder;
-use Jobcloud\Kafka\Message\Decoder\JsonDecoder;
 use Jobcloud\Kafka\Message\Encoder\AvroEncoder;
-use Jobcloud\Kafka\Message\Encoder\JsonEncoder;
 use Jobcloud\Kafka\Message\KafkaAvroSchema;
 use Jobcloud\Kafka\Message\KafkaAvroSchemaInterface;
 use Jobcloud\Kafka\Message\KafkaConsumerMessageInterface;
@@ -122,7 +120,7 @@ class Kafka
             $encoder = $this->createAvroEncoder($topic, $schemaBody, $schemaKey);
             $producerBuilder = $producerBuilder->withEncoder($encoder);
         } elseif ($schemaType === self::JSON_SCHEMA) {
-            $encoder = new JsonEncoder();
+            $encoder = $this->createJsonSchemaEncoder($topic, $schemaBody, $schemaKey);
             $producerBuilder = $producerBuilder->withEncoder($encoder);
         }
 
@@ -413,6 +411,72 @@ class Kafka
     }
 
     /**
+     * Create JSON Schema encoder with schema registry
+     *
+     * @param string      $topic      Topic name
+     * @param string|null $schemaBody Body schema definition (JSON Schema string)
+     * @param string|null $schemaKey  Key schema definition (JSON Schema string)
+     *
+     * @return JsonSchemaEncoder
+     * @throws ParameterException
+     */
+    private function createJsonSchemaEncoder(
+        string $topic,
+        ?string $schemaBody,
+        ?string $schemaKey
+    ): JsonSchemaEncoder {
+        if (empty(env('KAFKA_SCHEME_REGISTRY_URL'))) {
+            throw new ParameterException('Environment variable KAFKA_SCHEME_REGISTRY_URL is not set');
+        }
+
+        if ($schemaBody === null) {
+            throw new ParameterException('JSON Schema body definition is required for JSON_SCHEMA mode');
+        }
+
+        $registry = new JsonSchemaRegistry(
+            new GuzzleClient(
+                [
+                    'base_uri' => env('KAFKA_SCHEME_REGISTRY_URL'),
+                    'auth' => [env('KAFKA_USER_PRODUCE'), env('KAFKA_PASS_PRODUCE')]
+                ]
+            )
+        );
+
+        $bodySchema = new KafkaJsonSchema($topic . '-value', $schemaBody);
+
+        $keySchema = null;
+        if ($schemaKey !== null) {
+            $keySchema = new KafkaJsonSchema($topic . '-key', $schemaKey);
+        }
+
+        return new JsonSchemaEncoder($registry, $bodySchema, $keySchema);
+    }
+
+    /**
+     * Create JSON Schema decoder with schema registry
+     *
+     * @return JsonSchemaDecoder
+     * @throws ParameterException
+     */
+    private function createJsonSchemaDecoder(): JsonSchemaDecoder
+    {
+        if (empty(env('KAFKA_SCHEME_REGISTRY_URL'))) {
+            throw new ParameterException('Environment variable KAFKA_SCHEME_REGISTRY_URL is not set');
+        }
+
+        $registry = new JsonSchemaRegistry(
+            new GuzzleClient(
+                [
+                    'base_uri' => env('KAFKA_SCHEME_REGISTRY_URL'),
+                    'auth' => [env('KAFKA_USER_CONSUME'), env('KAFKA_PASS_CONSUME')]
+                ]
+            )
+        );
+
+        return new JsonSchemaDecoder($registry);
+    }
+
+    /**
      * Ensure producer is initialized
      *
      * @return void
@@ -518,10 +582,12 @@ class Kafka
             $decoder = $this->createAvroDecoder($topic);
             $consumerBuilder = $consumerBuilder->withDecoder($decoder);
         } elseif ($schemaType === self::JSON_SCHEMA) {
-            $consumerBuilder = $consumerBuilder->withDecoder(new JsonDecoder());
+            $decoder = $this->createJsonSchemaDecoder();
+            $consumerBuilder = $consumerBuilder->withDecoder($decoder);
         } elseif ($schemaType === self::AUTO_SCHEMA) {
             $avroDecoder = $this->createAvroDecoder($topic);
-            $consumerBuilder = $consumerBuilder->withDecoder(new KafkaAutoDecoder($avroDecoder));
+            $jsonSchemaDecoder = $this->createJsonSchemaDecoder();
+            $consumerBuilder = $consumerBuilder->withDecoder(new KafkaAutoDecoder($avroDecoder, $jsonSchemaDecoder));
         }
 
         $this->consumer = $consumerBuilder->build();

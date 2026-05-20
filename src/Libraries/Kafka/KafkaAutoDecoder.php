@@ -22,8 +22,10 @@ use Jobcloud\Kafka\Message\KafkaConsumerMessageInterface;
 /**
  * KafkaAutoDecoder
  *
- * Smart decoder that auto-detects Avro wire format (magic byte 0x00) and
- * falls back to raw/schemaless if the byte is absent or decoding fails.
+ * Smart decoder that auto-detects message encoding. When the message starts with
+ * the Confluent wire format magic byte (0x00), it first attempts JSON Schema
+ * decoding (payload bytes 5+ are valid JSON), then falls back to Avro decoding.
+ * Messages without the magic byte are attempted as plain JSON, or returned raw.
  *
  * @category Library
  * @package  Libraries
@@ -36,18 +38,25 @@ class KafkaAutoDecoder implements DecoderInterface
     /**
      * KafkaAutoDecoder constructor
      *
-     * @param AvroDecoder $avroDecoder Avro decoder instance backed by schema registry
+     * @param AvroDecoder            $avroDecoder       Avro decoder instance backed by schema registry
+     * @param JsonSchemaDecoder|null $jsonSchemaDecoder JSON Schema decoder instance (optional)
      */
-    public function __construct(private AvroDecoder $avroDecoder)
-    {
+    public function __construct(
+        private AvroDecoder $avroDecoder,
+        private ?JsonSchemaDecoder $jsonSchemaDecoder = null
+    ) {
     }
 
     /**
      * Decode a Kafka consumer message
      *
-     * Attempts Avro decoding when the message body starts with the Avro magic
-     * byte (0x00). Falls back to returning the raw message as-is for schemaless
-     * messages or when Avro decoding fails.
+     * Attempts decoding in this order for wire-format messages (magic byte 0x00):
+     * 1. JSON Schema (payload after header is valid JSON text)
+     * 2. Avro (binary payload after header)
+     *
+     * For non-wire-format messages:
+     * 3. Plain JSON (starts with { or [)
+     * 4. Raw passthrough
      *
      * @param KafkaConsumerMessageInterface $consumerMessage Incoming Kafka message
      *
@@ -58,8 +67,22 @@ class KafkaAutoDecoder implements DecoderInterface
         $body = $consumerMessage->getBody();
 
         if (is_string($body) && strlen($body) > 5) {
-            // Avro: magic byte 0x00
+            // Confluent wire format: magic byte 0x00
             if (ord($body[0]) === 0) {
+                // Try JSON Schema first (payload is UTF-8 JSON text)
+                $jsonDecoded = JsonSchemaDecoder::tryDecode($body);
+                if ($jsonDecoded !== null) {
+                    if ($this->jsonSchemaDecoder !== null) {
+                        try {
+                            return $this->jsonSchemaDecoder->decode($consumerMessage);
+                        } catch (\Throwable) {
+                            // Fall through to return basic decoded
+                        }
+                    }
+                    return new KafkaDecodedMessage($consumerMessage, $jsonDecoded);
+                }
+
+                // Fall back to Avro (binary payload)
                 try {
                     return $this->avroDecoder->decode($consumerMessage);
                 } catch (\Throwable) {
@@ -67,7 +90,7 @@ class KafkaAutoDecoder implements DecoderInterface
                 }
             }
 
-            // JSON: starts with { or [
+            // Plain JSON: starts with { or [
             $firstChar = ltrim($body)[0] ?? '';
             if ($firstChar === '{' || $firstChar === '[') {
                 $decoded = json_decode($body, true);
