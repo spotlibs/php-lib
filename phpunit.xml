@@ -31,6 +31,7 @@
         <exclude>
             <file>src/Exceptions/Handler.php</file>
             <file>src/Libraries/Kafka.php</file>
+            <file>src/Libraries/Kafka/Kafka.php</file>
             <file>src/Libraries/KafkaCallable.php</file>
             <file>src/Libraries/Storage.php</file>
             <directory suffix=".php">src/Commands</directory>

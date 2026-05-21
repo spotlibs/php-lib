@@ -11,7 +11,6 @@ use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Utils;
-use Illuminate\Support\Facades\Redis;
 use Laravel\Lumen\Testing\TestCase;
 use Spotlibs\PhpLib\Libraries\ClientExternal;
 use GuzzleHttp\Handler\MockHandler;
@@ -46,12 +45,16 @@ class ClientExternalTest extends TestCase
 
     public function testCallExternalMultipartSuccess(): void
     {
-        Redis::shouldReceive('get')->andReturn(json_encode([
+        $redisMock = \Mockery::mock();
+        $redisMock->shouldReceive('get')->andReturn(json_encode([
             'id' => 1,
             'target_url' => 'https://jsonplaceholder.typicode.com/posts',
             'mock_url' => 'https://jsonplaceholder.typicode.com/posts',
             'flag' => true,
         ]));
+        $this->app->singleton('redis', function () use ($redisMock) {
+            return $redisMock;
+        });
         $f = fopen('public/docs/hello.txt', 'w');
         fwrite($f, 'hello world');
         fclose($f);
