@@ -366,6 +366,60 @@ class FirebaseClient
     }
 
     /**
+     * Send FCM message to a topic
+     *
+     * @param string $topic        Topic name (without /topics/ prefix)
+     * @param array  $notification Notification payload (title, body)
+     * @param array  $data         Data payload
+     *
+     * @return ResponseInterface
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException On HTTP error
+     */
+    public function sendToTopic(
+        string $topic,
+        array $notification = [],
+        array $data = []
+    ): ResponseInterface {
+        $message = ['topic' => $topic];
+        if (!empty($notification)) {
+            $message['notification'] = $notification;
+        }
+        if (!empty($data)) {
+            $message['data'] = $data;
+        }
+
+        return $this->sendMessage($message);
+    }
+
+    /**
+     * Send FCM message to a topic condition
+     *
+     * @param string $condition    Topic condition expression (e.g. "'topicA' in topics && 'topicB' in topics")
+     * @param array  $notification Notification payload (title, body)
+     * @param array  $data         Data payload
+     *
+     * @return ResponseInterface
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException On HTTP error
+     */
+    public function sendToCondition(
+        string $condition,
+        array $notification = [],
+        array $data = []
+    ): ResponseInterface {
+        $message = ['condition' => $condition];
+        if (!empty($notification)) {
+            $message['notification'] = $notification;
+        }
+        if (!empty($data)) {
+            $message['data'] = $data;
+        }
+
+        return $this->sendMessage($message);
+    }
+
+    /**
      * Generate JWT manually using OpenSSL
      *
      * @param array  $payload    JWT payload

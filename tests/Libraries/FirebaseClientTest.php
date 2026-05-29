@@ -274,6 +274,101 @@ class FirebaseClientTest extends TestCase
     }
 
     /** @test */
+    public function testSendToTopic(): void
+    {
+        $mockResponse = new Response(
+            200,
+            [],
+            json_encode(['name' => 'projects/test-project/messages/123'])
+        );
+
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $guzzleMock->shouldReceive('send')
+            ->once()
+            ->andReturn($mockResponse);
+
+        $client = $this->createMockedClient($guzzleMock);
+
+        $response = $client->sendToTopic(
+            'news',
+            ['title' => 'Breaking', 'body' => 'Something happened'],
+            ['key' => 'value']
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /** @test */
+    public function testSendToTopicWithNotificationOnly(): void
+    {
+        $mockResponse = new Response(
+            200,
+            [],
+            json_encode(['name' => 'projects/test-project/messages/123'])
+        );
+
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $guzzleMock->shouldReceive('send')
+            ->once()
+            ->andReturn($mockResponse);
+
+        $client = $this->createMockedClient($guzzleMock);
+
+        $response = $client->sendToTopic('news', ['title' => 'Test', 'body' => 'Body']);
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /** @test */
+    public function testSendToCondition(): void
+    {
+        $mockResponse = new Response(
+            200,
+            [],
+            json_encode(['name' => 'projects/test-project/messages/123'])
+        );
+
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $guzzleMock->shouldReceive('send')
+            ->once()
+            ->andReturn($mockResponse);
+
+        $client = $this->createMockedClient($guzzleMock);
+
+        $response = $client->sendToCondition(
+            "'news' in topics || 'alerts' in topics",
+            ['title' => 'Update', 'body' => 'New update available'],
+            ['version' => '2.0']
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /** @test */
+    public function testSendToConditionWithNotificationOnly(): void
+    {
+        $mockResponse = new Response(
+            200,
+            [],
+            json_encode(['name' => 'projects/test-project/messages/123'])
+        );
+
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $guzzleMock->shouldReceive('send')
+            ->once()
+            ->andReturn($mockResponse);
+
+        $client = $this->createMockedClient($guzzleMock);
+
+        $response = $client->sendToCondition(
+            "'news' in topics && 'premium' in topics",
+            ['title' => 'Premium News', 'body' => 'Exclusive content']
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    /** @test */
     public function testSetProxy(): void
     {
         $guzzleMock = Mockery::mock(GuzzleClient::class);
