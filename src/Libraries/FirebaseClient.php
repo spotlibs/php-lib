@@ -429,8 +429,8 @@ class FirebaseClient
      */
     private function createJWT(array $payload, string $privateKey): string
     {
-        $header = base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
-        $payload = base64_encode(json_encode($payload));
+        $header = rtrim(strtr(base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT'])), '+/', '-_'), '=');
+        $payload = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
 
         $signature = '';
         openssl_sign(
@@ -440,8 +440,8 @@ class FirebaseClient
             OPENSSL_ALGO_SHA256
         );
 
-        $signature = base64_encode($signature);
+        $signature = rtrim(strtr(base64_encode($signature), '+/', '-_'), '=');
 
-        return str_replace(['+', '/', '='], ['-', '_', ''], $header . '.' . $payload . '.' . $signature);
+        return $header . '.' . $payload . '.' . $signature;
     }
 }
