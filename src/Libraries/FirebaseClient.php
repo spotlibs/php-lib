@@ -366,6 +366,60 @@ class FirebaseClient
     }
 
     /**
+     * Send FCM message to a topic
+     *
+     * @param string $topic        Topic name (without /topics/ prefix)
+     * @param array  $notification Notification payload (title, body)
+     * @param array  $data         Data payload
+     *
+     * @return ResponseInterface
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException On HTTP error
+     */
+    public function sendToTopic(
+        string $topic,
+        array $notification = [],
+        array $data = []
+    ): ResponseInterface {
+        $message = ['topic' => $topic];
+        if (!empty($notification)) {
+            $message['notification'] = $notification;
+        }
+        if (!empty($data)) {
+            $message['data'] = $data;
+        }
+
+        return $this->sendMessage($message);
+    }
+
+    /**
+     * Send FCM message to a topic condition
+     *
+     * @param string $condition    Topic condition expression (e.g. "'topicA' in topics && 'topicB' in topics")
+     * @param array  $notification Notification payload (title, body)
+     * @param array  $data         Data payload
+     *
+     * @return ResponseInterface
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException On HTTP error
+     */
+    public function sendToCondition(
+        string $condition,
+        array $notification = [],
+        array $data = []
+    ): ResponseInterface {
+        $message = ['condition' => $condition];
+        if (!empty($notification)) {
+            $message['notification'] = $notification;
+        }
+        if (!empty($data)) {
+            $message['data'] = $data;
+        }
+
+        return $this->sendMessage($message);
+    }
+
+    /**
      * Generate JWT manually using OpenSSL
      *
      * @param array  $payload    JWT payload
@@ -375,8 +429,8 @@ class FirebaseClient
      */
     private function createJWT(array $payload, string $privateKey): string
     {
-        $header = base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
-        $payload = base64_encode(json_encode($payload));
+        $header = rtrim(strtr(base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT'])), '+/', '-_'), '=');
+        $payload = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
 
         $signature = '';
         openssl_sign(
@@ -386,8 +440,8 @@ class FirebaseClient
             OPENSSL_ALGO_SHA256
         );
 
-        $signature = base64_encode($signature);
+        $signature = rtrim(strtr(base64_encode($signature), '+/', '-_'), '=');
 
-        return str_replace(['+', '/', '='], ['-', '_', ''], $header . '.' . $payload . '.' . $signature);
+        return $header . '.' . $payload . '.' . $signature;
     }
 }
