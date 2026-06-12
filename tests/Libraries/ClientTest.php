@@ -62,6 +62,10 @@ class ClientTest extends TestCase
         $meta->req_level_uker = 'X';
         $meta->req_uid = 'abc123';
         $meta->req_role = 'abc';
+        $meta->req_uker_commercial = '123';
+        $meta->req_uker_commercial_desc = 'abc';
+        $meta->req_floor_commercial = '123';
+        $meta->req_floor_commercial_desc = 'abc';
         /**
          * @var \Mockery\MockInterface $context
          */
