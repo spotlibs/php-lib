@@ -6,3 +6,4 @@
 report_coverage.xml
 /storage
 .idea
+/coverage-report
