@@ -173,9 +173,6 @@ class Client extends BaseClient
             if (isset($meta->req_uker_commercial) && $meta->req_uker_commercial !== null) {
                 $this->requestHeaders['X-Request-Uker-Commercial'] = $meta->req_uker_commercial;
             }
-            if (isset($meta->req_uker_commercial_desc) && $meta->req_uker_commercial_desc !== null) {
-                $this->requestHeaders['X-Request-Uker-Commercial-Desc'] = $meta->req_uker_commercial_desc;
-            }
             if (isset($meta->req_floor_commercial) && $meta->req_floor_commercial !== null) {
                 $this->requestHeaders['X-Request-Floor-Commercial'] = $meta->req_floor_commercial;
             }

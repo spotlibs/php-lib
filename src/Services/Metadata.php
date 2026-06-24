@@ -62,7 +62,6 @@ class Metadata
     public ?string $req_level_uker;
     public ?string $req_uid;
     public ?string $req_uker_commercial;
-    public ?string $req_uker_commercial_desc;
     public ?string $req_floor_commercial;
     public ?string $req_floor_commercial_desc;
 }
