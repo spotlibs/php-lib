@@ -366,6 +366,229 @@ class FirebaseClient
     }
 
     /**
+     * Maximum number of concurrent HTTP requests per curl_multi batch
+     *
+     * @var int
+     */
+    private const MAX_PARALLEL_REQUESTS = 20;
+
+    /**
+     * Send to multiple tokens using curl_multi for parallel execution
+     *
+     * Unlike sendMulticast() which sends sequentially, this method fires all
+     * HTTP requests concurrently using curl_multi. Tokens are processed in
+     * batches of 20 to avoid overwhelming the network stack.
+     * For 100 tokens at ~200ms each: sequential = ~20s, parallel = ~1-2s (5 batches).
+     *
+     * @param array $tokens       FCM registration tokens
+     * @param array $notification Notification payload
+     * @param array $data         Data payload
+     *
+     * @return array Results with success/failure counts
+     */
+    public function sendMulticastParallel(
+        array $tokens,
+        array $notification = [],
+        array $data = []
+    ): array {
+        if (empty($tokens)) {
+            return ['success' => 0, 'failure' => 0, 'responses' => []];
+        }
+
+        $accessToken = $this->getAccessToken();
+        $projectId = $this->serviceAccount['project_id'];
+        $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
+
+        $startTime = microtime(true);
+
+        // Process tokens in batches of MAX_PARALLEL_REQUESTS
+        $results = ['success' => 0, 'failure' => 0, 'responses' => []];
+        $chunks = array_chunk($tokens, self::MAX_PARALLEL_REQUESTS);
+
+        foreach ($chunks as $chunk) {
+            $batchResults = $this->executeCurlMulti($chunk, $notification, $data, $accessToken, $url);
+            $results['success'] += $batchResults['success'];
+            $results['failure'] += $batchResults['failure'];
+            foreach ($batchResults['responses'] as $resp) {
+                $results['responses'][] = $resp;
+            }
+        }
+
+        // Retry 401 failures with refreshed token
+        $retryTokens = [];
+        $retryIndices = [];
+        foreach ($results['responses'] as $index => $resp) {
+            if (!$resp['success'] && isset($resp['httpCode']) && $resp['httpCode'] === 401) {
+                $retryTokens[] = $resp['token'];
+                $retryIndices[] = $index;
+            }
+        }
+
+        if (!empty($retryTokens)) {
+            Log::runtime()->warning(
+                [
+                    'operation' => 'firebase_multicast_parallel_401_retry',
+                    'count' => count($retryTokens),
+                    'message' => 'Retrying failed tokens with refreshed access token'
+                ]
+            );
+
+            $newAccessToken = $this->getAccessToken(true);
+
+            // Retry also in batches
+            $retryChunks = array_chunk($retryTokens, self::MAX_PARALLEL_REQUESTS);
+            $allRetryResponses = [];
+            foreach ($retryChunks as $retryChunk) {
+                $chunkResults = $this->executeCurlMulti($retryChunk, $notification, $data, $newAccessToken, $url);
+                foreach ($chunkResults['responses'] as $resp) {
+                    $allRetryResponses[] = $resp;
+                }
+            }
+
+            foreach ($retryIndices as $i => $originalIndex) {
+                $retryResp = $allRetryResponses[$i];
+                $oldResp = $results['responses'][$originalIndex];
+
+                if ($retryResp['success'] && !$oldResp['success']) {
+                    $results['success']++;
+                    $results['failure']--;
+                }
+                $results['responses'][$originalIndex] = $retryResp;
+            }
+        }
+
+        $elapsed = microtime(true) - $startTime;
+
+        Log::runtime()->info(
+            [
+                'operation' => 'firebase_multicast_parallel_complete',
+                'totalTokens' => count($tokens),
+                'success' => $results['success'],
+                'failure' => $results['failure'],
+                'responseTime' => round($elapsed * 1000)
+            ]
+        );
+
+        return $results;
+    }
+
+    /**
+     * Execute parallel FCM sends using curl_multi
+     *
+     * @param array  $tokens       FCM device tokens
+     * @param array  $notification Notification payload
+     * @param array  $data         Data payload
+     * @param string $accessToken  OAuth2 bearer token
+     * @param string $url          FCM endpoint URL
+     *
+     * @return array Results with success/failure counts and responses
+     */
+    private function executeCurlMulti(
+        array $tokens,
+        array $notification,
+        array $data,
+        string $accessToken,
+        string $url
+    ): array {
+        $results = ['success' => 0, 'failure' => 0, 'responses' => []];
+        $multiHandle = curl_multi_init();
+        $curlHandles = [];
+
+        foreach ($tokens as $index => $deviceToken) {
+            $message = ['token' => $deviceToken];
+            if (!empty($notification)) {
+                $message['notification'] = $notification;
+            }
+            if (!empty($data)) {
+                $message['data'] = $data;
+            }
+
+            $payload = json_encode(['message' => $message], JSON_THROW_ON_ERROR);
+
+            $ch = curl_init();
+            curl_setopt_array(
+                $ch,
+                [
+                    CURLOPT_URL => $url,
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => $payload,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_HTTPHEADER => [
+                        'Authorization: Bearer ' . $accessToken,
+                        'Content-Type: application/json',
+                    ],
+                    CURLOPT_TIMEOUT => 60,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                ]
+            );
+
+            if (!empty($this->proxyUrl)) {
+                curl_setopt($ch, CURLOPT_PROXY, $this->proxyUrl);
+            }
+
+            $curlHandles[$index] = ['handle' => $ch, 'token' => $deviceToken];
+            curl_multi_add_handle($multiHandle, $ch);
+        }
+
+        // Execute all requests in parallel
+        $running = null;
+        do {
+            $status = curl_multi_exec($multiHandle, $running);
+            if ($status > CURLM_OK) {
+                break;
+            }
+            if ($running > 0) {
+                curl_multi_select($multiHandle, 1.0);
+            }
+        } while ($running > 0);
+
+        // Collect results
+        foreach ($curlHandles as $index => $item) {
+            $ch = $item['handle'];
+            $deviceToken = $item['token'];
+
+            $responseBody = curl_multi_getcontent($ch);
+            $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+
+            curl_multi_remove_handle($multiHandle, $ch);
+            curl_close($ch);
+
+            if (!empty($curlError)) {
+                $results['failure']++;
+                $results['responses'][$index] = [
+                    'token' => $deviceToken,
+                    'success' => false,
+                    'error' => $curlError,
+                    'httpCode' => 0
+                ];
+            } elseif ($httpCode === 200) {
+                $results['success']++;
+                $results['responses'][$index] = [
+                    'token' => $deviceToken,
+                    'success' => true,
+                    'httpCode' => $httpCode
+                ];
+            } else {
+                $results['failure']++;
+                $results['responses'][$index] = [
+                    'token' => $deviceToken,
+                    'success' => false,
+                    'error' => $responseBody,
+                    'httpCode' => $httpCode
+                ];
+            }
+        }
+
+        curl_multi_close($multiHandle);
+
+        // Re-index to sequential array
+        $results['responses'] = array_values($results['responses']);
+
+        return $results;
+    }
+
+    /**
      * Send FCM message to a topic
      *
      * @param string $topic        Topic name (without /topics/ prefix)

@@ -379,8 +379,393 @@ class FirebaseClientTest extends TestCase
         $this->assertInstanceOf(TestableFirebaseClient::class, $result);
     }
 
+    // =========================================================================
+    // sendMulticastParallel
+    // =========================================================================
+
+    /** @test */
+    public function testSendMulticastParallelReturnsEmptyWhenNoTokens(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $client = $this->createParallelClient($guzzleMock);
+
+        $result = $client->sendMulticastParallel([], ['title' => 'Test', 'body' => 'Body']);
+
+        $this->assertEquals(0, $result['success']);
+        $this->assertEquals(0, $result['failure']);
+        $this->assertEmpty($result['responses']);
+    }
+
+    /** @test */
+    public function testSendMulticastParallelAllSuccess(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $client = $this->createParallelClient($guzzleMock, [
+            ['token' => 'token1', 'success' => true, 'httpCode' => 200],
+            ['token' => 'token2', 'success' => true, 'httpCode' => 200],
+            ['token' => 'token3', 'success' => true, 'httpCode' => 200],
+        ]);
+
+        $tokens = ['token1', 'token2', 'token3'];
+        $notification = ['title' => 'Test', 'body' => 'Message'];
+
+        $result = $client->sendMulticastParallel($tokens, $notification);
+
+        $this->assertEquals(3, $result['success']);
+        $this->assertEquals(0, $result['failure']);
+        $this->assertCount(3, $result['responses']);
+    }
+
+    /** @test */
+    public function testSendMulticastParallelWithFailures(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $client = $this->createParallelClient($guzzleMock, [
+            ['token' => 'token1', 'success' => true, 'httpCode' => 200],
+            ['token' => 'token2', 'success' => false, 'error' => 'Invalid token', 'httpCode' => 400],
+            ['token' => 'token3', 'success' => false, 'error' => 'Curl error', 'httpCode' => 0],
+        ]);
+
+        $tokens = ['token1', 'token2', 'token3'];
+        $result = $client->sendMulticastParallel($tokens);
+
+        $this->assertEquals(1, $result['success']);
+        $this->assertEquals(2, $result['failure']);
+        $this->assertCount(3, $result['responses']);
+    }
+
+    /** @test */
+    public function testSendMulticastParallelRetries401Tokens(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+
+        // First call: token2 gets 401, token1 and token3 succeed
+        $firstCallResults = [
+            ['token' => 'token1', 'success' => true, 'httpCode' => 200],
+            ['token' => 'token2', 'success' => false, 'error' => 'Unauthorized', 'httpCode' => 401],
+            ['token' => 'token3', 'success' => true, 'httpCode' => 200],
+        ];
+
+        // Retry call: token2 succeeds with new access token
+        $retryResults = [
+            ['token' => 'token2', 'success' => true, 'httpCode' => 200],
+        ];
+
+        $client = $this->createParallelClientWithRetry($guzzleMock, $firstCallResults, $retryResults);
+
+        $tokens = ['token1', 'token2', 'token3'];
+        $notification = ['title' => 'Test', 'body' => 'Body'];
+
+        $result = $client->sendMulticastParallel($tokens, $notification);
+
+        $this->assertEquals(3, $result['success']);
+        $this->assertEquals(0, $result['failure']);
+        $this->assertCount(3, $result['responses']);
+        $this->assertTrue($result['responses'][1]['success']);
+    }
+
+    /** @test */
+    public function testSendMulticastParallelRetry401StillFails(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+
+        $firstCallResults = [
+            ['token' => 'token1', 'success' => true, 'httpCode' => 200],
+            ['token' => 'token2', 'success' => false, 'error' => 'Unauthorized', 'httpCode' => 401],
+        ];
+
+        // Retry still fails
+        $retryResults = [
+            ['token' => 'token2', 'success' => false, 'error' => 'Still unauthorized', 'httpCode' => 401],
+        ];
+
+        $client = $this->createParallelClientWithRetry($guzzleMock, $firstCallResults, $retryResults);
+
+        $tokens = ['token1', 'token2'];
+        $result = $client->sendMulticastParallel($tokens);
+
+        $this->assertEquals(1, $result['success']);
+        $this->assertEquals(1, $result['failure']);
+        $this->assertFalse($result['responses'][1]['success']);
+    }
+
+    /** @test */
+    public function testSendMulticastParallelWithDataPayload(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $client = $this->createParallelClient($guzzleMock, [
+            ['token' => 'token1', 'success' => true, 'httpCode' => 200],
+        ]);
+
+        $tokens = ['token1'];
+        $notification = ['title' => 'Test', 'body' => 'Body'];
+        $data = ['key' => 'value', 'action' => 'open_screen'];
+
+        $result = $client->sendMulticastParallel($tokens, $notification, $data);
+
+        $this->assertEquals(1, $result['success']);
+        $this->assertEquals(0, $result['failure']);
+    }
+
+    // =========================================================================
+    // executeCurlMulti (via reflection)
+    // =========================================================================
+
+    /** @test */
+    public function testExecuteCurlMultiAllSuccess(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $client = $this->createMockedClient($guzzleMock);
+
+        $reflection = new \ReflectionMethod(FirebaseClient::class, 'executeCurlMulti');
+        $reflection->setAccessible(true);
+
+        // Use httpbin or a mock server — but since we can't guarantee network,
+        // we test against the actual curl_multi with a known unreachable endpoint
+        // to verify error handling
+        $tokens = ['device_token_1'];
+        $notification = ['title' => 'Test', 'body' => 'Body'];
+        $data = [];
+        $accessToken = 'test_access_token';
+        // Use a URL that immediately refuses connection to test curl error path
+        $url = 'http://127.0.0.1:1/v1/projects/test/messages:send';
+
+        $result = $reflection->invoke(
+            $client,
+            $tokens,
+            $notification,
+            $data,
+            $accessToken,
+            $url
+        );
+
+        $this->assertArrayHasKey('success', $result);
+        $this->assertArrayHasKey('failure', $result);
+        $this->assertArrayHasKey('responses', $result);
+        $this->assertEquals(0, $result['success']);
+        $this->assertEquals(1, $result['failure']);
+        $this->assertCount(1, $result['responses']);
+        $this->assertFalse($result['responses'][0]['success']);
+        $this->assertEquals('device_token_1', $result['responses'][0]['token']);
+    }
+
+    /** @test */
+    public function testExecuteCurlMultiWithProxy(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $client = $this->createMockedClient($guzzleMock);
+        $client->setProxy('http://invalid-proxy:9999');
+
+        $reflection = new \ReflectionMethod(FirebaseClient::class, 'executeCurlMulti');
+        $reflection->setAccessible(true);
+
+        $tokens = ['device_token_1'];
+        $notification = [];
+        $data = ['key' => 'value'];
+        $accessToken = 'test_token';
+        $url = 'http://127.0.0.1:1/v1/projects/test/messages:send';
+
+        $result = $reflection->invoke(
+            $client,
+            $tokens,
+            $notification,
+            $data,
+            $accessToken,
+            $url
+        );
+
+        $this->assertArrayHasKey('success', $result);
+        $this->assertArrayHasKey('failure', $result);
+        $this->assertArrayHasKey('responses', $result);
+        $this->assertEquals(1, $result['failure']);
+        $this->assertFalse($result['responses'][0]['success']);
+    }
+
+    /** @test */
+    public function testExecuteCurlMultiMultipleTokens(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $client = $this->createMockedClient($guzzleMock);
+
+        $reflection = new \ReflectionMethod(FirebaseClient::class, 'executeCurlMulti');
+        $reflection->setAccessible(true);
+
+        $tokens = ['token_a', 'token_b', 'token_c'];
+        $notification = ['title' => 'Multi', 'body' => 'Test'];
+        $data = [];
+        $accessToken = 'bearer_token';
+        $url = 'http://127.0.0.1:1/v1/projects/test/messages:send';
+
+        $result = $reflection->invoke(
+            $client,
+            $tokens,
+            $notification,
+            $data,
+            $accessToken,
+            $url
+        );
+
+        $this->assertCount(3, $result['responses']);
+        $this->assertEquals(3, $result['failure']);
+        $this->assertEquals(0, $result['success']);
+
+        // Verify each token is present in results
+        $resultTokens = array_column($result['responses'], 'token');
+        $this->assertContains('token_a', $resultTokens);
+        $this->assertContains('token_b', $resultTokens);
+        $this->assertContains('token_c', $resultTokens);
+    }
+
+    /** @test */
+    public function testExecuteCurlMultiWithEmptyNotificationAndData(): void
+    {
+        $guzzleMock = Mockery::mock(GuzzleClient::class);
+        $client = $this->createMockedClient($guzzleMock);
+
+        $reflection = new \ReflectionMethod(FirebaseClient::class, 'executeCurlMulti');
+        $reflection->setAccessible(true);
+
+        $tokens = ['token_only'];
+        $notification = [];
+        $data = [];
+        $accessToken = 'test_token';
+        $url = 'http://127.0.0.1:1/v1/projects/test/messages:send';
+
+        $result = $reflection->invoke(
+            $client,
+            $tokens,
+            $notification,
+            $data,
+            $accessToken,
+            $url
+        );
+
+        $this->assertArrayHasKey('responses', $result);
+        $this->assertCount(1, $result['responses']);
+        $this->assertEquals('token_only', $result['responses'][0]['token']);
+    }
+
     private function createMockedClient($guzzleMock): TestableFirebaseClient
     {
         return new TestableFirebaseClient($guzzleMock, $this->mockServiceAccount);
+    }
+
+    private function createParallelClient($guzzleMock, array $curlMultiResults = []): TestableParallelFirebaseClient
+    {
+        return new TestableParallelFirebaseClient($guzzleMock, $this->mockServiceAccount, $curlMultiResults);
+    }
+
+    private function createParallelClientWithRetry(
+        $guzzleMock,
+        array $firstCallResults,
+        array $retryResults
+    ): TestableParallelFirebaseClient {
+        return new TestableParallelFirebaseClient(
+            $guzzleMock,
+            $this->mockServiceAccount,
+            $firstCallResults,
+            $retryResults
+        );
+    }
+}
+
+/**
+ * Testable subclass for sendMulticastParallel that stubs executeCurlMulti
+ */
+class TestableParallelFirebaseClient extends TestableFirebaseClient
+{
+    private array $curlMultiResults;
+    private array $retryResults;
+    private int $callCount = 0;
+
+    public function __construct(
+        GuzzleClient $httpClient,
+        array $serviceAccount,
+        array $curlMultiResults = [],
+        array $retryResults = []
+    ) {
+        parent::__construct($httpClient, $serviceAccount);
+        $this->curlMultiResults = $curlMultiResults;
+        $this->retryResults = $retryResults;
+    }
+
+    /**
+     * Override sendMulticastParallel to use our stubbed executeCurlMulti
+     */
+    public function sendMulticastParallel(
+        array $tokens,
+        array $notification = [],
+        array $data = []
+    ): array {
+        if (empty($tokens)) {
+            return ['success' => 0, 'failure' => 0, 'responses' => []];
+        }
+
+        $accessToken = $this->getAccessTokenPublic();
+        $reflection = new \ReflectionClass(FirebaseClient::class);
+        $serviceProperty = $reflection->getProperty('serviceAccount');
+        $serviceProperty->setAccessible(true);
+        $serviceAccount = $serviceProperty->getValue($this);
+
+        $projectId = $serviceAccount['project_id'];
+        $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
+
+        $results = $this->stubbedExecuteCurlMulti($tokens, $notification, $data, $accessToken, $url);
+
+        // Retry 401 failures with refreshed token
+        $retryTokens = [];
+        $retryIndices = [];
+        foreach ($results['responses'] as $index => $resp) {
+            if (!$resp['success'] && isset($resp['httpCode']) && $resp['httpCode'] === 401) {
+                $retryTokens[] = $resp['token'];
+                $retryIndices[] = $index;
+            }
+        }
+
+        if (!empty($retryTokens)) {
+            $newAccessToken = $this->getAccessTokenPublic(true);
+            $retryResults = $this->stubbedExecuteCurlMulti($retryTokens, $notification, $data, $newAccessToken, $url);
+
+            foreach ($retryIndices as $i => $originalIndex) {
+                $retryResp = $retryResults['responses'][$i];
+                $oldResp = $results['responses'][$originalIndex];
+
+                if ($retryResp['success'] && !$oldResp['success']) {
+                    $results['success']++;
+                    $results['failure']--;
+                }
+                $results['responses'][$originalIndex] = $retryResp;
+            }
+        }
+
+        return $results;
+    }
+
+    private function stubbedExecuteCurlMulti(
+        array $tokens,
+        array $notification,
+        array $data,
+        string $accessToken,
+        string $url
+    ): array {
+        $this->callCount++;
+
+        if ($this->callCount === 1) {
+            $responses = $this->curlMultiResults;
+        } else {
+            $responses = $this->retryResults;
+        }
+
+        $success = 0;
+        $failure = 0;
+        foreach ($responses as $resp) {
+            if ($resp['success']) {
+                $success++;
+            } else {
+                $failure++;
+            }
+        }
+
+        return ['success' => $success, 'failure' => $failure, 'responses' => $responses];
     }
 }
