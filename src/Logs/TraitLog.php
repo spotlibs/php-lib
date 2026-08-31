@@ -65,6 +65,7 @@ trait TraitLog
     {
         $data['taskname'] = env('TASK_NAME');
         $data['hostname'] = gethostname();
+        $data['logtype'] = $this->channel;
         if ($meta = $this->context->get(Metadata::class)) {
             if ($meta instanceof Metadata) {
                 if (isset($meta->req_id)) {
