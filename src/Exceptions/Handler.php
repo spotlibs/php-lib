@@ -108,7 +108,8 @@ class Handler extends ExceptionHandler
         if ($exception instanceof QueryException && ENV('APP_ENV') === 'production') {
             $exception = new Exception("Query exception happens, see runtime error for more details.");
         }
-        if (!$exception instanceof ExceptionInterface) {
+
+        if (!$exception instanceof ExceptionInterface || $exception instanceof RuntimeException) {
             $exception = new RuntimeException(
                 (ENV('APP_DEBUG') === true ? $exception->getMessage() . ' ' . $exception->getFile() . ' Ln.' . $exception->getLine() : 'Terjadi kesalahan, mohon coba beberapa saat lagi yaa...')
             );
