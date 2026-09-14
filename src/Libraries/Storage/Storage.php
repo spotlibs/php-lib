@@ -36,7 +36,6 @@ class Storage
     public const NFS = 'NFS';
     public const MINIO = 'MINIO';
     public const MINIO_BRIMEN = 'MINIO_BRIMEN';
-    public const NETAPP = 'NETAPP';
 
     private ?string $pendingDriver = null;
     private bool $pendingAutoDetect = false;
@@ -46,7 +45,7 @@ class Storage
     /**
      * Explicitly select a driver for the current operation.
      *
-     * @param string $driver one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN, Storage::NETAPP
+     * @param string $driver one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN
      *
      * @return static
      */
@@ -72,7 +71,7 @@ class Storage
     /**
      * Select the source driver for a cross-driver copy/move.
      *
-     * @param string $driver one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN, Storage::NETAPP
+     * @param string $driver one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN
      *
      * @return static
      */
@@ -86,7 +85,7 @@ class Storage
     /**
      * Select the destination driver for a cross-driver copy/move (or the buildZip target driver).
      *
-     * @param string $driver one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN, Storage::NETAPP
+     * @param string $driver one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN
      *
      * @return static
      */
@@ -112,7 +111,7 @@ class Storage
             $resolver = new DriverResolver();
 
             if ($this->pendingAutoDetect) {
-                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS, self::NETAPP] as $driverName) {
+                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
                     $driver = $this->makeDriver($driverName);
                     if ($driver->exists($filepath)) {
                         return $driver->readStream($filepath);
@@ -144,7 +143,7 @@ class Storage
     {
         try {
             if ($this->pendingAutoDetect) {
-                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS, self::NETAPP] as $driverName) {
+                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
                     if ($this->makeDriver($driverName)->exists($filepath)) {
                         return true;
                     }
@@ -211,7 +210,7 @@ class Storage
             $resolver = new DriverResolver();
 
             if ($this->pendingAutoDetect) {
-                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS, self::NETAPP] as $driverName) {
+                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
                     $driver = $this->makeDriver($driverName);
                     if ($driver->exists($filepath)) {
                         $driver->delete($filepath);
@@ -250,7 +249,7 @@ class Storage
             $resolver = new DriverResolver();
 
             if ($this->pendingAutoDetect) {
-                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS, self::NETAPP] as $driverName) {
+                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
                     $driver = $this->makeDriver($driverName);
                     if ($driver->exists($filepath)) {
                         return $driver->securelink($filepath, $ttl);
@@ -488,7 +487,7 @@ class Storage
                                 );
                             } else {
                                 $sourceDriver = null;
-                                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS, self::NETAPP] as $driverName) {
+                                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
                                     $candidateDriver = $this->makeDriver($driverName);
                                     if ($candidateDriver->exists($pathFile)) {
                                         $sourceDriver = $candidateDriver;
@@ -617,7 +616,7 @@ class Storage
     /**
      * Instantiate the concrete driver for a given driver name.
      *
-     * @param string $driverName one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN, Storage::NETAPP
+     * @param string $driverName one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN
      *
      * @throws RuntimeException when the driver has no concrete implementation yet
      *
@@ -632,8 +631,6 @@ class Storage
                 return new MinioDriver('minio');
             case self::MINIO_BRIMEN:
                 return new MinioDriver('minio_brimen');
-            case self::NETAPP:
-                throw new RuntimeException("Driver not yet implemented: {$driverName}");
             default:
                 throw new RuntimeException("Unknown storage driver: {$driverName}");
         }

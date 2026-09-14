@@ -33,7 +33,7 @@ class DriverResolver
     /**
      * Resolve the driver name to use when no explicit driver was chained.
      *
-     * @return string one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN, Storage::NETAPP
+     * @return string one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN
      *@throws RuntimeException when env is not set or invalid
      *
      */
@@ -49,7 +49,6 @@ class DriverResolver
             Storage::NFS,
             Storage::MINIO,
             Storage::MINIO_BRIMEN,
-            Storage::NETAPP,
         ], true)) {
             throw new RuntimeException("DEFAULT_DRIVER_STORAGE has invalid value: {$driver}");
         }
@@ -72,7 +71,6 @@ class DriverResolver
             Storage::NFS,
             Storage::MINIO,
             Storage::MINIO_BRIMEN,
-            Storage::NETAPP,
         ], true)) {
             throw new RuntimeException("Unknown storage driver: {$driver}");
         }
