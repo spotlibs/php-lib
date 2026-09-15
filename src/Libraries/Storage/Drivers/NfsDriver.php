@@ -313,4 +313,31 @@ class NfsDriver implements StorageDriverInterface
 
         return $result;
     }
+
+    /**
+     * Get information about a specific file.
+     *
+     * @param string $filepath file path to inspect
+     *
+     * @throws RuntimeException when the file is not found
+     *
+     * @return StorageResult
+     */
+    public function info(string $filepath): StorageResult
+    {
+        if (!file_exists($filepath)) {
+            throw new RuntimeException("File not found: {$filepath}");
+        }
+
+        $size = filesize($filepath);
+
+        $result = new StorageResult();
+        $result->driver = Storage::NFS;
+        $result->pathFile = basename($filepath);
+        $result->fullPath = $filepath;
+        $result->folder = dirname($filepath) . '/';
+        $result->size = $size !== false ? $size : '';
+
+        return $result;
+    }
 }

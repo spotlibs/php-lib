@@ -269,4 +269,32 @@ class MinioDriver implements StorageDriverInterface
 
         return $result;
     }
+
+    /**
+     * Get information about a specific file.
+     *
+     * @param string $filepath file path to inspect
+     *
+     * @throws RuntimeException when the file is not found
+     *
+     * @return StorageResult
+     */
+    public function info(string $filepath): StorageResult
+    {
+        $disk = LaravelStorage::disk($this->disk);
+        if (!$disk->exists($filepath)) {
+            throw new RuntimeException("File not found: {$filepath}");
+        }
+
+        $result = new StorageResult();
+        $result->driver = $this->disk === 'minio_brimen'
+            ? StorageManager::MINIO_BRIMEN
+            : StorageManager::MINIO;
+        $result->pathFile = basename($filepath);
+        $result->fullPath = $filepath;
+        $result->folder = dirname($filepath) . '/';
+        $result->size = $disk->size($filepath);
+
+        return $result;
+    }
 }

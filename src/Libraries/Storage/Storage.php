@@ -234,6 +234,39 @@ class Storage
     }
 
     /**
+     * Get information about a file, automatically detecting the driver if not explicitly chained.
+     *
+     * @param string $filepath full path including prefix and filename
+     *
+     * @throws RuntimeException when the file is not found
+     *
+     * @return StorageResult
+     */
+    public function info(string $filepath): StorageResult
+    {
+        try {
+            if ($this->pendingDriver !== null) {
+                $resolver = new DriverResolver();
+                $resolvedDriverName = $resolver->resolveExplicit($this->pendingDriver);
+                
+                return $this->makeDriver($resolvedDriverName)->info($filepath);
+            }
+
+            foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
+                $driver = $this->makeDriver($driverName);
+                if ($driver->exists($filepath)) {
+                    return $driver->info($filepath);
+                }
+            }
+
+            throw new RuntimeException("File not found: {$filepath}");
+        } finally {
+            $this->pendingDriver = null;
+            $this->pendingAutoDetect = false;
+        }
+    }
+
+    /**
      * Generate a temporary URL for a file on the resolved driver.
      *
      * @param string   $filepath full path including prefix and filename

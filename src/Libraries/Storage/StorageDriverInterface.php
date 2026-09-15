@@ -132,11 +132,22 @@ interface StorageDriverInterface
     public function files(string $dirpath): array;
 
     /**
-     * List files in a directory recursively.
+     * List files recursively within a directory.
      *
      * @param string $dirpath directory path to list
      *
      * @return array<int, array{path: string, size: int|string}> file entries
      */
     public function allFiles(string $dirpath): array;
+
+    /**
+     * Get information about a specific file as a StorageResult.
+     *
+     * @param string $filepath file path to inspect
+     *
+     * @throws RuntimeException when the file is missing
+     *
+     * @return StorageResult file information
+     */
+    public function info(string $filepath): StorageResult;
 }

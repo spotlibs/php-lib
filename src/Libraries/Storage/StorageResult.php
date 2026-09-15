@@ -32,4 +32,5 @@ class StorageResult
     public string $folder;
     public string $pathFile;
     public string $fullPath;
+    public int|string $size = '';
 }
