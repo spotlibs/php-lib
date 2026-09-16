@@ -36,6 +36,36 @@ use Spotlibs\PhpLib\Libraries\Storage\StorageResult;
 class NfsDriver implements StorageDriverInterface
 {
     /**
+     * Resolve the actual absolute path using fallbacks if necessary.
+     *
+     * @param string $path file or directory path
+     *
+     * @return string resolved absolute path or original path if not found
+     */
+    private function resolvePath(string $path): string
+    {
+        if (str_starts_with($path, '/data/NFS_') || str_starts_with($path, '/')) {
+            return $path;
+        }
+
+        $envFallbacks = (string) env('PATH_NFS_FALLBACK_STORAGE_SPOTLIB', '');
+        if ($envFallbacks === '') {
+            return $path;
+        }
+
+        $fallbacks = array_filter(array_map('trim', explode(',', $envFallbacks)));
+        
+        foreach ($fallbacks as $basePath) {
+            $fullPath = rtrim($basePath, '/') . '/' . ltrim($path, '/');
+            if (file_exists($fullPath)) {
+                return $fullPath;
+            }
+        }
+
+        return $path;
+    }
+
+    /**
      * Upload a file to an NFS directory.
      *
      * @param UploadedFile $file    file to upload
@@ -105,6 +135,8 @@ class NfsDriver implements StorageDriverInterface
      */
     public function copySameDriver(string $srcPath, string $destPath): StorageResult
     {
+        $srcPath = $this->resolvePath($srcPath);
+
         if (!file_exists($srcPath)) {
             throw new RuntimeException("Source file not found: {$srcPath}");
         }
@@ -139,6 +171,8 @@ class NfsDriver implements StorageDriverInterface
      */
     public function moveSameDriver(string $srcPath, string $destPath): StorageResult
     {
+        $srcPath = $this->resolvePath($srcPath);
+
         if (!file_exists($srcPath)) {
             throw new RuntimeException("Source file not found: {$srcPath}");
         }
@@ -172,6 +206,8 @@ class NfsDriver implements StorageDriverInterface
      */
     public function delete(string $filepath): void
     {
+        $filepath = $this->resolvePath($filepath);
+
         if (str_ends_with($filepath, '/') || is_dir($filepath)) {
             throw new RuntimeException("Cannot delete a folder: {$filepath}");
         }
@@ -197,6 +233,8 @@ class NfsDriver implements StorageDriverInterface
      */
     public function securelink(string $filepath, ?int $ttl = null): string
     {
+        $filepath = $this->resolvePath($filepath);
+
         if (!is_file($filepath)) {
             throw new RuntimeException("File not found within filepath: {$filepath}");
         }
@@ -227,7 +265,7 @@ class NfsDriver implements StorageDriverInterface
      */
     public function exists(string $filepath): bool
     {
-        return file_exists($filepath);
+        return file_exists($this->resolvePath($filepath));
     }
 
     /**
@@ -241,6 +279,8 @@ class NfsDriver implements StorageDriverInterface
      */
     public function readStream(string $filepath)
     {
+        $filepath = $this->resolvePath($filepath);
+
         if (!file_exists($filepath)) {
             throw new RuntimeException("File not found: {$filepath}");
         }
@@ -262,6 +302,8 @@ class NfsDriver implements StorageDriverInterface
      */
     public function files(string $dirpath): array
     {
+        $dirpath = $this->resolvePath($dirpath);
+
         if (!is_dir($dirpath)) {
             return [];
         }
@@ -294,6 +336,8 @@ class NfsDriver implements StorageDriverInterface
      */
     public function allFiles(string $dirpath): array
     {
+        $dirpath = $this->resolvePath($dirpath);
+
         if (!is_dir($dirpath)) {
             return [];
         }
@@ -329,6 +373,8 @@ class NfsDriver implements StorageDriverInterface
      */
     public function info(string $filepath): StorageResult
     {
+        $filepath = $this->resolvePath($filepath);
+
         if (!file_exists($filepath)) {
             throw new RuntimeException("File not found: {$filepath}");
         }
