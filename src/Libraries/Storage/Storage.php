@@ -211,24 +211,16 @@ class Storage
         }
 
         try {
-            $resolver = new DriverResolver();
-
             if ($this->pendingAutoDetect) {
-                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
-                    $driver = $this->makeDriver($driverName);
-                    if ($driver->exists($filepath)) {
-                        $driver->delete($filepath);
-
-                        return;
-                    }
-                }
-
-                throw new RuntimeException("File not found: {$filepath}");
+                throw new RuntimeException('autoDetect is not allowed for delete');
             }
 
-            $resolvedDriverName = $this->pendingDriver !== null
-                ? $resolver->resolveExplicit($this->pendingDriver)
-                : $resolver->resolveDefault();
+            if ($this->pendingDriver === null) {
+                throw new RuntimeException('delete requires explicit driver. Call ->driver()');
+            }
+
+            $resolver = new DriverResolver();
+            $resolvedDriverName = $resolver->resolveExplicit($this->pendingDriver);
 
             $this->makeDriver($resolvedDriverName)->delete($filepath);
         } finally {
