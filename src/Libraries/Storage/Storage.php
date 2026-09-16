@@ -206,6 +206,10 @@ class Storage
      */
     public function delete(string $filepath): void
     {
+        if (env('ALLOW_DELETE_STORAGE_SPOTLIB', false) == false) {
+            throw new RuntimeException('disallow action');
+        }
+
         try {
             $resolver = new DriverResolver();
 

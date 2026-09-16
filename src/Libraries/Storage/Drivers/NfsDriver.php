@@ -172,6 +172,10 @@ class NfsDriver implements StorageDriverInterface
      */
     public function delete(string $filepath): void
     {
+        if (str_ends_with($filepath, '/') || is_dir($filepath)) {
+            throw new RuntimeException("Cannot delete a folder: {$filepath}");
+        }
+
         if (!file_exists($filepath)) {
             throw new RuntimeException("File not found: {$filepath}");
         }

@@ -170,7 +170,13 @@ class MinioDriver implements StorageDriverInterface
      */
     public function delete(string $filepath): void
     {
-        if (!LaravelStorage::disk($this->disk)->delete($filepath)) {
+        $disk = LaravelStorage::disk($this->disk);
+
+        if (str_ends_with($filepath, '/') || (method_exists($disk, 'directoryExists') && $disk->directoryExists($filepath))) {
+            throw new RuntimeException("Cannot delete a folder: {$filepath}");
+        }
+
+        if (!$disk->delete($filepath)) {
             throw new RuntimeException("MinIO delete failed: {$filepath}");
         }
     }
