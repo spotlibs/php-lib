@@ -267,6 +267,36 @@ class Storage
     }
 
     /**
+     * Get an array of all files in a directory on the resolved driver.
+     *
+     * @param string $dirpath directory path
+     *
+     * @throws RuntimeException when autoDetect is used
+     *
+     * @return array
+     */
+    public function allFiles(string $dirpath): array
+    {
+        try {
+            if ($this->pendingAutoDetect) {
+                throw new RuntimeException(
+                    'autoDetect is not allowed for allFiles'
+                );
+            }
+
+            $resolver = new DriverResolver();
+            $resolvedDriverName = $this->pendingDriver !== null
+                ? $resolver->resolveExplicit($this->pendingDriver)
+                : $resolver->resolveDefault();
+
+            return $this->makeDriver($resolvedDriverName)->allFiles($dirpath);
+        } finally {
+            $this->pendingDriver = null;
+            $this->pendingAutoDetect = false;
+        }
+    }
+
+    /**
      * Generate a temporary URL for a file on the resolved driver.
      *
      * @param string   $filepath full path including prefix and filename
