@@ -120,20 +120,77 @@ class MinioAdapter extends Filesystem
     }
 
     /**
-     * Get all files in a directory
+     * Check whether a file exists in MinIO.
      *
-     * @param string $dirpath   path of the directory
-     * @param bool   $recursive whether to get files recursively or not
+     * Flysystem 1 exposes this operation as has(), while automatic driver
+     * detection calls exists().
      *
-     * @return bool
+     * @param string $path file path
+     *
+     * @return bool whether the file exists
      */
-    public function allFiles(string $dirpath, bool $recursive = false): array
+    public function exists(string $path): bool
     {
-        try {
-            $paths = $this->listContents($dirpath, $recursive);
-            return $paths;
-        } catch (\Throwable $th) {
-            throw $th;
+        return $this->has($path);
+    }
+
+    /**
+     * Get the size of a file in MinIO.
+     *
+     * Laravel's storage-facing API calls this size(), while Flysystem 1
+     * exposes the same operation as getSize().
+     *
+     * @param string $path file path
+     *
+     * @return int|false file size or false when unavailable
+     */
+    public function size(string $path): int|false
+    {
+        return $this->getSize($path);
+    }
+
+    /**
+     * List files directly within a directory as path strings.
+     *
+     * @param string $dirpath directory path
+     *
+     * @return array<int, string> file paths
+     */
+    public function files(string $dirpath = ''): array
+    {
+        return $this->listPaths($dirpath, false);
+    }
+
+    /**
+     * List files recursively within a directory as path strings.
+     *
+     * @param string $dirpath   directory path
+     * @param bool   $recursive whether to recurse into subdirectories
+     *
+     * @return array<int, string> file paths
+     */
+    public function allFiles(string $dirpath, bool $recursive = true): array
+    {
+        return $this->listPaths($dirpath, $recursive);
+    }
+
+    /**
+     * Convert Flysystem 1 metadata entries to Laravel-style file paths.
+     *
+     * @param string $dirpath   directory path
+     * @param bool   $recursive whether to recurse into subdirectories
+     *
+     * @return array<int, string> file paths
+     */
+    private function listPaths(string $dirpath, bool $recursive): array
+    {
+        $paths = [];
+        foreach ($this->listContents($dirpath, $recursive) as $entry) {
+            if (($entry['type'] ?? null) === 'file') {
+                $paths[] = $entry['path'];
+            }
         }
+
+        return $paths;
     }
 }
