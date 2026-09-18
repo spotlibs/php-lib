@@ -164,7 +164,7 @@ class MinioAdapter extends Filesystem
     /**
      * List files recursively within a directory as path strings.
      *
-     * @param string $dirpath directory path
+     * @param string $dirpath   directory path
      * @param bool   $recursive whether to recurse into subdirectories
      *
      * @return array<int, string> file paths
@@ -177,7 +177,7 @@ class MinioAdapter extends Filesystem
     /**
      * Convert Flysystem 1 metadata entries to Laravel-style file paths.
      *
-     * @param string $dirpath  directory path
+     * @param string $dirpath   directory path
      * @param bool   $recursive whether to recurse into subdirectories
      *
      * @return array<int, string> file paths
