@@ -34,14 +34,15 @@ interface StorageDriverInterface
     /**
      * Upload a file to the storage driver.
      *
-     * @param UploadedFile $file    file to upload
-     * @param string       $dirpath destination directory path
+     * @param UploadedFile $file     file to upload
+     * @param string       $dirpath  destination directory path
+     * @param string       $filename optionally override file name
      *
      * @throws RuntimeException when the upload fails
      *
      * @return StorageResult upload result
      */
-    public function upload(UploadedFile $file, string $dirpath): StorageResult;
+    public function upload(UploadedFile $file, string $dirpath, string $filename = ''): StorageResult;
 
     /**
      * Copy a file within the same storage driver.
