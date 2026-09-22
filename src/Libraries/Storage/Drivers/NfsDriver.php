@@ -68,26 +68,27 @@ class NfsDriver implements StorageDriverInterface
     /**
      * Upload a file to an NFS directory.
      *
-     * @param UploadedFile $file    file to upload
-     * @param string       $dirpath destination directory path
+     * @param UploadedFile $file     file to upload
+     * @param string       $dirpath  destination directory path
+     * @param string       $filename optionally override file name
      *
      * @throws RuntimeException when the destination directory cannot be created
      *
      * @return StorageResult upload result
      */
-    public function upload(UploadedFile $file, string $dirpath): StorageResult
+    public function upload(UploadedFile $file, string $dirpath, string $filename = ''): StorageResult
     {
         if (!is_dir($dirpath) && !mkdir($dirpath, 0755, true)) {
             throw new RuntimeException("Failed to create destination directory: {$dirpath}");
         }
 
-        $filename = $file->getClientOriginalName();
-        $file->move($dirpath, $filename);
+        $fileName = $filename === '' ? $file->getClientOriginalName() : $filename;
+        $file->move($dirpath, $fileName);
 
         $result = new StorageResult();
         $result->driver = Storage::NFS;
-        $result->pathFile = $filename;
-        $result->fullPath = rtrim($dirpath, '/') . '/' . $filename;
+        $result->pathFile = $fileName;
+        $result->fullPath = rtrim($dirpath, '/') . '/' . $fileName;
         $result->folder = rtrim($dirpath, '/') . '/';
 
         return $result;

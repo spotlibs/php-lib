@@ -51,17 +51,18 @@ class MinioDriver implements StorageDriverInterface
     /**
      * Upload a file to MinIO.
      *
-     * @param UploadedFile $file    file to upload
-     * @param string       $dirpath destination directory path
+     * @param UploadedFile $file     file to upload
+     * @param string       $dirpath  destination directory path
+     * @param string       $filename optionally override file name
      *
      * @throws RuntimeException when the upload fails
      *
      * @return StorageResult upload result
      */
-    public function upload(UploadedFile $file, string $dirpath): StorageResult
+    public function upload(UploadedFile $file, string $dirpath, string $filename = ''): StorageResult
     {
-        $filename = $file->getClientOriginalName();
-        $destPath = rtrim($dirpath, '/') . '/' . $filename;
+        $fileName = $filename === '' ? $file->getClientOriginalName() : $filename;
+        $destPath = rtrim($dirpath, '/') . '/' . $fileName;
 
         if (!LaravelStorage::disk($this->disk)->put($destPath, $file->getContent())) {
             throw new RuntimeException("Failed to upload file to MinIO: {$destPath}");
@@ -71,7 +72,7 @@ class MinioDriver implements StorageDriverInterface
         $result->driver = $this->disk === 'minio_brimen'
             ? StorageManager::MINIO_BRIMEN
             : StorageManager::MINIO;
-        $result->pathFile = $filename;
+        $result->pathFile = $fileName;
         $result->fullPath = $destPath;
         $result->folder = rtrim($dirpath, '/') . '/';
 

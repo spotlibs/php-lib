@@ -62,6 +62,19 @@ class NfsDriverTest extends TestCase
         $this->assertEquals('test.txt', $result->pathFile);
     }
 
+    public function testUploadWithFilenameOverride(): void
+    {
+        $fileMock = Mockery::mock(UploadedFile::class);
+        $fileMock->shouldReceive('getClientOriginalName')->andReturn('test.txt');
+        $fileMock->shouldReceive('move')->with($this->tempDir . '/uploads', 'custom.txt')->once();
+
+        $driver = new NfsDriver();
+        $result = $driver->upload($fileMock, $this->tempDir . '/uploads', 'custom.txt');
+
+        $this->assertEquals(Storage::NFS, $result->driver);
+        $this->assertEquals('custom.txt', $result->pathFile);
+    }
+
     public function testWriteStream(): void
     {
         $driver = new NfsDriver();
