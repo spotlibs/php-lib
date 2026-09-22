@@ -167,14 +167,15 @@ class Storage
     /**
      * Upload a file to the resolved driver.
      *
-     * @param UploadedFile $file    file from http request
-     * @param string       $dirpath full destination path including prefix
+     * @param UploadedFile $file     file from http request
+     * @param string       $dirpath  full destination path including prefix
+     * @param string       $filename optionally override file name
      *
      * @throws RuntimeException
      *
      * @return StorageResult
      */
-    public function upload(UploadedFile $file, string $dirpath): StorageResult
+    public function upload(UploadedFile $file, string $dirpath, string $filename = ''): StorageResult
     {
         try {
             if ($this->pendingAutoDetect) {
@@ -188,7 +189,7 @@ class Storage
                 ? $resolver->resolveExplicit($this->pendingDriver)
                 : $resolver->resolveDefault();
 
-            return $this->makeDriver($resolvedDriverName)->upload($file, $dirpath);
+            return $this->makeDriver($resolvedDriverName)->upload($file, $dirpath, $filename);
         } finally {
             $this->pendingDriver = null;
             $this->pendingAutoDetect = false;

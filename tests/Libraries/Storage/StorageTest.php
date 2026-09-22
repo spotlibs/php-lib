@@ -46,6 +46,21 @@ class StorageTest extends TestCase
         $this->assertEquals(Storage::MINIO, $result->driver);
     }
 
+    public function testUploadExplicitDriverWithFilenameOverride(): void
+    {
+        $diskMock = Mockery::mock();
+        LaravelStorage::shouldReceive('disk')->with('minio')->andReturn($diskMock);
+        $diskMock->shouldReceive('put')->once()->andReturn(true);
+
+        $fileMock = Mockery::mock(UploadedFile::class);
+        $fileMock->shouldReceive('getClientOriginalName')->andReturn('test.txt');
+        $fileMock->shouldReceive('getContent')->andReturn('content');
+
+        $storage = new Storage();
+        $result = $storage->driver(Storage::MINIO)->upload($fileMock, '/tmp', 'custom.txt');
+        $this->assertEquals(Storage::MINIO, $result->driver);
+    }
+
     public function testUploadAutoDetectFails(): void
     {
         $storage = new Storage();
