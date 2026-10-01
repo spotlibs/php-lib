@@ -81,6 +81,61 @@ class StorageTest extends TestCase
         $this->assertTrue($storage->autoDetect()->exists('test.txt'));
     }
 
+    public function testExistsAutoDetectUsesNfsPathHint(): void
+    {
+        $path = sys_get_temp_dir() . '/nFs_' . uniqid('', true) . '/test.txt';
+        mkdir(dirname($path), 0755, true);
+        file_put_contents($path, 'content');
+        LaravelStorage::shouldReceive('disk')->never();
+
+        try {
+            $storage = new Storage();
+            $this->assertTrue($storage->autoDetect()->exists($path));
+        } finally {
+            unlink($path);
+            rmdir(dirname($path));
+        }
+    }
+
+    public function testAllFilesUsesNfsFolderPathHint(): void
+    {
+        $directory = sys_get_temp_dir() . '/nFs_' . uniqid('', true);
+        $path = $directory . '/test.txt';
+        mkdir($directory, 0755, true);
+        file_put_contents($path, 'content');
+        LaravelStorage::shouldReceive('disk')->never();
+
+        try {
+            $storage = new Storage();
+            $this->assertCount(1, $storage->allFiles($directory));
+        } finally {
+            unlink($path);
+            rmdir($directory);
+        }
+    }
+
+    public function testExistsAutoDetectUsesMinioPathHintCaseInsensitively(): void
+    {
+        $diskMock = Mockery::mock();
+        LaravelStorage::shouldReceive('disk')->with('minio')->once()->andReturn($diskMock);
+        LaravelStorage::shouldReceive('disk')->with('minio_brimen')->never();
+        $diskMock->shouldReceive('exists')->with('folder/MiNiO/file.txt')->once()->andReturn(true);
+
+        $storage = new Storage();
+        $this->assertTrue($storage->autoDetect()->exists('folder/MiNiO/file.txt'));
+    }
+
+    public function testExistsAutoDetectUsesMinioBrimenPathHint(): void
+    {
+        $diskMock = Mockery::mock();
+        LaravelStorage::shouldReceive('disk')->with('minio')->never();
+        LaravelStorage::shouldReceive('disk')->with('minio_brimen')->once()->andReturn($diskMock);
+        $diskMock->shouldReceive('exists')->with('folder/MINIO_BRIMEN/file.txt')->once()->andReturn(true);
+
+        $storage = new Storage();
+        $this->assertTrue($storage->autoDetect()->exists('folder/MINIO_BRIMEN/file.txt'));
+    }
+
     public function testDeleteAllowed(): void
     {
         putenv('ALLOW_DELETE_STORAGE_SPOTLIB=true');

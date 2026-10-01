@@ -111,7 +111,7 @@ class Storage
             $resolver = new DriverResolver();
 
             if ($this->pendingAutoDetect) {
-                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
+                foreach ($this->getAutoDetectDriverNames($filepath) as $driverName) {
                     $driver = $this->makeDriver($driverName);
                     if ($driver->exists($filepath)) {
                         return $driver->readStream($filepath);
@@ -143,7 +143,7 @@ class Storage
     {
         try {
             if ($this->pendingAutoDetect) {
-                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
+                foreach ($this->getAutoDetectDriverNames($filepath) as $driverName) {
                     if ($this->makeDriver($driverName)->exists($filepath)) {
                         return true;
                     }
@@ -249,7 +249,7 @@ class Storage
                 return $this->makeDriver($resolvedDriverName)->info($filepath);
             }
 
-            foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
+            foreach ($this->getAutoDetectDriverNames($filepath) as $driverName) {
                 $driver = $this->makeDriver($driverName);
                 if ($driver->exists($filepath)) {
                     return $driver->info($filepath);
@@ -282,9 +282,10 @@ class Storage
             }
 
             $resolver = new DriverResolver();
+            $pathDriverName = $this->getPathDriverName($dirpath);
             $resolvedDriverName = $this->pendingDriver !== null
                 ? $resolver->resolveExplicit($this->pendingDriver)
-                : $resolver->resolveDefault();
+                : ($pathDriverName ?? $resolver->resolveDefault());
 
             return $this->makeDriver($resolvedDriverName)->allFiles($dirpath);
         } finally {
@@ -309,7 +310,7 @@ class Storage
             $resolver = new DriverResolver();
 
             if ($this->pendingAutoDetect) {
-                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
+                foreach ($this->getAutoDetectDriverNames($filepath) as $driverName) {
                     $driver = $this->makeDriver($driverName);
                     if ($driver->exists($filepath)) {
                         return $driver->securelink($filepath, $ttl);
@@ -485,9 +486,12 @@ class Storage
             }
 
             $resolver = new DriverResolver();
-            $resolvedDestinationName = $this->pendingToDriver !== null
-                ? $resolver->resolveExplicit($this->pendingToDriver)
-                : $resolver->resolveDefault();
+            if ($this->pendingToDriver !== null) {
+                $resolvedDestinationName = $resolver->resolveExplicit($this->pendingToDriver);
+            } else {
+                $resolvedDestinationName = $this->getPathDriverName($destPath)
+                    ?? $resolver->resolveDefault();
+            }
             $destinationDriver = $this->makeDriver($resolvedDestinationName);
 
             if ($destinationDriver->exists($destPath)) {
@@ -547,7 +551,7 @@ class Storage
                                 );
                             } else {
                                 $sourceDriver = null;
-                                foreach ([self::MINIO, self::MINIO_BRIMEN, self::NFS] as $driverName) {
+                                foreach ($this->getAutoDetectDriverNames($pathFile) as $driverName) {
                                     $candidateDriver = $this->makeDriver($driverName);
                                     if ($candidateDriver->exists($pathFile)) {
                                         $sourceDriver = $candidateDriver;
@@ -636,9 +640,12 @@ class Storage
     {
         try {
             $resolver = new DriverResolver();
-            $resolvedSourceDriverName = $this->pendingFromDriver !== null
-                ? $resolver->resolveExplicit($this->pendingFromDriver)
-                : $resolver->resolveDefault();
+            if ($this->pendingFromDriver !== null) {
+                $resolvedSourceDriverName = $resolver->resolveExplicit($this->pendingFromDriver);
+            } else {
+                $resolvedSourceDriverName = $this->getPathDriverName($sourceFolder)
+                    ?? $resolver->resolveDefault();
+            }
             $sourceDriver = $this->makeDriver($resolvedSourceDriverName);
             $files = $sourceDriver->allFiles($sourceFolder);
 
@@ -671,6 +678,65 @@ class Storage
             $this->pendingFromDriver = null;
             $this->pendingToDriver = null;
         }
+    }
+
+    /**
+     * Detect a storage driver marker in a path.
+     *
+     * The earliest case-insensitive marker wins. If MINIO_BRIMEN and MINIO
+     * start at the same position, the more specific MINIO_BRIMEN marker wins.
+     *
+     * @param string $path full path, file path, or folder path
+     *
+     * @return string|null detected driver name, or null when no marker exists
+     */
+    private function getPathDriverName(string $path): ?string
+    {
+        $driverPositions = [
+            self::NFS => stripos($path, self::NFS),
+            self::MINIO_BRIMEN => stripos($path, self::MINIO_BRIMEN),
+            self::MINIO => stripos($path, self::MINIO),
+        ];
+        $detectedDriver = null;
+        $detectedPosition = PHP_INT_MAX;
+        $detectedLength = 0;
+
+        foreach ($driverPositions as $driverName => $position) {
+            if ($position === false) {
+                continue;
+            }
+
+            $driverLength = strlen($driverName);
+            if ($position < $detectedPosition
+                || ($position === $detectedPosition && $driverLength > $detectedLength)
+            ) {
+                $detectedDriver = $driverName;
+                $detectedPosition = $position;
+                $detectedLength = $driverLength;
+            }
+        }
+
+        return $detectedDriver;
+    }
+
+    /**
+     * Resolve the autodetect query order from a storage path.
+     *
+     * A path marker is checked before querying storage so a known storage path
+     * only performs one remote or filesystem existence check.
+     *
+     * @param string $path full path, file path, or folder path
+     *
+     * @return array<int, string> driver names ordered for autodetection
+     */
+    private function getAutoDetectDriverNames(string $path): array
+    {
+        $detectedDriver = $this->getPathDriverName($path);
+        if ($detectedDriver !== null) {
+            return [$detectedDriver];
+        }
+
+        return [self::MINIO, self::NFS, self::MINIO_BRIMEN];
     }
 
     /**
