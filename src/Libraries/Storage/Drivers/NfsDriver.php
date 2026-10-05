@@ -35,6 +35,8 @@ use Spotlibs\PhpLib\Libraries\Storage\StorageResult;
  */
 class NfsDriver implements StorageDriverInterface
 {
+    public const SECURELINK_DIR = '/var/www/html/public/securelink';
+
     /**
      * Resolve the actual absolute path using fallbacks if necessary.
      *
@@ -243,7 +245,7 @@ class NfsDriver implements StorageDriverInterface
         $extension = pathinfo($filepath, PATHINFO_EXTENSION);
         $random = Str::random(40);
         $random = $extension !== '' ? "{$random}.{$extension}" : $random;
-        $securelinkDir = '/var/www/html/public/securelink';
+        $securelinkDir = self::SECURELINK_DIR;
 
         if (!is_dir($securelinkDir)) {
             @mkdir($securelinkDir, 0755, true);

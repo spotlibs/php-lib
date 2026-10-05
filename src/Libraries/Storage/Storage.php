@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Spotlibs\PhpLib\Libraries\Storage;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
 use Spotlibs\PhpLib\Libraries\Storage\Drivers\MinioDriver;
 use Spotlibs\PhpLib\Libraries\Storage\Drivers\NfsDriver;
@@ -83,7 +84,7 @@ class Storage
     }
 
     /**
-     * Select the destination driver for a cross-driver copy/move (or the buildZip target driver).
+     * Select the destination driver for a cross-driver copy/move (ignored by buildZip/buildZipFolder, which always write to the NFS securelink folder).
      *
      * @param string $driver one of Storage::NFS, Storage::MINIO, Storage::MINIO_BRIMEN
      *
@@ -459,6 +460,21 @@ class Storage
         return $result;
     }
 
+    /**
+     * Build a zip archive from a list of files and write it to the NFS securelink folder.
+     *
+     * The zip is always written under {@see NfsDriver::SECURELINK_DIR} inside a random
+     * sub-directory, regardless of the source drivers or any chained ->toDriver(), so the
+     * returned StorageResult::$securelink is directly downloadable without a further
+     * securelink() call. Only the file name of $destPath is used.
+     *
+     * @param array<int, array{path_file: string, zip_path: string, driver?: string|null}> $sourceFiles files to include
+     * @param string                                                                        $destPath    desired zip file name (directory part is ignored)
+     *
+     * @throws RuntimeException when the input is invalid or the zip cannot be built/written
+     *
+     * @return StorageResult zip result, with the public URL in $securelink
+     */
     public function buildZip(array $sourceFiles, string $destPath): StorageResult
     {
         $resetState = function (): void {
@@ -467,8 +483,6 @@ class Storage
             $this->pendingFromDriver = null;
             $this->pendingToDriver = null;
         };
-
-        $finalResult = null;
 
         try {
             if ($sourceFiles === []) {
@@ -485,138 +499,130 @@ class Storage
                 $zipPaths[$zipPath] = true;
             }
 
-            $resolver = new DriverResolver();
-            if ($this->pendingToDriver !== null) {
-                $resolvedDestinationName = $resolver->resolveExplicit($this->pendingToDriver);
-            } else {
-                $resolvedDestinationName = $this->getPathDriverName($destPath)
-                    ?? $resolver->resolveDefault();
+            $zipName = basename($destPath);
+            if ($zipName === '' || $zipName === '.' || $zipName === '..') {
+                throw new RuntimeException('buildZip requires a valid zip file name');
             }
-            $destinationDriver = $this->makeDriver($resolvedDestinationName);
 
-            if ($destinationDriver->exists($destPath)) {
-                $result = new StorageResult();
-                $result->driver = $resolvedDestinationName;
-                $result->pathFile = basename($destPath);
-                $result->fullPath = $destPath;
-                $result->folder = dirname($destPath) . '/';
+            $resolver = new DriverResolver();
+            $randomDir = Str::random(40);
+            $securelinkDestPath = rtrim(NfsDriver::SECURELINK_DIR, '/') . "/{$randomDir}/{$zipName}";
 
-                $finalResult = $result;
-            } else {
-                $tempDir = sys_get_temp_dir() . '/zip_' . uniqid('', true);
-                $zip = null;
-                $zipOpened = false;
+            $tempDir = sys_get_temp_dir() . '/zip_' . uniqid('', true);
+            $zip = null;
+            $zipOpened = false;
 
-                $cleanup = static function (string $directory): void {
-                    if (!is_dir($directory)) {
-                        return;
+            $cleanup = static function (string $directory): void {
+                if (!is_dir($directory)) {
+                    return;
+                }
+
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::CHILD_FIRST
+                );
+
+                foreach ($iterator as $fileInfo) {
+                    if ($fileInfo->isDir()) {
+                        @rmdir($fileInfo->getPathname());
+                        continue;
                     }
 
-                    $iterator = new \RecursiveIteratorIterator(
-                        new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
-                        \RecursiveIteratorIterator::CHILD_FIRST
-                    );
+                    @unlink($fileInfo->getPathname());
+                }
 
-                    foreach ($iterator as $fileInfo) {
-                        if ($fileInfo->isDir()) {
-                            @rmdir($fileInfo->getPathname());
-                            continue;
-                        }
+                @rmdir($directory);
+            };
 
-                        @unlink($fileInfo->getPathname());
-                    }
+            try {
+                if (!mkdir($tempDir, 0775, true) && !is_dir($tempDir)) {
+                    throw new RuntimeException('Failed to create zip on pod');
+                }
 
-                    @rmdir($directory);
-                };
+                $zip = new \ZipArchive();
+                if ($zip->open($tempDir . '/final.zip', \ZipArchive::CREATE) !== true) {
+                    throw new RuntimeException('Failed to create zip on pod');
+                }
+                $zipOpened = true;
 
-                try {
-                    if (!mkdir($tempDir, 0775, true) && !is_dir($tempDir)) {
-                        throw new RuntimeException('Failed to create zip on pod');
-                    }
-
-                    $zip = new \ZipArchive();
-                    if ($zip->open($tempDir . '/final.zip', \ZipArchive::CREATE) !== true) {
-                        throw new RuntimeException('Failed to create zip on pod');
-                    }
-                    $zipOpened = true;
-
-                    foreach ($sourceFiles as $item) {
-                        $pathFile = $item['path_file'];
-                        $stream = null;
-
-                        try {
-                            if (isset($item['driver'])) {
-                                $sourceDriver = $this->makeDriver(
-                                    $resolver->resolveExplicit($item['driver'])
-                                );
-                            } else {
-                                $sourceDriver = null;
-                                foreach ($this->getAutoDetectDriverNames($pathFile) as $driverName) {
-                                    $candidateDriver = $this->makeDriver($driverName);
-                                    if ($candidateDriver->exists($pathFile)) {
-                                        $sourceDriver = $candidateDriver;
-                                        break;
-                                    }
-                                }
-
-                                if ($sourceDriver === null) {
-                                    throw new RuntimeException("File not found: {$pathFile}");
-                                }
-                            }
-
-                            $stream = $sourceDriver->readStream($pathFile);
-                            if (!$stream) {
-                                throw new RuntimeException("Failed to open read stream for: {$pathFile}");
-                            }
-
-                            $temporaryFile = $tempDir . '/' . uniqid('', true);
-                            if (file_put_contents($temporaryFile, $stream) === false) {
-                                throw new RuntimeException("Failed to write stream to pod: {$pathFile}");
-                            }
-
-                            if (is_resource($stream)) {
-                                fclose($stream);
-                                $stream = null;
-                            }
-
-                            if (!$zip->addFile($temporaryFile, $item['zip_path'])) {
-                                throw new RuntimeException("Failed to add file to zip: {$pathFile}");
-                            }
-                        } catch (\Throwable $exception) {
-                            if (is_resource($stream)) {
-                                fclose($stream);
-                            }
-
-                            throw new RuntimeException(
-                                "buildZip failed to stream {$pathFile}: {$exception->getMessage()}"
-                            );
-                        }
-                    }
-
-                    if (!$zip->close()) {
-                        $zipOpened = false;
-                        throw new RuntimeException('Failed to create zip on pod');
-                    }
-                    $zipOpened = false;
-
-                    $archiveStream = fopen($tempDir . '/final.zip', 'r');
-                    if ($archiveStream === false) {
-                        throw new RuntimeException('Failed to open zip for upload');
-                    }
+                foreach ($sourceFiles as $item) {
+                    $pathFile = $item['path_file'];
+                    $stream = null;
 
                     try {
-                        $finalResult = $destinationDriver->writeStream($archiveStream, $destPath);
-                    } finally {
-                        fclose($archiveStream);
-                    }
-                } finally {
-                    if ($zipOpened && $zip !== null) {
-                        $zip->close();
-                    }
+                        if (isset($item['driver'])) {
+                            $sourceDriver = $this->makeDriver(
+                                $resolver->resolveExplicit($item['driver'])
+                            );
+                        } else {
+                            $sourceDriver = null;
+                            foreach ($this->getAutoDetectDriverNames($pathFile) as $driverName) {
+                                $candidateDriver = $this->makeDriver($driverName);
+                                if ($candidateDriver->exists($pathFile)) {
+                                    $sourceDriver = $candidateDriver;
+                                    break;
+                                }
+                            }
 
-                    $cleanup($tempDir);
+                            if ($sourceDriver === null) {
+                                throw new RuntimeException("File not found: {$pathFile}");
+                            }
+                        }
+
+                        $stream = $sourceDriver->readStream($pathFile);
+                        if (!$stream) {
+                            throw new RuntimeException("Failed to open read stream for: {$pathFile}");
+                        }
+
+                        $temporaryFile = $tempDir . '/' . uniqid('', true);
+                        if (file_put_contents($temporaryFile, $stream) === false) {
+                            throw new RuntimeException("Failed to write stream to pod: {$pathFile}");
+                        }
+
+                        if (is_resource($stream)) {
+                            fclose($stream);
+                            $stream = null;
+                        }
+
+                        if (!$zip->addFile($temporaryFile, $item['zip_path'])) {
+                            throw new RuntimeException("Failed to add file to zip: {$pathFile}");
+                        }
+                    } catch (\Throwable $exception) {
+                        if (is_resource($stream)) {
+                            fclose($stream);
+                        }
+
+                        throw new RuntimeException(
+                            "buildZip failed to stream {$pathFile}: {$exception->getMessage()}"
+                        );
+                    }
                 }
+
+                if (!$zip->close()) {
+                    $zipOpened = false;
+                    throw new RuntimeException('Failed to create zip on pod');
+                }
+                $zipOpened = false;
+
+                $archiveStream = fopen($tempDir . '/final.zip', 'r');
+                if ($archiveStream === false) {
+                    throw new RuntimeException('Failed to open zip for upload');
+                }
+
+                try {
+                    $finalResult = $this->makeDriver(self::NFS)->writeStream($archiveStream, $securelinkDestPath);
+                } finally {
+                    fclose($archiveStream);
+                }
+            } finally {
+                if ($zipOpened && $zip !== null) {
+                    $zip->close();
+                }
+
+                $cleanup($tempDir);
             }
+
+            $finalResult->securelink = env('APP_URL') . "/securelink/{$randomDir}/{$zipName}";
         } finally {
             $resetState();
         }
@@ -627,14 +633,14 @@ class Storage
     /**
      * Build a zip archive from an entire folder on a single source driver,
      * preserving the folder's relative subfolder structure inside the archive,
-     * and upload the result to a single destination.
+     * and write the result to the NFS securelink folder (see buildZip()).
      *
      * @param string $sourceFolder full source folder path including prefix
-     * @param string $destPath     full destination path for the resulting zip, including prefix and filename
+     * @param string $destPath     desired zip file name (directory part is ignored; zip is written to the NFS securelink folder)
      *
      * @throws RuntimeException when the folder cannot be zipped or uploaded
      *
-     * @return StorageResult zip result
+     * @return StorageResult zip result, with the public URL in $securelink
      */
     public function buildZipFolder(string $sourceFolder, string $destPath): StorageResult
     {
@@ -665,10 +671,6 @@ class Storage
                     'driver' => $resolvedSourceDriverName,
                     'zip_path' => $zipPath,
                 ];
-            }
-
-            if ($this->pendingToDriver !== null) {
-                $this->toDriver($this->pendingToDriver);
             }
 
             return $this->buildZip($sourceFiles, $destPath);

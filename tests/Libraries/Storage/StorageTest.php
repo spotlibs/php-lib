@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage as LaravelStorage;
 use Laravel\Lumen\Testing\TestCase;
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
+use Spotlibs\PhpLib\Libraries\Storage\Drivers\NfsDriver;
 use Spotlibs\PhpLib\Libraries\Storage\Storage;
 use Spotlibs\PhpLib\Libraries\Storage\StorageResult;
 use Mockery;
@@ -192,5 +193,46 @@ class StorageTest extends TestCase
         $storage = new Storage();
         $result = $storage->driver(Storage::MINIO)->move('a.txt', 'b.txt');
         $this->assertEquals('b.txt', $result->pathFile);
+    }
+
+    public function testBuildZipAlwaysWritesToNfsSecurelinkFolder(): void
+    {
+        putenv('APP_URL=http://host');
+        $_ENV['APP_URL'] = 'http://host';
+        $srcFile = sys_get_temp_dir() . '/src_' . uniqid('', true) . '.txt';
+        file_put_contents($srcFile, 'hello');
+
+        $storage = new Storage();
+        $result = $storage->toDriver(Storage::MINIO)->buildZip(
+            [['path_file' => $srcFile, 'driver' => Storage::NFS, 'zip_path' => 'a.txt']],
+            'some/other/dir/prakarsa.zip'
+        );
+
+        try {
+            $this->assertEquals(Storage::NFS, $result->driver);
+            $this->assertStringStartsWith(NfsDriver::SECURELINK_DIR . '/', $result->fullPath);
+            $this->assertEquals('prakarsa.zip', $result->pathFile);
+            $this->assertFileExists($result->fullPath);
+            $this->assertEquals(
+                'http://host/securelink/' . basename(dirname($result->fullPath)) . '/prakarsa.zip',
+                $result->securelink
+            );
+
+            $zip = new \ZipArchive();
+            $this->assertTrue($zip->open($result->fullPath) === true);
+            $this->assertEquals('hello', $zip->getFromName('a.txt'));
+            $zip->close();
+        } finally {
+            @unlink($srcFile);
+            @unlink($result->fullPath);
+            @rmdir(dirname($result->fullPath));
+        }
+    }
+
+    public function testBuildZipRejectsEmptySourceFiles(): void
+    {
+        $this->expectException(RuntimeException::class);
+
+        (new Storage())->buildZip([], 'prakarsa.zip');
     }
 }
