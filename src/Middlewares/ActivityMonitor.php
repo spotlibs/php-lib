@@ -95,8 +95,10 @@ class ActivityMonitor
         $meta->req_level_uker = $request->header('X-Request-Level-Uker');
         $meta->req_uid = $request->header('X-Request-Uid-Las');
         $meta->req_uker_commercial = $request->header('X-Request-Uker-Commercial');
+        $meta->req_uker_commercial_desc = $request->header('X-Request-Uker-Commercial-Desc');
         $meta->req_floor_commercial = $request->header('X-Request-Floor-Commercial');
         $meta->req_floor_commercial_desc = $request->header('X-Request-Floor-Commercial-Desc');
+        $meta->fid_role = $request->header('X-Request-Fid-Role');
         $this->contextService->set(Metadata::class, $meta);
 
         $this->contextService->set('method', $request->method());
