@@ -163,8 +163,10 @@ class MinioDriverTest extends TestCase
     {
         $diskMock = Mockery::mock();
         LaravelStorage::shouldReceive('disk')->with('minio')->andReturn($diskMock);
-        $diskMock->shouldReceive('files')->with('/tmp')->once()->andReturn(['/tmp/a.txt']);
-        $diskMock->shouldReceive('size')->with('/tmp/a.txt')->once()->andReturn(123);
+        $diskMock->shouldReceive('listContents')->with('/tmp', false)->once()->andReturn([
+            ['type' => 'dir', 'path' => '/tmp/sub'],
+            ['type' => 'file', 'path' => '/tmp/a.txt', 'size' => '123'],
+        ]);
 
         $driver = new MinioDriver();
         $files = $driver->files('/tmp');
@@ -177,8 +179,10 @@ class MinioDriverTest extends TestCase
     {
         $diskMock = Mockery::mock();
         LaravelStorage::shouldReceive('disk')->with('minio')->andReturn($diskMock);
-        $diskMock->shouldReceive('allFiles')->with('/tmp')->once()->andReturn(['/tmp/a.txt']);
-        $diskMock->shouldReceive('size')->with('/tmp/a.txt')->once()->andReturn(123);
+        $diskMock->shouldReceive('listContents')->with('/tmp', true)->once()->andReturn([
+            ['type' => 'dir', 'path' => '/tmp/sub'],
+            ['type' => 'file', 'path' => '/tmp/a.txt', 'size' => '123'],
+        ]);
 
         $driver = new MinioDriver();
         $files = $driver->allFiles('/tmp');

@@ -240,18 +240,7 @@ class MinioDriver implements StorageDriverInterface
      */
     public function files(string $dirpath): array
     {
-        $disk = LaravelStorage::disk($this->disk);
-        $paths = $disk->files($dirpath);
-
-        $result = [];
-        foreach ($paths as $path) {
-            $result[] = [
-                'path' => $path,
-                'size' => $disk->size($path),
-            ];
-        }
-
-        return $result;
+        return $this->listFileEntries($dirpath, false);
     }
 
     /**
@@ -263,14 +252,29 @@ class MinioDriver implements StorageDriverInterface
      */
     public function allFiles(string $dirpath): array
     {
-        $disk = LaravelStorage::disk($this->disk);
-        $paths = $disk->allFiles($dirpath);
+        return $this->listFileEntries($dirpath, true);
+    }
 
+    /**
+     * List file entries through Flysystem listContents, independent of the
+     * adapter's allFiles()/files() contract.
+     *
+     * @param string $dirpath   directory path to list
+     * @param bool   $recursive whether to descend into subdirectories
+     *
+     * @return array<int, array{path: string, size: int|string}> file entries
+     */
+    private function listFileEntries(string $dirpath, bool $recursive): array
+    {
         $result = [];
-        foreach ($paths as $path) {
+        foreach (LaravelStorage::disk($this->disk)->listContents($dirpath, $recursive) as $entry) {
+            if (($entry['type'] ?? null) !== 'file') {
+                continue;
+            }
+
             $result[] = [
-                'path' => $path,
-                'size' => $disk->size($path),
+                'path' => $entry['path'],
+                'size' => isset($entry['size']) ? (int) $entry['size'] : '',
             ];
         }
 
