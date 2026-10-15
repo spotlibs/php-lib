@@ -162,29 +162,26 @@ class MinioAdapter extends Filesystem
     }
 
     /**
-     * Get all files in a directory.
+     * Get all files in a directory
      *
-     * Legacy contract (default, same as v1.7.2): returns raw Flysystem 1
-     * listContents() entries (arrays with path, type, size, ...), directories
-     * included, non-recursive unless $recursive is true.
+     * Legacy contract, identical to v1.7.2: returns raw Flysystem 1 listContents()
+     * entries (path, dirname, basename, type, ...), directories included,
+     * non-recursive unless $recursive is true. The storage manager
+     * (Libraries\Storage) does not use this method.
      *
-     * Opt-in contract: when env MINIO_ALLFILES_PATHS=true, returns file path
-     * strings only (directories excluded), recursive unless $recursive is false.
+     * @param string $dirpath   path of the directory
+     * @param bool   $recursive whether to get files recursively or not
      *
-     * The storage manager (Libraries\Storage) does not use this method.
-     *
-     * @param string    $dirpath   path of the directory
-     * @param bool|null $recursive whether to get files recursively or not
-     *
-     * @return array<int, array|string>
+     * @return array
      */
-    public function allFiles(string $dirpath, ?bool $recursive = null): array
+    public function allFiles(string $dirpath, bool $recursive = false): array
     {
-        if (filter_var(env('MINIO_ALLFILES_PATHS', false), FILTER_VALIDATE_BOOLEAN)) {
-            return $this->listPaths($dirpath, $recursive ?? true);
+        try {
+            $paths = $this->listContents($dirpath, $recursive);
+            return $paths;
+        } catch (\Throwable $th) {
+            throw $th;
         }
-
-        return $this->listContents($dirpath, $recursive ?? false);
     }
 
     /**
