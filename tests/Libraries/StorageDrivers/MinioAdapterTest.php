@@ -9,13 +9,11 @@ use PHPUnit\Framework\TestCase;
 use Spotlibs\PhpLib\Libraries\StorageDrivers\MinioAdapter;
 
 /**
- * Pins the MinioAdapter::allFiles contract so legacy callers (raw
- * listContents entries) are not changed by storage manager work.
+ * Pins the MinioAdapter::allFiles legacy contract (v1.7.2): raw listContents
+ * entries, non-recursive by default. Legacy callers depend on this shape.
  */
 class MinioAdapterTest extends TestCase
 {
-    private const ENV_KEY = 'MINIO_ALLFILES_PATHS';
-
     private array $entries = [
         ['type' => 'dir', 'path' => '378/REF/dokumentasi', 'basename' => 'dokumentasi'],
         ['type' => 'file', 'path' => '378/REF/dokumentasi/a.png', 'size' => '10'],
@@ -23,7 +21,6 @@ class MinioAdapterTest extends TestCase
 
     protected function tearDown(): void
     {
-        putenv(self::ENV_KEY);
         Mockery::close();
         parent::tearDown();
     }
@@ -41,37 +38,15 @@ class MinioAdapterTest extends TestCase
 
     public function testAllFilesDefaultReturnsRawEntriesNonRecursive(): void
     {
-        putenv(self::ENV_KEY);
-
         $result = $this->adapter('378/REF', false)->allFiles('378/REF');
 
         $this->assertSame($this->entries, $result);
     }
 
-    public function testAllFilesDefaultHonorsExplicitRecursive(): void
+    public function testAllFilesHonorsExplicitRecursive(): void
     {
-        putenv(self::ENV_KEY);
-
         $result = $this->adapter('378/REF', true)->allFiles('378/REF', true);
 
         $this->assertSame($this->entries, $result);
-    }
-
-    public function testAllFilesOptInReturnsFilePathsRecursiveByDefault(): void
-    {
-        putenv(self::ENV_KEY . '=true');
-
-        $result = $this->adapter('378/REF', true)->allFiles('378/REF');
-
-        $this->assertSame(['378/REF/dokumentasi/a.png'], $result);
-    }
-
-    public function testAllFilesOptInHonorsExplicitNonRecursive(): void
-    {
-        putenv(self::ENV_KEY . '=true');
-
-        $result = $this->adapter('378/REF', false)->allFiles('378/REF', false);
-
-        $this->assertSame(['378/REF/dokumentasi/a.png'], $result);
     }
 }
