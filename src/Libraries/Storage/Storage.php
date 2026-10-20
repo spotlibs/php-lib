@@ -20,6 +20,9 @@ use Illuminate\Support\Str;
 use Spotlibs\PhpLib\Exceptions\RuntimeException;
 use Spotlibs\PhpLib\Libraries\Storage\Drivers\MinioDriver;
 use Spotlibs\PhpLib\Libraries\Storage\Drivers\NfsDriver;
+use Spotlibs\PhpLib\Libraries\Storage\Strategies\MinioConcurrentZip;
+use Spotlibs\PhpLib\Libraries\Storage\Strategies\NfsDirectZip;
+use Spotlibs\PhpLib\Libraries\Storage\Strategies\NfsOriginalZip;
 
 /**
  * Storage
@@ -468,6 +471,9 @@ class Storage
      * returned StorageResult::$securelink is directly downloadable without a further
      * securelink() call. Only the file name of $destPath is used.
      *
+     * Routes execution dynamically between ORIGINAL and OPTIMIZED strategies based on
+     * the ZIP_STRATEGY environment variable.
+     *
      * @param array<int, array{path_file: string, zip_path: string, driver?: string|null}> $sourceFiles files to include
      * @param string                                                                        $destPath    desired zip file name (directory part is ignored)
      *
@@ -504,130 +510,24 @@ class Storage
                 throw new RuntimeException('buildZip requires a valid zip file name');
             }
 
-            $resolver = new DriverResolver();
             $randomDir = Str::random(40);
             $securelinkDestPath = rtrim(NfsDriver::SECURELINK_DIR, '/') . "/{$randomDir}/{$zipName}";
 
-            $tempDir = sys_get_temp_dir() . '/zip_' . uniqid('', true);
-            $zip = null;
-            $zipOpened = false;
+            $logResolver = new LogResolver();
+            $strategy = strtoupper((string) env('ZIP_STRATEGY', 'ORIGINAL'));
 
-            $cleanup = static function (string $directory): void {
-                if (!is_dir($directory)) {
-                    return;
-                }
-
-                $iterator = new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
-                    \RecursiveIteratorIterator::CHILD_FIRST
-                );
-
-                foreach ($iterator as $fileInfo) {
-                    if ($fileInfo->isDir()) {
-                        @rmdir($fileInfo->getPathname());
-                        continue;
-                    }
-
-                    @unlink($fileInfo->getPathname());
-                }
-
-                @rmdir($directory);
-            };
-
-            try {
-                if (!mkdir($tempDir, 0775, true) && !is_dir($tempDir)) {
-                    throw new RuntimeException('Failed to create zip on pod');
-                }
-
-                $zip = new \ZipArchive();
-                if ($zip->open($tempDir . '/final.zip', \ZipArchive::CREATE) !== true) {
-                    throw new RuntimeException('Failed to create zip on pod');
-                }
-                $zipOpened = true;
-
-                foreach ($sourceFiles as $item) {
-                    $pathFile = $item['path_file'];
-                    $stream = null;
-
-                    try {
-                        if (isset($item['driver'])) {
-                            $sourceDriver = $this->makeDriver(
-                                $resolver->resolveExplicit($item['driver'])
-                            );
-                        } else {
-                            $sourceDriver = null;
-                            foreach ($this->getAutoDetectDriverNames($pathFile) as $driverName) {
-                                $candidateDriver = $this->makeDriver($driverName);
-                                if ($candidateDriver->exists($pathFile)) {
-                                    $sourceDriver = $candidateDriver;
-                                    break;
-                                }
-                            }
-
-                            if ($sourceDriver === null) {
-                                throw new RuntimeException("File not found: {$pathFile}");
-                            }
-                        }
-
-                        $stream = $sourceDriver->readStream($pathFile);
-                        if (!$stream) {
-                            throw new RuntimeException("Failed to open read stream for: {$pathFile}");
-                        }
-
-                        $temporaryFile = $tempDir . '/' . uniqid('', true);
-                        if (file_put_contents($temporaryFile, $stream) === false) {
-                            throw new RuntimeException("Failed to write stream to pod: {$pathFile}");
-                        }
-
-                        if (is_resource($stream)) {
-                            fclose($stream);
-                            $stream = null;
-                        }
-
-                        if (!$zip->addFile($temporaryFile, $item['zip_path'])) {
-                            throw new RuntimeException("Failed to add file to zip: {$pathFile}");
-                        }
-                    } catch (\Throwable $exception) {
-                        if (is_resource($stream)) {
-                            fclose($stream);
-                        }
-
-                        throw new RuntimeException(
-                            "buildZip failed to stream {$pathFile}: {$exception->getMessage()}"
-                        );
-                    }
-                }
-
-                if (!$zip->close()) {
-                    $zipOpened = false;
-                    throw new RuntimeException('Failed to create zip on pod');
-                }
-                $zipOpened = false;
-
-                $archiveStream = fopen($tempDir . '/final.zip', 'r');
-                if ($archiveStream === false) {
-                    throw new RuntimeException('Failed to open zip for upload');
-                }
-
-                try {
-                    $finalResult = $this->makeDriver(self::NFS)->writeStream($archiveStream, $securelinkDestPath);
-                } finally {
-                    fclose($archiveStream);
-                }
-            } finally {
-                if ($zipOpened && $zip !== null) {
-                    $zip->close();
-                }
-
-                $cleanup($tempDir);
+            if ($strategy === 'OPTIMIZED') {
+                $finalResult = $this->buildZipOptimized($sourceFiles, $securelinkDestPath, $zipName, $logResolver);
+            } else {
+                $finalResult = $this->buildZipOriginal($sourceFiles, $securelinkDestPath, $zipName, $logResolver);
             }
 
             $finalResult->securelink = env('APP_URL') . "/securelink/{$randomDir}/{$zipName}";
+
+            return $finalResult;
         } finally {
             $resetState();
         }
-
-        return $finalResult;
     }
 
     /**
@@ -680,6 +580,244 @@ class Storage
             $this->pendingFromDriver = null;
             $this->pendingToDriver = null;
         }
+    }
+
+    /**
+     * Execute the original sequential zip build strategy (backward compatible).
+     *
+     * @param array<int, array{path_file: string, zip_path: string, driver?: string|null}> $sourceFiles
+     * @param string                                                                       $securelinkDestPath
+     * @param string                                                                       $zipName
+     * @param LogResolver                                                                  $logResolver
+     *
+     * @throws RuntimeException
+     *
+     * @return StorageResult
+     */
+    private function buildZipOriginal(
+        array $sourceFiles,
+        string $securelinkDestPath,
+        string $zipName,
+        LogResolver $logResolver
+    ): StorageResult {
+        $resolver = new DriverResolver();
+        $originalStrategy = new NfsOriginalZip($logResolver);
+
+        $streamReader = function (string $pathFile, ?string $driverName) use ($resolver) {
+            if ($driverName !== null) {
+                $sourceDriver = $this->makeDriver($resolver->resolveExplicit($driverName));
+            } else {
+                $sourceDriver = null;
+                foreach ($this->getAutoDetectDriverNames($pathFile) as $name) {
+                    $candidateDriver = $this->makeDriver($name);
+                    if ($candidateDriver->exists($pathFile)) {
+                        $sourceDriver = $candidateDriver;
+                        break;
+                    }
+                }
+
+                if ($sourceDriver === null) {
+                    throw new RuntimeException("File not found: {$pathFile}");
+                }
+            }
+
+            return $sourceDriver->readStream($pathFile);
+        };
+
+        $streamWriter = function ($archiveStream, string $destPath): StorageResult {
+            return $this->makeDriver(self::NFS)->writeStream($archiveStream, $destPath);
+        };
+
+        $finalResult = $originalStrategy->build(
+            $sourceFiles,
+            $securelinkDestPath,
+            $streamReader,
+            $streamWriter
+        );
+
+        $logResolver->logAggregate('ORIGINAL_ZIP_COMPLETED', ['zip_name' => $zipName]);
+
+        return $finalResult;
+    }
+
+    /**
+     * Execute the high-performance optimized zip strategy (Zero-copy NFS, concurrent MinIO, CM_STORE)[cite: 4].
+     *
+     * @param array<int, array{path_file: string, zip_path: string, driver?: string|null}> $sourceFiles
+     * @param string                                                                       $securelinkDestPath
+     * @param string                                                                       $zipName
+     * @param LogResolver                                                                  $logResolver
+     *
+     * @throws RuntimeException
+     *
+     * @return StorageResult
+     */
+    private function buildZipOptimized(
+        array $sourceFiles,
+        string $securelinkDestPath,
+        string $zipName,
+        LogResolver $logResolver
+    ): StorageResult {
+        $resolver = new DriverResolver();
+        $nfsFiles = [];
+        $minioGroups = []; // [driverName => [files]]
+
+        // 1. Resolve drivers and partition files into NFS vs MinIO
+        foreach ($sourceFiles as $item) {
+            $pathFile = $item['path_file'];
+
+            if (isset($item['driver'])) {
+                $driverName = $resolver->resolveExplicit($item['driver']);
+            } else {
+                $driverName = null;
+                foreach ($this->getAutoDetectDriverNames($pathFile) as $candidateName) {
+                    $candidateDriver = $this->makeDriver($candidateName);
+                    if ($candidateDriver->exists($pathFile)) {
+                        $driverName = $candidateName;
+                        break;
+                    }
+                }
+
+                if ($driverName === null) {
+                    throw new RuntimeException("File not found: {$pathFile}");
+                }
+            }
+
+            if ($driverName === self::NFS) {
+                $nfsFiles[] = $item;
+            } else {
+                $minioGroups[$driverName][] = $item;
+            }
+        }
+
+        // Case A: Pure MinIO (Single MinIO Driver)
+        if ($nfsFiles === [] && count($minioGroups) === 1) {
+            $driverName = (string) array_key_first($minioGroups);
+            /** @var MinioDriver $minioDriver */
+            $minioDriver = $this->makeDriver($driverName);
+
+            $minioConcurrent = new MinioConcurrentZip($logResolver);
+            $minioConcurrent->build($minioGroups[$driverName], $securelinkDestPath, $minioDriver);
+
+            $logResolver->logAggregate('OPTIMIZED_ZIP_COMPLETED', ['zip_name' => $zipName]);
+
+            return $this->createDirectStorageResult($securelinkDestPath, $zipName);
+        }
+
+        // Case B: Pure NFS or Mixed (NFS + MinIO)
+        $nfsDirect = new NfsDirectZip($logResolver);
+
+        if ($nfsFiles !== []) {
+            $nfsDirect->validateNfsMountHealth($nfsFiles);
+            $nfsDirect->checkNfsPayloadSize($nfsFiles);
+        }
+
+        $minioTempDir = null;
+        $minioDownloads = []; // [localTempPath => zipPath]
+
+        try {
+            // Concurrent ingest for any MinIO files in the batch
+            if ($minioGroups !== []) {
+                $minioTempDir = $logResolver->track('minio_mixed_setup', function (): string {
+                    $dir = sys_get_temp_dir() . '/minio_mixed_' . uniqid('', true);
+                    if (!mkdir($dir, 0775, true) && !is_dir($dir)) {
+                        throw new RuntimeException('Failed to create temp directory for MinIO downloads');
+                    }
+                    return $dir;
+                });
+
+                foreach ($minioGroups as $driverName => $files) {
+                    /** @var MinioDriver $driver */
+                    $driver = $this->makeDriver($driverName);
+                    $targetMap = [];
+
+                    foreach ($files as $file) {
+                        $localPath = $minioTempDir . '/' . uniqid('minio_', true) . '.tmp';
+                        $targetMap[$file['path_file']] = $localPath;
+                        $minioDownloads[$localPath] = $file['zip_path'];
+                    }
+
+                    $logResolver->track('minio_concurrent_download', function () use ($driver, $targetMap, $minioTempDir): void {
+                        $strategy = env('MINIO_CONCURRENT_STRATEGY', MinioDriver::STRATEGY_COMMAND_POOL);
+                        $concurrency = (int) env('MINIO_CONCURRENCY', 5);
+                        $driver->readMinioConcurrent($targetMap, $minioTempDir, $strategy, $concurrency);
+                    });
+                }
+            }
+
+            // Register directly on Securelink PVC using CM_STORE[cite: 4]
+            if ($nfsFiles !== []) {
+                $zip = $nfsDirect->buildDirectNfsZip($securelinkDestPath, $nfsFiles);
+            } else {
+                $destDir = dirname($securelinkDestPath);
+                if (!is_dir($destDir) && !mkdir($destDir, 0775, true) && !is_dir($destDir)) {
+                    throw new RuntimeException("Failed to create securelink destination directory: {$destDir}");
+                }
+                $zip = new ZipArchive();
+                if ($zip->open($securelinkDestPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+                    throw new RuntimeException("Failed to open ZIP directly at destination: {$securelinkDestPath}");
+                }
+            }
+
+            if ($minioDownloads !== []) {
+                $logResolver->track('minio_zip_registration', function () use ($zip, $minioDownloads): void {
+                    foreach ($minioDownloads as $localPath => $zipPath) {
+                        if (!is_file($localPath)) {
+                            throw new RuntimeException("Downloaded MinIO file is missing: {$localPath}");
+                        }
+                        if (!$zip->addFile($localPath, $zipPath)) {
+                            throw new RuntimeException("Failed to add MinIO file to zip: {$localPath}");
+                        }
+                        $zip->setCompressionName($zipPath, ZipArchive::CM_STORE);
+                    }
+                });
+            }
+
+            $logResolver->track('zip_close', function () use ($zip): void {
+                if (!$zip->close()) {
+                    throw new RuntimeException('Failed to close and stream ZIP directly to destination');
+                }
+            });
+        } finally {
+            if ($minioTempDir !== null && is_dir($minioTempDir)) {
+                $logResolver->track('minio_mixed_cleanup', function () use ($minioTempDir): void {
+                    $files = (array) glob($minioTempDir . '/*');
+                    foreach ($files as $file) {
+                        if (is_file($file)) {
+                            @unlink($file);
+                        }
+                    }
+                    @rmdir($minioTempDir);
+                });
+            }
+        }
+
+        $logResolver->logAggregate('OPTIMIZED_ZIP_COMPLETED', ['zip_name' => $zipName]);
+
+        return $this->createDirectStorageResult($securelinkDestPath, $zipName);
+    }
+
+    /**
+     * Build the StorageResult object for a directly generated ZIP archive.
+     *
+     * @param string $securelinkDestPath
+     * @param string $zipName
+     *
+     * @return StorageResult
+     */
+    private function createDirectStorageResult(string $securelinkDestPath, string $zipName): StorageResult
+    {
+        $result = new StorageResult();
+        $result->driver = self::NFS;
+        $result->pathFile = $zipName;
+        $result->fullPath = $securelinkDestPath;
+        $result->folder = dirname($securelinkDestPath) . '/';
+
+        if (is_file($securelinkDestPath)) {
+            $result->size = filesize($securelinkDestPath);
+        }
+
+        return $result;
     }
 
     /**
